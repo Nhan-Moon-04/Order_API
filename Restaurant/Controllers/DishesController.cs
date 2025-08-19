@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Data;
+using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Entities;
+using Restaurant.Service.Interfaces;
 
 namespace Restaurant.Controllers
 {
@@ -9,59 +11,37 @@ namespace Restaurant.Controllers
     [ApiController]
     public class DishesController : ControllerBase
     {
-        private readonly RestaurantDbContext _context;
-
-        public DishesController(RestaurantDbContext context)
+        public readonly IDishesService _service;
+        public DishesController(IDishesService service)
         {
-            _context = context;
+            _service = service;
         }
 
+        // GET: api/dishes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Dishes>>> GetDishes()
+
+        public async Task<ActionResult<IEnumerable<DishesDto>>> GetAll()
         {
-            return await _context.Dishes
-                                 .Include(d => d.Kitchen)
-                                 .Include(d => d.AreaDishPrices)
-                                 .ToListAsync();
+            var dishes = await _service.GetAllDishesAsync();
+            return Ok(dishes);
         }
 
+        // GET: api/dishes/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Dishes>> GetDish(string id)
+        public async Task<ActionResult<DishesDto>> GetById(string id)
         {
-            var dish = await _context.Dishes
-                                     .Include(d => d.Kitchen)
-                                     .Include(d => d.AreaDishPrices)
-                                     .FirstOrDefaultAsync(d => d.DishId == id);
-
+            var dish = await _service.GetDishByIdAsync(id);
             if (dish == null) return NotFound();
-            return dish;
+            return Ok(dish);
         }
 
+        // POST: api/dishes
         [HttpPost]
-        public async Task<ActionResult<Dishes>> CreateDish(Dishes dish)
+        public async Task<ActionResult<DishesDto>> CreateDishAsync([FromBody] DishesDto dishDto)
         {
-            _context.Dishes.Add(dish);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetDish), new { id = dish.DishId }, dish);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDish(string id, Dishes dish)
-        {
-            if (id != dish.DishId) return BadRequest();
-            _context.Entry(dish).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDish(string id)
-        {
-            var dish = await _context.Dishes.FindAsync(id);
-            if (dish == null) return NotFound();
-            _context.Dishes.Remove(dish);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            if (dishDto == null) return BadRequest("Dish data is required.");
+            var createdDish = await _service.CreateDishAsync(dishDto);
+            return CreatedAtAction(nameof(GetById), new { id = createdDish.DishId }, createdDish);
         }
     }
 }

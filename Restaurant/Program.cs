@@ -16,6 +16,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAreaDishPriceService, AreaDishPriceService>();
 builder.Services.AddScoped<IAreasService, AreasService>();
+builder.Services.AddScoped<IDishesService,DishesService>();
+builder.Services.AddScoped<IKitchensService, KitchensService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

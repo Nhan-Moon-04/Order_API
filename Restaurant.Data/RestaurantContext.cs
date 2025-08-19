@@ -17,16 +17,13 @@ namespace Restaurant.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure entity relationships
-            ConfigureRelationships(modelBuilder);
-
             var fixedDate = new DateTime(2025, 01, 01); // ngày cố định
 
             // Seed Areas
             modelBuilder.Entity<Areas>().HasData(
                 new Areas 
                 { 
-                    Id = "AREA001", 
+                    Id = "bf1d3a14-cec7-4217-afef-3070cc964d2b",
                     AreaId = "A001", 
                     AreaName = "Tầng Trệt - Khu A", 
                     Description = "Khu vực tầng trệt, phù hợp cho gia đình", 
@@ -35,7 +32,7 @@ namespace Restaurant.Data
                 },
                 new Areas 
                 { 
-                    Id = "AREA002", 
+                    Id = "87cce1fb-d6f9-49a2-b026-15bb0740385c",
                     AreaId = "A002", 
                     AreaName = "Tầng Trệt - Khu B", 
                     Description = "Khu vực tầng trệt, gần cửa sổ", 
@@ -44,7 +41,7 @@ namespace Restaurant.Data
                 },
                 new Areas 
                 { 
-                    Id = "AREA003", 
+                    Id = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                     AreaId = "A003", 
                     AreaName = "Tầng 2 - Khu VIP", 
                     Description = "Khu vực VIP tầng 2, view đẹp", 
@@ -53,7 +50,7 @@ namespace Restaurant.Data
                 },
                 new Areas 
                 { 
-                    Id = "AREA004", 
+                    Id = "e3da7474-bab3-48de-b4bd-7887170d7e59",
                     AreaId = "A004", 
                     AreaName = "Tầng 2 - Khu Thường", 
                     Description = "Khu vực thường tầng 2", 
@@ -62,7 +59,7 @@ namespace Restaurant.Data
                 },
                 new Areas 
                 { 
-                    Id = "AREA005", 
+                    Id = "eb837d6c-079e-44b9-8df5-da3ac31bc03c",
                     AreaId = "A005", 
                     AreaName = "Sân Thượng", 
                     Description = "Khu vực sân thượng, không gian mở", 
@@ -75,7 +72,7 @@ namespace Restaurant.Data
             modelBuilder.Entity<Kitchens>().HasData(
                 new Kitchens 
                 { 
-                    Id = "KITCHEN001", 
+                    Id = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad",
                     KitchenId = "K001", 
                     KitchenName = "Bếp Âu", 
                     Description = "Chuyên món Âu, Mỹ, Ý", 
@@ -84,7 +81,7 @@ namespace Restaurant.Data
                 },
                 new Kitchens 
                 { 
-                    Id = "KITCHEN002", 
+                    Id = "ed39caf8-325b-4670-a339-9a0b17983250",
                     KitchenId = "K002", 
                     KitchenName = "Bếp Á", 
                     Description = "Chuyên món Việt, Trung, Nhật, Hàn", 
@@ -93,7 +90,7 @@ namespace Restaurant.Data
                 },
                 new Kitchens 
                 { 
-                    Id = "KITCHEN003", 
+                    Id = "dcabb860-de38-4cb8-a190-8ef255deba01",
                     KitchenId = "K003", 
                     KitchenName = "Bếp Nướng BBQ", 
                     Description = "Chuyên các món nướng, BBQ", 
@@ -102,7 +99,7 @@ namespace Restaurant.Data
                 },
                 new Kitchens 
                 { 
-                    Id = "KITCHEN004", 
+                    Id = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a",
                     KitchenId = "K004", 
                     KitchenName = "Bếp Dessert", 
                     Description = "Chuyên tráng miệng, đồ ngọt", 
@@ -111,7 +108,7 @@ namespace Restaurant.Data
                 },
                 new Kitchens 
                 { 
-                    Id = "KITCHEN005", 
+                    Id = "8820e289-12fc-4434-820e-440479c9b462",
                     KitchenId = "K005", 
                     KitchenName = "Bar & Thức Uống", 
                     Description = "Chuyên pha chế đồ uống, cocktail", 
@@ -125,31 +122,31 @@ namespace Restaurant.Data
                 // Món Âu
                 new Dishes 
                 { 
-                    Id = "DISH001", 
+                    Id = "7a1e24dc-ca9e-4bf5-aa2d-c0036c4043fa",
                     DishId = "D001", 
                     DishName = "Steak Bò Mỹ", 
                     Price = (double)350000, 
-                    KitchenId = "KITCHEN001", 
+                    KitchenId = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH002", 
+                    Id = "5667d134-2d25-4a16-a5d1-157308227a17",
                     DishId = "D002", 
                     DishName = "Pasta Carbonara", 
                     Price = (double)180000, 
-                    KitchenId = "KITCHEN001", 
+                    KitchenId = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH003", 
+                    Id = "eba3c6e2-a1c1-43ab-9d2a-33c13b335e65",
                     DishId = "D003", 
                     DishName = "Salmon Teriyaki", 
                     Price = (double)280000, 
-                    KitchenId = "KITCHEN001", 
+                    KitchenId = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
@@ -157,41 +154,41 @@ namespace Restaurant.Data
                 // Món Á
                 new Dishes 
                 { 
-                    Id = "DISH004", 
+                    Id = "d9ccfb52-47f7-47be-b8fe-f5eacac402b1",
                     DishId = "D004", 
                     DishName = "Phở Bò Đặc Biệt", 
                     Price = (double)75000, 
-                    KitchenId = "KITCHEN002", 
+                    KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH005", 
+                    Id = "cff053a4-a929-40c7-ad66-dd4c3b8a6d65",
                     DishId = "D005", 
                     DishName = "Bún Chả Hà Nội", 
                     Price = (double)65000, 
-                    KitchenId = "KITCHEN002", 
+                    KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH006", 
+                    Id = "5c19bd27-58d1-4b05-9a68-cbf20ababb2c",
                     DishId = "D006", 
                     DishName = "Cơm Gà Hải Nam", 
                     Price = (double)85000, 
-                    KitchenId = "KITCHEN002", 
+                    KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH007", 
+                    Id = "f40ac9ad-43af-4a54-86fe-f47ff0999b34",
                     DishId = "D007", 
                     DishName = "Lẩu Thái Chua Cay", 
                     Price = (double)250000, 
-                    KitchenId = "KITCHEN002", 
+                    KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
@@ -199,31 +196,31 @@ namespace Restaurant.Data
                 // Món Nướng BBQ
                 new Dishes 
                 { 
-                    Id = "DISH008", 
+                    Id = "6d2a44ca-6e63-472f-9d80-9cecd5ba8d04",
                     DishId = "D008", 
                     DishName = "Sườn Nướng BBQ", 
                     Price = (double)195000, 
-                    KitchenId = "KITCHEN003", 
+                    KitchenId = "dcabb860-de38-4cb8-a190-8ef255deba01", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH009", 
+                    Id = "bfee412d-3269-45b4-b044-d57d1da9d9f0",
                     DishId = "D009", 
                     DishName = "Gà Nướng Mật Ong", 
                     Price = (double)165000, 
-                    KitchenId = "KITCHEN003", 
+                    KitchenId = "dcabb860-de38-4cb8-a190-8ef255deba01", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH010", 
+                    Id = "1a3c182a-9605-44e1-ae27-df362a15494c",
                     DishId = "D010", 
                     DishName = "Bò Nướng Lá Lốt", 
                     Price = (double)145000, 
-                    KitchenId = "KITCHEN003", 
+                    KitchenId = "dcabb860-de38-4cb8-a190-8ef255deba01", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
@@ -231,31 +228,31 @@ namespace Restaurant.Data
                 // Dessert
                 new Dishes 
                 { 
-                    Id = "DISH011", 
+                    Id = "c6dc0e86-f5d0-45fc-b4de-d7299c581a33",
                     DishId = "D011", 
                     DishName = "Tiramisu", 
                     Price = (double)65000, 
-                    KitchenId = "KITCHEN004", 
+                    KitchenId = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH012", 
+                    Id = "021d17c2-fc6a-459a-af8d-e38eeac64faa",
                     DishId = "D012", 
                     DishName = "Chocolate Lava Cake", 
                     Price = (double)75000, 
-                    KitchenId = "KITCHEN004", 
+                    KitchenId = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH013", 
+                    Id = "f985a4f6-43d3-4545-a967-7aba4556a108",
                     DishId = "D013", 
                     DishName = "Kem Vanilla Pháp", 
                     Price = (double)45000, 
-                    KitchenId = "KITCHEN004", 
+                    KitchenId = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
@@ -263,31 +260,31 @@ namespace Restaurant.Data
                 // Thức uống
                 new Dishes 
                 { 
-                    Id = "DISH014", 
+                    Id = "3d1559a8-bb69-4c03-b341-6df3035d5341",
                     DishId = "D014", 
                     DishName = "Mojito Classic", 
                     Price = (double)85000, 
-                    KitchenId = "KITCHEN005", 
+                    KitchenId = "8820e289-12fc-4434-820e-440479c9b462", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH015", 
+                    Id = "de57ba84-10b9-4ec3-84a7-7296917dd829",
                     DishId = "D015", 
                     DishName = "Cà Phê Sữa Đá", 
                     Price = (double)25000, 
-                    KitchenId = "KITCHEN005", 
+                    KitchenId = "8820e289-12fc-4434-820e-440479c9b462", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 },
                 new Dishes 
                 { 
-                    Id = "DISH016", 
+                    Id = "1f86ddb0-3b7e-441f-9628-3bc7b2a7de9e",
                     DishId = "D016", 
                     DishName = "Sinh Tố Bơ", 
                     Price = (double)35000, 
-                    KitchenId = "KITCHEN005", 
+                    KitchenId = "8820e289-12fc-4434-820e-440479c9b462", 
                     IsActive = true, 
                     CreatedAt = fixedDate 
                 }
@@ -298,18 +295,18 @@ namespace Restaurant.Data
                 // Khu A - Tầng trệt (giá chuẩn)
                 new AreaDishPrices 
                 { 
-                    Id = "ADP001", 
-                    AreaId = "AREA001", 
-                    DishId = "DISH001", 
+                    Id = "61945c0d-deff-4057-9e8a-f721a5c0cb7b",
+                    AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b", 
+                    DishId = "7a1e24dc-ca9e-4bf5-aa2d-c0036c4043fa", 
                     CustomPrice = (double)350000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP002", 
-                    AreaId = "AREA001", 
-                    DishId = "DISH004", 
+                    Id = "774bac0c-974a-402e-bf86-55112d3f7b32",
+                    AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b", 
+                    DishId = "d9ccfb52-47f7-47be-b8fe-f5eacac402b1", 
                     CustomPrice = (double)75000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
@@ -318,36 +315,36 @@ namespace Restaurant.Data
                 // Khu VIP - Tầng 2 (giá cao hơn 15%)
                 new AreaDishPrices 
                 { 
-                    Id = "ADP003", 
-                    AreaId = "AREA003", 
-                    DishId = "DISH001", 
+                    Id = "b9e21b5c-a1b9-40a2-a37c-2d54645772fd",
+                    AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b", 
+                    DishId = "7a1e24dc-ca9e-4bf5-aa2d-c0036c4043fa", 
                     CustomPrice = (double)402500, // +15%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP004", 
-                    AreaId = "AREA003", 
-                    DishId = "DISH002", 
+                    Id = "4326b2e6-74f3-4fb7-98ce-d93c603bb3ae",
+                    AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b", 
+                    DishId = "5667d134-2d25-4a16-a5d1-157308227a17", 
                     CustomPrice = (double)207000, // +15%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP005", 
-                    AreaId = "AREA003", 
-                    DishId = "DISH003", 
+                    Id = "88f46e3a-5ee1-4afc-b006-dda8a8ba613f",
+                    AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b", 
+                    DishId = "eba3c6e2-a1c1-43ab-9d2a-33c13b335e65", 
                     CustomPrice = (double)322000, // +15%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP006", 
-                    AreaId = "AREA003", 
-                    DishId = "DISH007", 
+                    Id = "e589b937-ce64-4a17-b37c-c3824ed536fa",
+                    AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b", 
+                    DishId = "f40ac9ad-43af-4a54-86fe-f47ff0999b34", 
                     CustomPrice = (double)287500, // +15%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
@@ -356,27 +353,27 @@ namespace Restaurant.Data
                 // Khu B - Tầng trệt (giá giảm 5% để thu hút khách)
                 new AreaDishPrices 
                 { 
-                    Id = "ADP007", 
-                    AreaId = "AREA002", 
-                    DishId = "DISH008", 
+                    Id = "933b82d7-80b3-412a-9095-641178588217",
+                    AreaId = "87cce1fb-d6f9-49a2-b026-15bb0740385c", 
+                    DishId = "6d2a44ca-6e63-472f-9d80-9cecd5ba8d04", 
                     CustomPrice = (double)185250, // -5%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP008", 
-                    AreaId = "AREA002", 
-                    DishId = "DISH009", 
+                    Id = "5ebea2d1-85b2-444f-ad62-1333c379d38d",
+                    AreaId = "87cce1fb-d6f9-49a2-b026-15bb0740385c", 
+                    DishId = "bfee412d-3269-45b4-b044-d57d1da9d9f0", 
                     CustomPrice = (double)156750, // -5%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP009", 
-                    AreaId = "AREA002", 
-                    DishId = "DISH010", 
+                    Id = "ab2daf7d-8b87-4c85-83be-caed26fdb0cd",
+                    AreaId = "87cce1fb-d6f9-49a2-b026-15bb0740385c", 
+                    DishId = "1a3c182a-9605-44e1-ae27-df362a15494c", 
                     CustomPrice = (double)137750, // -5%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
@@ -385,27 +382,27 @@ namespace Restaurant.Data
                 // Khu Thường Tầng 2 (giá chuẩn)
                 new AreaDishPrices 
                 { 
-                    Id = "ADP010", 
-                    AreaId = "AREA004", 
-                    DishId = "DISH004", 
+                    Id = "4780ada7-3329-4d75-9865-b01ad347348d",
+                    AreaId = "e3da7474-bab3-48de-b4bd-7887170d7e59", 
+                    DishId = "d9ccfb52-47f7-47be-b8fe-f5eacac402b1", 
                     CustomPrice = (double)75000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP011", 
-                    AreaId = "AREA004", 
-                    DishId = "DISH005", 
+                    Id = "91dcdba4-88f7-4c1a-b030-fda2240684fd",
+                    AreaId = "e3da7474-bab3-48de-b4bd-7887170d7e59", 
+                    DishId = "cff053a4-a929-40c7-ad66-dd4c3b8a6d65", 
                     CustomPrice = (double)65000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP012", 
-                    AreaId = "AREA004", 
-                    DishId = "DISH006", 
+                    Id = "5f7ad5cd-1aef-4152-a8d8-223aec2c5f52",
+                    AreaId = "e3da7474-bab3-48de-b4bd-7887170d7e59", 
+                    DishId = "5c19bd27-58d1-4b05-9a68-cbf20ababb2c", 
                     CustomPrice = (double)85000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
@@ -414,27 +411,27 @@ namespace Restaurant.Data
                 // Dessert & Drinks cho tất cả khu vực (giá chuẩn)
                 new AreaDishPrices 
                 { 
-                    Id = "ADP013", 
-                    AreaId = "AREA001", 
-                    DishId = "DISH011", 
+                    Id = "aa4d00b3-42ab-4af8-9d04-c75a0ee08593",
+                    AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b", 
+                    DishId = "c6dc0e86-f5d0-45fc-b4de-d7299c581a33", 
                     CustomPrice = (double)65000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP014", 
-                    AreaId = "AREA001", 
-                    DishId = "DISH014", 
+                    Id = "45eafca6-f793-48de-8f0d-a19154392783",
+                    AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b", 
+                    DishId = "3d1559a8-bb69-4c03-b341-6df3035d5341", 
                     CustomPrice = (double)85000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP015", 
-                    AreaId = "AREA001", 
-                    DishId = "DISH015", 
+                    Id = "6ba71674-fa01-4ee0-abe8-40a9b707a47b",
+                    AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b", 
+                    DishId = "de57ba84-10b9-4ec3-84a7-7296917dd829", 
                     CustomPrice = (double)25000, 
                     EffectiveDate = fixedDate, 
                     IsActive = true 
@@ -443,89 +440,32 @@ namespace Restaurant.Data
                 // VIP Dessert (giá cao hơn 10%)
                 new AreaDishPrices 
                 { 
-                    Id = "ADP016", 
-                    AreaId = "AREA003", 
-                    DishId = "DISH011", 
+                    Id = "ca3797b3-d380-42a1-a25e-8a265d9e3988",
+                    AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b", 
+                    DishId = "c6dc0e86-f5d0-45fc-b4de-d7299c581a33", 
                     CustomPrice = (double)71500, // +10%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP017", 
-                    AreaId = "AREA003", 
-                    DishId = "DISH012", 
+                    Id = "31b9a1c7-2e62-4532-b11f-197644b732b7",
+                    AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b", 
+                    DishId = "021d17c2-fc6a-459a-af8d-e38eeac64faa", 
                     CustomPrice = (double)82500, // +10%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 },
                 new AreaDishPrices 
                 { 
-                    Id = "ADP018", 
-                    AreaId = "AREA003", 
-                    DishId = "DISH014", 
+                    Id = "36745970-4738-442d-81ac-7c757068102b",
+                    AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b", 
+                    DishId = "3d1559a8-bb69-4c03-b341-6df3035d5341", 
                     CustomPrice = (double)93500, // +10%
                     EffectiveDate = fixedDate, 
                     IsActive = true 
                 }
             );
-        }
-
-        private void ConfigureRelationships(ModelBuilder modelBuilder)
-        {
-            // Configure Kitchens -> Dishes relationship (One-to-Many)
-            modelBuilder.Entity<Dishes>()
-                .HasOne(d => d.Kitchen)
-                .WithMany(k => k.Dishes)
-                .HasForeignKey(d => d.KitchenId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-
-            // Configure Areas -> AreaDishPrices relationship (One-to-Many)
-            modelBuilder.Entity<AreaDishPrices>()
-                .HasOne(adp => adp.Area)
-                .WithMany(a => a.AreaDishPrices)
-                .HasForeignKey(adp => adp.AreaId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-
-            // Configure Dishes -> AreaDishPrices relationship (One-to-Many)
-            modelBuilder.Entity<AreaDishPrices>()
-                .HasOne(adp => adp.Dish)
-                .WithMany(d => d.AreaDishPrices)
-                .HasForeignKey(adp => adp.DishId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-
-            // Configure primary keys (if needed for custom configuration)
-            modelBuilder.Entity<Areas>()
-                .HasKey(a => a.Id);
-
-            modelBuilder.Entity<Kitchens>()
-                .HasKey(k => k.Id);
-
-            modelBuilder.Entity<Dishes>()
-                .HasKey(d => d.Id);
-
-            modelBuilder.Entity<AreaDishPrices>()
-                .HasKey(adp => adp.Id);
-
-            // Configure indexes for better performance
-            modelBuilder.Entity<Areas>()
-                .HasIndex(a => a.AreaId)
-                .IsUnique();
-            modelBuilder.Entity<Kitchens>()
-                .HasIndex(k => k.KitchenId)
-                .IsUnique();
-
-            modelBuilder.Entity<Dishes>()
-                .HasIndex(d => d.DishId)
-                .IsUnique();
-
-            // Configure composite index for AreaDishPrices
-            modelBuilder.Entity<AreaDishPrices>()
-                .HasIndex(adp => new { adp.AreaId, adp.DishId, adp.EffectiveDate })
-                .HasDatabaseName("IX_AreaDishPrices_AreaId_DishId_EffectiveDate");
         }
     }
 }

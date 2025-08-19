@@ -47,173 +47,172 @@ namespace Restaurant.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DishId");
+                    b.HasIndex("AreaId");
 
-                    b.HasIndex("AreaId", "DishId", "EffectiveDate")
-                        .HasDatabaseName("IX_AreaDishPrices_AreaId_DishId_EffectiveDate");
+                    b.HasIndex("DishId");
 
                     b.ToTable("AreaDishPrices");
 
                     b.HasData(
                         new
                         {
-                            Id = "ADP001",
-                            AreaId = "AREA001",
+                            Id = "61945c0d-deff-4057-9e8a-f721a5c0cb7b",
+                            AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b",
                             CustomPrice = 350000.0,
-                            DishId = "DISH001",
+                            DishId = "7a1e24dc-ca9e-4bf5-aa2d-c0036c4043fa",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP002",
-                            AreaId = "AREA001",
+                            Id = "774bac0c-974a-402e-bf86-55112d3f7b32",
+                            AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b",
                             CustomPrice = 75000.0,
-                            DishId = "DISH004",
+                            DishId = "d9ccfb52-47f7-47be-b8fe-f5eacac402b1",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP003",
-                            AreaId = "AREA003",
+                            Id = "b9e21b5c-a1b9-40a2-a37c-2d54645772fd",
+                            AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             CustomPrice = 402500.0,
-                            DishId = "DISH001",
+                            DishId = "7a1e24dc-ca9e-4bf5-aa2d-c0036c4043fa",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP004",
-                            AreaId = "AREA003",
+                            Id = "4326b2e6-74f3-4fb7-98ce-d93c603bb3ae",
+                            AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             CustomPrice = 207000.0,
-                            DishId = "DISH002",
+                            DishId = "5667d134-2d25-4a16-a5d1-157308227a17",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP005",
-                            AreaId = "AREA003",
+                            Id = "88f46e3a-5ee1-4afc-b006-dda8a8ba613f",
+                            AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             CustomPrice = 322000.0,
-                            DishId = "DISH003",
+                            DishId = "eba3c6e2-a1c1-43ab-9d2a-33c13b335e65",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP006",
-                            AreaId = "AREA003",
+                            Id = "e589b937-ce64-4a17-b37c-c3824ed536fa",
+                            AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             CustomPrice = 287500.0,
-                            DishId = "DISH007",
+                            DishId = "f40ac9ad-43af-4a54-86fe-f47ff0999b34",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP007",
-                            AreaId = "AREA002",
+                            Id = "933b82d7-80b3-412a-9095-641178588217",
+                            AreaId = "87cce1fb-d6f9-49a2-b026-15bb0740385c",
                             CustomPrice = 185250.0,
-                            DishId = "DISH008",
+                            DishId = "6d2a44ca-6e63-472f-9d80-9cecd5ba8d04",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP008",
-                            AreaId = "AREA002",
+                            Id = "5ebea2d1-85b2-444f-ad62-1333c379d38d",
+                            AreaId = "87cce1fb-d6f9-49a2-b026-15bb0740385c",
                             CustomPrice = 156750.0,
-                            DishId = "DISH009",
+                            DishId = "bfee412d-3269-45b4-b044-d57d1da9d9f0",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP009",
-                            AreaId = "AREA002",
+                            Id = "ab2daf7d-8b87-4c85-83be-caed26fdb0cd",
+                            AreaId = "87cce1fb-d6f9-49a2-b026-15bb0740385c",
                             CustomPrice = 137750.0,
-                            DishId = "DISH010",
+                            DishId = "1a3c182a-9605-44e1-ae27-df362a15494c",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP010",
-                            AreaId = "AREA004",
+                            Id = "4780ada7-3329-4d75-9865-b01ad347348d",
+                            AreaId = "e3da7474-bab3-48de-b4bd-7887170d7e59",
                             CustomPrice = 75000.0,
-                            DishId = "DISH004",
+                            DishId = "d9ccfb52-47f7-47be-b8fe-f5eacac402b1",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP011",
-                            AreaId = "AREA004",
+                            Id = "91dcdba4-88f7-4c1a-b030-fda2240684fd",
+                            AreaId = "e3da7474-bab3-48de-b4bd-7887170d7e59",
                             CustomPrice = 65000.0,
-                            DishId = "DISH005",
+                            DishId = "cff053a4-a929-40c7-ad66-dd4c3b8a6d65",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP012",
-                            AreaId = "AREA004",
+                            Id = "5f7ad5cd-1aef-4152-a8d8-223aec2c5f52",
+                            AreaId = "e3da7474-bab3-48de-b4bd-7887170d7e59",
                             CustomPrice = 85000.0,
-                            DishId = "DISH006",
+                            DishId = "5c19bd27-58d1-4b05-9a68-cbf20ababb2c",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP013",
-                            AreaId = "AREA001",
+                            Id = "aa4d00b3-42ab-4af8-9d04-c75a0ee08593",
+                            AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b",
                             CustomPrice = 65000.0,
-                            DishId = "DISH011",
+                            DishId = "c6dc0e86-f5d0-45fc-b4de-d7299c581a33",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP014",
-                            AreaId = "AREA001",
+                            Id = "45eafca6-f793-48de-8f0d-a19154392783",
+                            AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b",
                             CustomPrice = 85000.0,
-                            DishId = "DISH014",
+                            DishId = "3d1559a8-bb69-4c03-b341-6df3035d5341",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP015",
-                            AreaId = "AREA001",
+                            Id = "6ba71674-fa01-4ee0-abe8-40a9b707a47b",
+                            AreaId = "bf1d3a14-cec7-4217-afef-3070cc964d2b",
                             CustomPrice = 25000.0,
-                            DishId = "DISH015",
+                            DishId = "de57ba84-10b9-4ec3-84a7-7296917dd829",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP016",
-                            AreaId = "AREA003",
+                            Id = "ca3797b3-d380-42a1-a25e-8a265d9e3988",
+                            AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             CustomPrice = 71500.0,
-                            DishId = "DISH011",
+                            DishId = "c6dc0e86-f5d0-45fc-b4de-d7299c581a33",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP017",
-                            AreaId = "AREA003",
+                            Id = "31b9a1c7-2e62-4532-b11f-197644b732b7",
+                            AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             CustomPrice = 82500.0,
-                            DishId = "DISH012",
+                            DishId = "021d17c2-fc6a-459a-af8d-e38eeac64faa",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         },
                         new
                         {
-                            Id = "ADP018",
-                            AreaId = "AREA003",
+                            Id = "36745970-4738-442d-81ac-7c757068102b",
+                            AreaId = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             CustomPrice = 93500.0,
-                            DishId = "DISH014",
+                            DishId = "3d1559a8-bb69-4c03-b341-6df3035d5341",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true
                         });
@@ -227,7 +226,7 @@ namespace Restaurant.Data.Migrations
 
                     b.Property<string>("AreaId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AreaName")
                         .IsRequired()
@@ -245,15 +244,12 @@ namespace Restaurant.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AreaId")
-                        .IsUnique();
-
                     b.ToTable("Areas");
 
                     b.HasData(
                         new
                         {
-                            Id = "AREA001",
+                            Id = "bf1d3a14-cec7-4217-afef-3070cc964d2b",
                             AreaId = "A001",
                             AreaName = "Tầng Trệt - Khu A",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -262,7 +258,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "AREA002",
+                            Id = "87cce1fb-d6f9-49a2-b026-15bb0740385c",
                             AreaId = "A002",
                             AreaName = "Tầng Trệt - Khu B",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -271,7 +267,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "AREA003",
+                            Id = "a57ca4df-4212-4271-ab4e-3c2761987e0b",
                             AreaId = "A003",
                             AreaName = "Tầng 2 - Khu VIP",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -280,7 +276,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "AREA004",
+                            Id = "e3da7474-bab3-48de-b4bd-7887170d7e59",
                             AreaId = "A004",
                             AreaName = "Tầng 2 - Khu Thường",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -289,7 +285,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "AREA005",
+                            Id = "eb837d6c-079e-44b9-8df5-da3ac31bc03c",
                             AreaId = "A005",
                             AreaName = "Sân Thượng",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -309,7 +305,7 @@ namespace Restaurant.Data.Migrations
 
                     b.Property<string>("DishId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DishName")
                         .IsRequired()
@@ -327,9 +323,6 @@ namespace Restaurant.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DishId")
-                        .IsUnique();
-
                     b.HasIndex("KitchenId");
 
                     b.ToTable("Dishes");
@@ -337,162 +330,162 @@ namespace Restaurant.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "DISH001",
+                            Id = "7a1e24dc-ca9e-4bf5-aa2d-c0036c4043fa",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D001",
                             DishName = "Steak Bò Mỹ",
                             IsActive = true,
-                            KitchenId = "KITCHEN001",
+                            KitchenId = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad",
                             Price = 350000.0
                         },
                         new
                         {
-                            Id = "DISH002",
+                            Id = "5667d134-2d25-4a16-a5d1-157308227a17",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D002",
                             DishName = "Pasta Carbonara",
                             IsActive = true,
-                            KitchenId = "KITCHEN001",
+                            KitchenId = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad",
                             Price = 180000.0
                         },
                         new
                         {
-                            Id = "DISH003",
+                            Id = "eba3c6e2-a1c1-43ab-9d2a-33c13b335e65",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D003",
                             DishName = "Salmon Teriyaki",
                             IsActive = true,
-                            KitchenId = "KITCHEN001",
+                            KitchenId = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad",
                             Price = 280000.0
                         },
                         new
                         {
-                            Id = "DISH004",
+                            Id = "d9ccfb52-47f7-47be-b8fe-f5eacac402b1",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D004",
                             DishName = "Phở Bò Đặc Biệt",
                             IsActive = true,
-                            KitchenId = "KITCHEN002",
+                            KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250",
                             Price = 75000.0
                         },
                         new
                         {
-                            Id = "DISH005",
+                            Id = "cff053a4-a929-40c7-ad66-dd4c3b8a6d65",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D005",
                             DishName = "Bún Chả Hà Nội",
                             IsActive = true,
-                            KitchenId = "KITCHEN002",
+                            KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250",
                             Price = 65000.0
                         },
                         new
                         {
-                            Id = "DISH006",
+                            Id = "5c19bd27-58d1-4b05-9a68-cbf20ababb2c",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D006",
                             DishName = "Cơm Gà Hải Nam",
                             IsActive = true,
-                            KitchenId = "KITCHEN002",
+                            KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250",
                             Price = 85000.0
                         },
                         new
                         {
-                            Id = "DISH007",
+                            Id = "f40ac9ad-43af-4a54-86fe-f47ff0999b34",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D007",
                             DishName = "Lẩu Thái Chua Cay",
                             IsActive = true,
-                            KitchenId = "KITCHEN002",
+                            KitchenId = "ed39caf8-325b-4670-a339-9a0b17983250",
                             Price = 250000.0
                         },
                         new
                         {
-                            Id = "DISH008",
+                            Id = "6d2a44ca-6e63-472f-9d80-9cecd5ba8d04",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D008",
                             DishName = "Sườn Nướng BBQ",
                             IsActive = true,
-                            KitchenId = "KITCHEN003",
+                            KitchenId = "dcabb860-de38-4cb8-a190-8ef255deba01",
                             Price = 195000.0
                         },
                         new
                         {
-                            Id = "DISH009",
+                            Id = "bfee412d-3269-45b4-b044-d57d1da9d9f0",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D009",
                             DishName = "Gà Nướng Mật Ong",
                             IsActive = true,
-                            KitchenId = "KITCHEN003",
+                            KitchenId = "dcabb860-de38-4cb8-a190-8ef255deba01",
                             Price = 165000.0
                         },
                         new
                         {
-                            Id = "DISH010",
+                            Id = "1a3c182a-9605-44e1-ae27-df362a15494c",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D010",
                             DishName = "Bò Nướng Lá Lốt",
                             IsActive = true,
-                            KitchenId = "KITCHEN003",
+                            KitchenId = "dcabb860-de38-4cb8-a190-8ef255deba01",
                             Price = 145000.0
                         },
                         new
                         {
-                            Id = "DISH011",
+                            Id = "c6dc0e86-f5d0-45fc-b4de-d7299c581a33",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D011",
                             DishName = "Tiramisu",
                             IsActive = true,
-                            KitchenId = "KITCHEN004",
+                            KitchenId = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a",
                             Price = 65000.0
                         },
                         new
                         {
-                            Id = "DISH012",
+                            Id = "021d17c2-fc6a-459a-af8d-e38eeac64faa",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D012",
                             DishName = "Chocolate Lava Cake",
                             IsActive = true,
-                            KitchenId = "KITCHEN004",
+                            KitchenId = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a",
                             Price = 75000.0
                         },
                         new
                         {
-                            Id = "DISH013",
+                            Id = "f985a4f6-43d3-4545-a967-7aba4556a108",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D013",
                             DishName = "Kem Vanilla Pháp",
                             IsActive = true,
-                            KitchenId = "KITCHEN004",
+                            KitchenId = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a",
                             Price = 45000.0
                         },
                         new
                         {
-                            Id = "DISH014",
+                            Id = "3d1559a8-bb69-4c03-b341-6df3035d5341",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D014",
                             DishName = "Mojito Classic",
                             IsActive = true,
-                            KitchenId = "KITCHEN005",
+                            KitchenId = "8820e289-12fc-4434-820e-440479c9b462",
                             Price = 85000.0
                         },
                         new
                         {
-                            Id = "DISH015",
+                            Id = "de57ba84-10b9-4ec3-84a7-7296917dd829",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D015",
                             DishName = "Cà Phê Sữa Đá",
                             IsActive = true,
-                            KitchenId = "KITCHEN005",
+                            KitchenId = "8820e289-12fc-4434-820e-440479c9b462",
                             Price = 25000.0
                         },
                         new
                         {
-                            Id = "DISH016",
+                            Id = "1f86ddb0-3b7e-441f-9628-3bc7b2a7de9e",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishId = "D016",
                             DishName = "Sinh Tố Bơ",
                             IsActive = true,
-                            KitchenId = "KITCHEN005",
+                            KitchenId = "8820e289-12fc-4434-820e-440479c9b462",
                             Price = 35000.0
                         });
                 });
@@ -515,7 +508,7 @@ namespace Restaurant.Data.Migrations
 
                     b.Property<string>("KitchenId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("KitchenName")
                         .IsRequired()
@@ -523,15 +516,12 @@ namespace Restaurant.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("KitchenId")
-                        .IsUnique();
-
                     b.ToTable("Kitchens");
 
                     b.HasData(
                         new
                         {
-                            Id = "KITCHEN001",
+                            Id = "2a8d7cbf-f8c0-426f-bebc-da0d67428aad",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên món Âu, Mỹ, Ý",
                             IsActive = true,
@@ -540,7 +530,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "KITCHEN002",
+                            Id = "ed39caf8-325b-4670-a339-9a0b17983250",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên món Việt, Trung, Nhật, Hàn",
                             IsActive = true,
@@ -549,7 +539,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "KITCHEN003",
+                            Id = "dcabb860-de38-4cb8-a190-8ef255deba01",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên các món nướng, BBQ",
                             IsActive = true,
@@ -558,7 +548,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "KITCHEN004",
+                            Id = "f6729fb5-bf42-4a1c-9e5e-845f7964f71a",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên tráng miệng, đồ ngọt",
                             IsActive = true,
@@ -567,7 +557,7 @@ namespace Restaurant.Data.Migrations
                         },
                         new
                         {
-                            Id = "KITCHEN005",
+                            Id = "8820e289-12fc-4434-820e-440479c9b462",
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên pha chế đồ uống, cocktail",
                             IsActive = true,
