@@ -1,0 +1,49 @@
+<div class="restaurants-grid">
+    <div class="row">
+        @for (restaurant of restaurants(); track restaurant.id) {
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="restaurant-card">
+                <div class="card-image-container">
+                    <img [src]="restaurant.image" [alt]="restaurant.name" class="card-img-top">
+                    <div class="cuisine-badge">{{ restaurant.cuisine }}</div>
+                    <div class="price-badge">{{ restaurant.price }}</div>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ restaurant.name }}</h5>
+
+                    <div class="rating-container mb-2">
+                        <div class="stars">
+                            @for (star of getStarArray(restaurant.rating); track $index) {
+                            <i class="fas fa-star"></i>
+                            }
+                            @if (hasHalfStar(restaurant.rating)) {
+                            <i class="fas fa-star-half-alt"></i>
+                            }
+                        </div>
+                        <span class="rating-text">{{ restaurant.rating }}</span>
+                    </div>
+
+                    <p class="card-text">{{ restaurant.description }}</p>
+
+                    <div class="restaurant-info">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ restaurant.address }}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ restaurant.phone }}</span>
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-sm">View Menu</button>
+                        <button class="btn btn-outline-primary btn-sm">Reserve Table</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

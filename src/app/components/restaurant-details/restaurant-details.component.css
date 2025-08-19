@@ -1,0 +1,200 @@
+.restaurants-grid {
+    padding: 20px 0;
+}
+
+.restaurant-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img-top {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.restaurant-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.cuisine-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.price-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stars {
+    display: flex;
+    gap: 2px;
+}
+
+.stars i {
+    color: #ffc107;
+    font-size: 0.9rem;
+}
+
+.rating-text {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.card-text {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+.restaurant-info {
+    margin-bottom: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #5a6c7d;
+}
+
+.info-item i {
+    color: #ff6b6b;
+    width: 16px;
+    text-align: center;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    font-weight: 600;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.btn-primary.btn-sm {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    border: none;
+}
+
+.btn-primary.btn-sm:hover {
+    background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary.btn-sm {
+    border: 2px solid #ff6b6b;
+    color: #ff6b6b;
+    background: transparent;
+}
+
+.btn-outline-primary.btn-sm:hover {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .btn-sm {
+        flex: none;
+    }
+
+    .card-img-top {
+        height: 180px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .restaurants-grid {
+        padding: 10px 0;
+    }
+
+    .card-img-top {
+        height: 160px;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .cuisine-badge,
+    .price-badge {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+}

@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+/* Custom component styles using Tailwind @apply */
+.hero-bg {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3');
+}
+
+.text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.area-card-header {
+    @apply bg-gradient-to-r from-orange-500 to-red-500 text-white p-5 border-0;
+}
+
+.area-info-icon {
+    @apply text-orange-500 w-5 text-center mr-2;
+}
+
+.status-icon-active {
+    @apply text-green-500;
+}
+
+.status-icon-inactive {
+    @apply text-red-500;
+}
+
+.spinner-custom {
+    @apply text-orange-500 w-12 h-12;
+}
+
+/* Navbar hover effect */
+.nav-link-hover:hover {
+    @apply text-yellow-400;
+}
+
+/* Footer link hover */
+.footer-link:hover {
+    @apply text-yellow-400;
+}
+
+/* Social link hover */
+.social-link:hover {
+    @apply transform -translate-y-1;
+}
+
+/* Filter buttons */
+.filter-btn {
+    @apply px-4 py-2 rounded-full font-medium transition-all duration-300 border-2;
+}
+
+.filter-btn-active {
+    @apply bg-orange-500 text-white border-orange-500;
+}
+
+.filter-btn-inactive {
+    @apply bg-transparent text-orange-500 border-orange-500 hover:bg-orange-500 hover:text-white;
+}
+
+/* Error message */
+.error-container {
+    @apply bg-red-50 border border-red-200 rounded-lg p-4 text-red-700;
+}
+
+/* Success message */
+.success-container {
+    @apply bg-green-50 border border-green-200 rounded-lg p-4 text-green-700;
+}
+
+/* Card entrance animation */
+.card-entrance {
+    animation: cardSlideIn 0.6s ease-out forwards;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+    from {
+        @apply opacity-0 translate-y-8;
+    }
+
+    to {
+        @apply opacity-100 translate-y-0;
+    }
+}
+
+@keyframes cardSlideIn {
+    from {
+        @apply opacity-0 translate-y-4 scale-95;
+    }
+
+    to {
+        @apply opacity-100 translate-y-0 scale-100;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        @apply opacity-100;
+    }
+
+    50% {
+        @apply opacity-50;
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.loading-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Skeleton loading */
+.skeleton {
+    @apply bg-gray-200 rounded animate-pulse;
+}
+
+.skeleton-card {
+    @apply bg-white rounded-2xl shadow-lg p-5 space-y-4;
+}
+
+.skeleton-header {
+    @apply h-6 bg-gray-300 rounded w-3/4;
+}
+
+.skeleton-text {
+    @apply h-4 bg-gray-200 rounded w-full;
+}
+
+.skeleton-button {
+    @apply h-8 bg-gray-300 rounded-full w-24;
+}
