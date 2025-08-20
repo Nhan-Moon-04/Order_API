@@ -1,0 +1,23 @@
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border-spin 0.75s linear infinite;
+}
+
+@keyframes spinner-border-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    transform: none !important;
+}

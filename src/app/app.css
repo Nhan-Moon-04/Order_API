@@ -76,21 +76,25 @@
 /* Custom animations */
 @keyframes fadeInUp {
     from {
-        @apply opacity-0 translate-y-8;
+        opacity: 0;
+        transform: translateY(2rem);
     }
 
     to {
-        @apply opacity-100 translate-y-0;
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
 @keyframes cardSlideIn {
     from {
-        @apply opacity-0 translate-y-4 scale-95;
+        opacity: 0;
+        transform: translateY(1rem) scale(0.95);
     }
 
     to {
-        @apply opacity-100 translate-y-0 scale-100;
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -98,11 +102,11 @@
 
     0%,
     100% {
-        @apply opacity-100;
+        opacity: 1;
     }
 
     50% {
-        @apply opacity-50;
+        opacity: 0.5;
     }
 }
 
@@ -116,21 +120,38 @@
 
 /* Skeleton loading */
 .skeleton {
-    @apply bg-gray-200 rounded animate-pulse;
+    background-color: #e5e7eb;
+    border-radius: 0.25rem;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .skeleton-card {
-    @apply bg-white rounded-2xl shadow-lg p-5 space-y-4;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .skeleton-header {
-    @apply h-6 bg-gray-300 rounded w-3/4;
+    height: 1.5rem;
+    background-color: #d1d5db;
+    border-radius: 0.25rem;
+    width: 75%;
 }
 
 .skeleton-text {
-    @apply h-4 bg-gray-200 rounded w-full;
+    height: 1rem;
+    background-color: #e5e7eb;
+    border-radius: 0.25rem;
+    width: 100%;
 }
 
 .skeleton-button {
-    @apply h-8 bg-gray-300 rounded-full w-24;
+    height: 2rem;
+    background-color: #d1d5db;
+    border-radius: 9999px;
+    width: 6rem;
 }
