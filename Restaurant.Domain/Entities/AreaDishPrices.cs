@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Restaurant.Domain.Entities
+﻿namespace Restaurant.Domain.Entities
 {
-    public class AreaDishPrices: BaseEntity
+    // Giá riêng theo từng khu vực
+    public class AreaDishPrices : BaseEntity
     {
         public required string AreaId { get; set; }
         public required string DishId { get; set; }
         public double CustomPrice { get; set; }
-        public DateTime EffectiveDate { get; set; }
-        public bool IsActive { get; set; }
+        public DateTime EffectiveDate { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; } = true;
 
-        // Navigation properties
+        // Navigation
         public virtual Areas? Area { get; set; }
         public virtual Dishes? Dish { get; set; }
     }

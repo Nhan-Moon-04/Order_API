@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Restaurant.Domain.Entities
+﻿namespace Restaurant.Domain.Entities
 {
-    public class Areas: BaseEntity
+    public class Areas : BaseEntity
     {
         public required string AreaId { get; set; }
         public required string AreaName { get; set; }
-        public required string Description { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string? Description { get; set; }
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
+        public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
         public virtual ICollection<AreaDishPrices> AreaDishPrices { get; set; } = new List<AreaDishPrices>();
     }
 }

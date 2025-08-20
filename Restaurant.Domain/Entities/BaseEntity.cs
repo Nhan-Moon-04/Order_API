@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Restaurant.Domain.Entities
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public required string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString(); // EF sẽ tự sinh GUID string khi add
     }
 }

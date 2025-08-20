@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Restaurant.Domain.Entities
+﻿namespace Restaurant.Domain.Entities
 {
-    public class Kitchens: BaseEntity
+    public class Kitchens : BaseEntity
     {
         public required string KitchenId { get; set; }
         public required string KitchenName { get; set; }
-        public required string Description { get; set; }
-        public required bool IsActive { get; set; }
-        public required DateTime CreatedAt { get; set; }
+        public string? Description { get; set; }
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
+        // Navigation
         public virtual ICollection<Dishes> Dishes { get; set; } = new List<Dishes>();
     }
 }

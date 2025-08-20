@@ -24,10 +24,11 @@ namespace Restaurant.Service.Services
             {
                 DishId = dish.DishId,
                 DishName = dish.DishName,
-                Price = dish.Price,
+                BasePrice = dish.BasePrice,
                 KitchenId = dish.KitchenId,
                 IsActive = dish.IsActive,
-                CreatedAt = dish.CreatedAt
+                CreatedAt = dish.CreatedAt,
+                KitchenName = dish.Kitchen?.KitchenName
             });
         }
 
@@ -42,10 +43,11 @@ namespace Restaurant.Service.Services
             {
                 DishId = dish.DishId,
                 DishName = dish.DishName,
-                Price = dish.Price,
+                BasePrice = dish.BasePrice,
                 KitchenId = dish.KitchenId,
                 IsActive = dish.IsActive,
-                CreatedAt = dish.CreatedAt
+                CreatedAt = dish.CreatedAt,
+                KitchenName = dish.Kitchen?.KitchenName
             };
         }
 
@@ -56,7 +58,7 @@ namespace Restaurant.Service.Services
             {
                 DishId = entityId,
                 DishName = dto.DishName,
-                Price = dto.Price,
+                BasePrice = dto.BasePrice,
                 KitchenId = dto.KitchenId,
                 IsActive = dto.IsActive,
                 CreatedAt = dto.CreatedAt,
