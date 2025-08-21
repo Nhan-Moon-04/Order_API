@@ -17,6 +17,7 @@ namespace Restaurant.Service.Services
         {
             var dishes = await _context.Dishes
                 .Include(d => d.Kitchen)
+                .Include(d => d.DishGroup)
                 .Include(d => d.AreaDishPrices)
                 .ToListAsync();
 
@@ -26,9 +27,11 @@ namespace Restaurant.Service.Services
                 DishName = dish.DishName,
                 BasePrice = dish.BasePrice,
                 KitchenId = dish.KitchenId,
+                GroupId = dish.GroupId,
                 IsActive = dish.IsActive,
                 CreatedAt = dish.CreatedAt,
-                KitchenName = dish.Kitchen?.KitchenName
+                KitchenName = dish.Kitchen?.KitchenName,
+                GroupName = dish.DishGroup?.GroupName
             });
         }
 
@@ -36,6 +39,7 @@ namespace Restaurant.Service.Services
         {
             var dish = await _context.Dishes
                 .Include(d => d.Kitchen)
+                .Include(d => d.DishGroup)
                 .Include(d => d.AreaDishPrices)
                 .FirstOrDefaultAsync(d => d.DishId == id);
 
@@ -45,9 +49,11 @@ namespace Restaurant.Service.Services
                 DishName = dish.DishName,
                 BasePrice = dish.BasePrice,
                 KitchenId = dish.KitchenId,
+                GroupId = dish.GroupId,
                 IsActive = dish.IsActive,
                 CreatedAt = dish.CreatedAt,
-                KitchenName = dish.Kitchen?.KitchenName
+                KitchenName = dish.Kitchen?.KitchenName,
+                GroupName = dish.DishGroup?.GroupName
             };
         }
 
@@ -60,6 +66,7 @@ namespace Restaurant.Service.Services
                 DishName = dto.DishName,
                 BasePrice = dto.BasePrice,
                 KitchenId = dto.KitchenId,
+                GroupId = dto.GroupId,
                 IsActive = dto.IsActive,
                 CreatedAt = dto.CreatedAt,
                 Id = entityId

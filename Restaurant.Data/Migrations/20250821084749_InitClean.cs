@@ -30,6 +30,22 @@ namespace Restaurant.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DishGroups",
+                columns: table => new
+                {
+                    GroupId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    GroupName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DishGroups", x => x.GroupId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Kitchens",
                 columns: table => new
                 {
@@ -104,12 +120,19 @@ namespace Restaurant.Data.Migrations
                     BasePrice = table.Column<double>(type: "float", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     KitchenId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    GroupId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Dishes", x => x.DishId);
+                    table.ForeignKey(
+                        name: "FK_Dishes_DishGroups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "DishGroups",
+                        principalColumn: "GroupId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Dishes_Kitchens_KitchenId",
                         column: x => x.KitchenId,
@@ -253,6 +276,20 @@ namespace Restaurant.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "DishGroups",
+                columns: new[] { "GroupId", "CreatedAt", "Description", "GroupName", "Id", "IsActive" },
+                values: new object[,]
+                {
+                    { "DG001", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Các món ăn khai vị, salad và appetizer", "Món Khai Vị", "DG001-STATIC-ID-GUID-00000000001", true },
+                    { "DG002", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Các món ăn chính như steak, pasta, cơm, phở", "Món Chính", "DG002-STATIC-ID-GUID-00000000002", true },
+                    { "DG003", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Các món nướng, BBQ và thịt nướng", "Món Nướng BBQ", "DG003-STATIC-ID-GUID-00000000003", true },
+                    { "DG004", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Các món hải sản tươi sống", "Hải Sản", "DG004-STATIC-ID-GUID-00000000004", true },
+                    { "DG005", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Các món lẩu, nồi và ăn tập thể", "Lẩu & Nồi", "DG005-STATIC-ID-GUID-00000000005", true },
+                    { "DG006", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Các món tráng miệng, bánh ngọt và dessert", "Tráng Miệng", "DG006-STATIC-ID-GUID-00000000006", true },
+                    { "DG007", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Đồ uống, cocktail, nước ép và cà phê", "Thức Uống", "DG007-STATIC-ID-GUID-00000000007", true }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Kitchens",
                 columns: new[] { "KitchenId", "CreatedAt", "Description", "Id", "IsActive", "KitchenName" },
                 values: new object[,]
@@ -268,44 +305,44 @@ namespace Restaurant.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Dishes",
-                columns: new[] { "DishId", "BasePrice", "CreatedAt", "DishName", "Id", "IsActive", "KitchenId" },
+                columns: new[] { "DishId", "BasePrice", "CreatedAt", "DishName", "GroupId", "Id", "IsActive", "KitchenId" },
                 values: new object[,]
                 {
-                    { "D001", 350000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Steak Bò Mỹ", "D001-STATIC-ID-GUID-000000000001", true, "K001" },
-                    { "D002", 180000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pasta Carbonara", "D002-STATIC-ID-GUID-000000000002", true, "K001" },
-                    { "D003", 280000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Salmon Teriyaki", "D003-STATIC-ID-GUID-000000000003", true, "K001" },
-                    { "D004", 75000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Phở Bò Đặc Biệt", "D004-STATIC-ID-GUID-000000000004", true, "K002" },
-                    { "D005", 65000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bún Chả Hà Nội", "D005-STATIC-ID-GUID-000000000005", true, "K002" },
-                    { "D006", 85000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cơm Gà Hải Nam", "D006-STATIC-ID-GUID-000000000006", true, "K002" },
-                    { "D007", 250000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lẩu Thái Chua Cay", "D007-STATIC-ID-GUID-000000000007", true, "K002" },
-                    { "D008", 195000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sườn Nướng BBQ", "D008-STATIC-ID-GUID-000000000008", true, "K003" },
-                    { "D009", 165000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Gà Nướng Mật Ong", "D009-STATIC-ID-GUID-000000000009", true, "K003" },
-                    { "D010", 145000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bò Nướng Lá Lốt", "D010-STATIC-ID-GUID-000000000010", true, "K003" },
-                    { "D011", 65000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Tiramisu", "D011-STATIC-ID-GUID-000000000011", true, "K004" },
-                    { "D012", 75000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chocolate Lava Cake", "D012-STATIC-ID-GUID-000000000012", true, "K004" },
-                    { "D013", 45000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kem Vanilla Pháp", "D013-STATIC-ID-GUID-000000000013", true, "K004" },
-                    { "D014", 85000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mojito Classic", "D014-STATIC-ID-GUID-000000000014", true, "K005" },
-                    { "D015", 25000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cà Phê Sữa Đá", "D015-STATIC-ID-GUID-000000000015", true, "K005" },
-                    { "D016", 35000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sinh Tố Bơ", "D016-STATIC-ID-GUID-000000000016", true, "K005" },
-                    { "D020", 220000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chicken Cordon Bleu", "D020-STATIC-ID-GUID-000000000020", true, "K001" },
-                    { "D021", 380000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lamb Chop Rosemary", "D021-STATIC-ID-GUID-000000000021", true, "K001" },
-                    { "D022", 165000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mushroom Risotto", "D022-STATIC-ID-GUID-000000000022", true, "K001" },
-                    { "D023", 95000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pad Thai Tôm", "D023-STATIC-ID-GUID-000000000023", true, "K002" },
-                    { "D024", 320000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sushi Set Deluxe", "D024-STATIC-ID-GUID-000000000024", true, "K002" },
-                    { "D025", 135000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Ramen Tonkotsu", "D025-STATIC-ID-GUID-000000000025", true, "K002" },
-                    { "D026", 185000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chả Cá Lăng", "D026-STATIC-ID-GUID-000000000026", true, "K003" },
-                    { "D027", 210000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Thịt Nướng Hàn Quốc", "D027-STATIC-ID-GUID-000000000027", true, "K003" },
-                    { "D028", 35000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bánh Flan Caramel", "D028-STATIC-ID-GUID-000000000028", true, "K004" },
-                    { "D029", 55000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Panna Cotta Berry", "D029-STATIC-ID-GUID-000000000029", true, "K004" },
-                    { "D030", 45000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Trà Đào Cam Sả", "D030-STATIC-ID-GUID-000000000030", true, "K005" },
-                    { "D031", 95000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cocktail Passion Fruit", "D031-STATIC-ID-GUID-000000000031", true, "K005" },
-                    { "D032", 280000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lẩu Bò Nhúng Dấm", "D032-STATIC-ID-GUID-000000000032", true, "K006" },
-                    { "D033", 220000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lẩu Gà Lá Giang", "D033-STATIC-ID-GUID-000000000033", true, "K006" },
-                    { "D034", 195000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Nồi Cá Kho Tộ", "D034-STATIC-ID-GUID-000000000034", true, "K006" },
-                    { "D035", 650000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Tôm Hùm Nướng Phô Mai", "D035-STATIC-ID-GUID-000000000035", true, "K007" },
-                    { "D036", 420000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cua Rang Me", "D036-STATIC-ID-GUID-000000000036", true, "K007" },
-                    { "D037", 380000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cá Mú Hấp Gừng", "D037-STATIC-ID-GUID-000000000037", true, "K007" },
-                    { "D038", 85000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Nghêu Hấp Lá Chuối", "D038-STATIC-ID-GUID-000000000038", true, "K007" }
+                    { "D001", 350000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Steak Bò Mỹ", "DG002", "D001-STATIC-ID-GUID-000000000001", true, "K001" },
+                    { "D002", 180000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pasta Carbonara", "DG002", "D002-STATIC-ID-GUID-000000000002", true, "K001" },
+                    { "D003", 280000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Salmon Teriyaki", "DG002", "D003-STATIC-ID-GUID-000000000003", true, "K001" },
+                    { "D004", 75000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Phở Bò Đặc Biệt", "DG002", "D004-STATIC-ID-GUID-000000000004", true, "K002" },
+                    { "D005", 65000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bún Chả Hà Nội", "DG002", "D005-STATIC-ID-GUID-000000000005", true, "K002" },
+                    { "D006", 85000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cơm Gà Hải Nam", "DG002", "D006-STATIC-ID-GUID-000000000006", true, "K002" },
+                    { "D007", 250000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lẩu Thái Chua Cay", "DG005", "D007-STATIC-ID-GUID-000000000007", true, "K002" },
+                    { "D008", 195000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sườn Nướng BBQ", "DG003", "D008-STATIC-ID-GUID-000000000008", true, "K003" },
+                    { "D009", 165000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Gà Nướng Mật Ong", "DG003", "D009-STATIC-ID-GUID-000000000009", true, "K003" },
+                    { "D010", 145000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bò Nướng Lá Lốt", "DG003", "D010-STATIC-ID-GUID-000000000010", true, "K003" },
+                    { "D011", 65000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Tiramisu", "DG006", "D011-STATIC-ID-GUID-000000000011", true, "K004" },
+                    { "D012", 75000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chocolate Lava Cake", "DG006", "D012-STATIC-ID-GUID-000000000012", true, "K004" },
+                    { "D013", 45000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kem Vanilla Pháp", "DG006", "D013-STATIC-ID-GUID-000000000013", true, "K004" },
+                    { "D014", 85000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mojito Classic", "DG007", "D014-STATIC-ID-GUID-000000000014", true, "K005" },
+                    { "D015", 25000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cà Phê Sữa Đá", "DG007", "D015-STATIC-ID-GUID-000000000015", true, "K005" },
+                    { "D016", 35000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sinh Tố Bơ", "DG007", "D016-STATIC-ID-GUID-000000000016", true, "K005" },
+                    { "D020", 220000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chicken Cordon Bleu", "DG002", "D020-STATIC-ID-GUID-000000000020", true, "K001" },
+                    { "D021", 380000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lamb Chop Rosemary", "DG002", "D021-STATIC-ID-GUID-000000000021", true, "K001" },
+                    { "D022", 165000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mushroom Risotto", "DG002", "D022-STATIC-ID-GUID-000000000022", true, "K001" },
+                    { "D023", 95000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pad Thai Tôm", "DG002", "D023-STATIC-ID-GUID-000000000023", true, "K002" },
+                    { "D024", 320000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sushi Set Deluxe", "DG002", "D024-STATIC-ID-GUID-000000000024", true, "K002" },
+                    { "D025", 135000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Ramen Tonkotsu", "DG002", "D025-STATIC-ID-GUID-000000000025", true, "K002" },
+                    { "D026", 185000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Chả Cá Lăng", "DG003", "D026-STATIC-ID-GUID-000000000026", true, "K003" },
+                    { "D027", 210000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Thịt Nướng Hàn Quốc", "DG003", "D027-STATIC-ID-GUID-000000000027", true, "K003" },
+                    { "D028", 35000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bánh Flan Caramel", "DG006", "D028-STATIC-ID-GUID-000000000028", true, "K004" },
+                    { "D029", 55000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Panna Cotta Berry", "DG006", "D029-STATIC-ID-GUID-000000000029", true, "K004" },
+                    { "D030", 45000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Trà Đào Cam Sả", "DG007", "D030-STATIC-ID-GUID-000000000030", true, "K005" },
+                    { "D031", 95000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cocktail Passion Fruit", "DG007", "D031-STATIC-ID-GUID-000000000031", true, "K005" },
+                    { "D032", 280000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lẩu Bò Nhúng Dấm", "DG005", "D032-STATIC-ID-GUID-000000000032", true, "K006" },
+                    { "D033", 220000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Lẩu Gà Lá Giang", "DG005", "D033-STATIC-ID-GUID-000000000033", true, "K006" },
+                    { "D034", 195000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Nồi Cá Kho Tộ", "DG005", "D034-STATIC-ID-GUID-000000000034", true, "K006" },
+                    { "D035", 650000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Tôm Hùm Nướng Phô Mai", "DG004", "D035-STATIC-ID-GUID-000000000035", true, "K007" },
+                    { "D036", 420000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cua Rang Me", "DG004", "D036-STATIC-ID-GUID-000000000036", true, "K007" },
+                    { "D037", 380000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cá Mú Hấp Gừng", "DG004", "D037-STATIC-ID-GUID-000000000037", true, "K007" },
+                    { "D038", 85000.0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Nghêu Hấp Lá Chuối", "DG004", "D038-STATIC-ID-GUID-000000000038", true, "K007" }
                 });
 
             migrationBuilder.InsertData(
@@ -442,6 +479,11 @@ namespace Restaurant.Data.Migrations
                 column: "DishId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dishes_GroupId",
+                table: "Dishes",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dishes_KitchenId",
                 table: "Dishes",
                 column: "KitchenId");
@@ -515,6 +557,9 @@ namespace Restaurant.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tables");
+
+            migrationBuilder.DropTable(
+                name: "DishGroups");
 
             migrationBuilder.DropTable(
                 name: "Kitchens");

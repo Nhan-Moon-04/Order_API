@@ -32,6 +32,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAreaDishPriceService, AreaDishPriceService>();
 builder.Services.AddScoped<IAreasService, AreasService>();
 builder.Services.AddScoped<IDishesService, DishesService>();
+builder.Services.AddScoped<IDishesGroupService, DishGroupService>();
 builder.Services.AddScoped<IKitchensService, KitchensService>();
 builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddScoped<IOrderService, OrderService>();

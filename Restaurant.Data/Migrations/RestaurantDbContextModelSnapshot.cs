@@ -400,6 +400,98 @@ namespace Restaurant.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Restaurant.Domain.Entities.DishGroup", b =>
+                {
+                    b.Property<string>("GroupId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.HasKey("GroupId");
+
+                    b.ToTable("DishGroups");
+
+                    b.HasData(
+                        new
+                        {
+                            GroupId = "DG001",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Các món ăn khai vị, salad và appetizer",
+                            GroupName = "Món Khai Vị",
+                            Id = "DG001-STATIC-ID-GUID-00000000001",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            GroupId = "DG002",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Các món ăn chính như steak, pasta, cơm, phở",
+                            GroupName = "Món Chính",
+                            Id = "DG002-STATIC-ID-GUID-00000000002",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            GroupId = "DG003",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Các món nướng, BBQ và thịt nướng",
+                            GroupName = "Món Nướng BBQ",
+                            Id = "DG003-STATIC-ID-GUID-00000000003",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            GroupId = "DG004",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Các món hải sản tươi sống",
+                            GroupName = "Hải Sản",
+                            Id = "DG004-STATIC-ID-GUID-00000000004",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            GroupId = "DG005",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Các món lẩu, nồi và ăn tập thể",
+                            GroupName = "Lẩu & Nồi",
+                            Id = "DG005-STATIC-ID-GUID-00000000005",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            GroupId = "DG006",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Các món tráng miệng, bánh ngọt và dessert",
+                            GroupName = "Tráng Miệng",
+                            Id = "DG006-STATIC-ID-GUID-00000000006",
+                            IsActive = true
+                        },
+                        new
+                        {
+                            GroupId = "DG007",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Đồ uống, cocktail, nước ép và cà phê",
+                            GroupName = "Thức Uống",
+                            Id = "DG007-STATIC-ID-GUID-00000000007",
+                            IsActive = true
+                        });
+                });
+
             modelBuilder.Entity("Restaurant.Domain.Entities.Dishes", b =>
                 {
                     b.Property<string>("DishId")
@@ -415,6 +507,10 @@ namespace Restaurant.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("GroupId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)");
@@ -428,6 +524,8 @@ namespace Restaurant.Data.Migrations
 
                     b.HasKey("DishId");
 
+                    b.HasIndex("GroupId");
+
                     b.HasIndex("KitchenId");
 
                     b.ToTable("Dishes");
@@ -439,6 +537,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 350000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Steak Bò Mỹ",
+                            GroupId = "DG002",
                             Id = "D001-STATIC-ID-GUID-000000000001",
                             IsActive = true,
                             KitchenId = "K001"
@@ -449,6 +548,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 180000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Pasta Carbonara",
+                            GroupId = "DG002",
                             Id = "D002-STATIC-ID-GUID-000000000002",
                             IsActive = true,
                             KitchenId = "K001"
@@ -459,6 +559,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 280000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Salmon Teriyaki",
+                            GroupId = "DG002",
                             Id = "D003-STATIC-ID-GUID-000000000003",
                             IsActive = true,
                             KitchenId = "K001"
@@ -469,6 +570,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 220000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Chicken Cordon Bleu",
+                            GroupId = "DG002",
                             Id = "D020-STATIC-ID-GUID-000000000020",
                             IsActive = true,
                             KitchenId = "K001"
@@ -479,6 +581,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 380000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Lamb Chop Rosemary",
+                            GroupId = "DG002",
                             Id = "D021-STATIC-ID-GUID-000000000021",
                             IsActive = true,
                             KitchenId = "K001"
@@ -489,6 +592,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 165000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Mushroom Risotto",
+                            GroupId = "DG002",
                             Id = "D022-STATIC-ID-GUID-000000000022",
                             IsActive = true,
                             KitchenId = "K001"
@@ -499,6 +603,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 75000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Phở Bò Đặc Biệt",
+                            GroupId = "DG002",
                             Id = "D004-STATIC-ID-GUID-000000000004",
                             IsActive = true,
                             KitchenId = "K002"
@@ -509,6 +614,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 65000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Bún Chả Hà Nội",
+                            GroupId = "DG002",
                             Id = "D005-STATIC-ID-GUID-000000000005",
                             IsActive = true,
                             KitchenId = "K002"
@@ -519,17 +625,8 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 85000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Cơm Gà Hải Nam",
+                            GroupId = "DG002",
                             Id = "D006-STATIC-ID-GUID-000000000006",
-                            IsActive = true,
-                            KitchenId = "K002"
-                        },
-                        new
-                        {
-                            DishId = "D007",
-                            BasePrice = 250000.0,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DishName = "Lẩu Thái Chua Cay",
-                            Id = "D007-STATIC-ID-GUID-000000000007",
                             IsActive = true,
                             KitchenId = "K002"
                         },
@@ -539,6 +636,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 95000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Pad Thai Tôm",
+                            GroupId = "DG002",
                             Id = "D023-STATIC-ID-GUID-000000000023",
                             IsActive = true,
                             KitchenId = "K002"
@@ -549,6 +647,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 320000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Sushi Set Deluxe",
+                            GroupId = "DG002",
                             Id = "D024-STATIC-ID-GUID-000000000024",
                             IsActive = true,
                             KitchenId = "K002"
@@ -559,7 +658,19 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 135000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Ramen Tonkotsu",
+                            GroupId = "DG002",
                             Id = "D025-STATIC-ID-GUID-000000000025",
+                            IsActive = true,
+                            KitchenId = "K002"
+                        },
+                        new
+                        {
+                            DishId = "D007",
+                            BasePrice = 250000.0,
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DishName = "Lẩu Thái Chua Cay",
+                            GroupId = "DG005",
+                            Id = "D007-STATIC-ID-GUID-000000000007",
                             IsActive = true,
                             KitchenId = "K002"
                         },
@@ -569,6 +680,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 195000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Sườn Nướng BBQ",
+                            GroupId = "DG003",
                             Id = "D008-STATIC-ID-GUID-000000000008",
                             IsActive = true,
                             KitchenId = "K003"
@@ -579,6 +691,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 165000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Gà Nướng Mật Ong",
+                            GroupId = "DG003",
                             Id = "D009-STATIC-ID-GUID-000000000009",
                             IsActive = true,
                             KitchenId = "K003"
@@ -589,6 +702,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 145000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Bò Nướng Lá Lốt",
+                            GroupId = "DG003",
                             Id = "D010-STATIC-ID-GUID-000000000010",
                             IsActive = true,
                             KitchenId = "K003"
@@ -599,6 +713,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 185000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Chả Cá Lăng",
+                            GroupId = "DG003",
                             Id = "D026-STATIC-ID-GUID-000000000026",
                             IsActive = true,
                             KitchenId = "K003"
@@ -609,6 +724,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 210000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Thịt Nướng Hàn Quốc",
+                            GroupId = "DG003",
                             Id = "D027-STATIC-ID-GUID-000000000027",
                             IsActive = true,
                             KitchenId = "K003"
@@ -619,6 +735,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 65000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Tiramisu",
+                            GroupId = "DG006",
                             Id = "D011-STATIC-ID-GUID-000000000011",
                             IsActive = true,
                             KitchenId = "K004"
@@ -629,6 +746,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 75000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Chocolate Lava Cake",
+                            GroupId = "DG006",
                             Id = "D012-STATIC-ID-GUID-000000000012",
                             IsActive = true,
                             KitchenId = "K004"
@@ -639,6 +757,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 45000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Kem Vanilla Pháp",
+                            GroupId = "DG006",
                             Id = "D013-STATIC-ID-GUID-000000000013",
                             IsActive = true,
                             KitchenId = "K004"
@@ -649,6 +768,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 35000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Bánh Flan Caramel",
+                            GroupId = "DG006",
                             Id = "D028-STATIC-ID-GUID-000000000028",
                             IsActive = true,
                             KitchenId = "K004"
@@ -659,6 +779,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 55000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Panna Cotta Berry",
+                            GroupId = "DG006",
                             Id = "D029-STATIC-ID-GUID-000000000029",
                             IsActive = true,
                             KitchenId = "K004"
@@ -669,6 +790,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 85000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Mojito Classic",
+                            GroupId = "DG007",
                             Id = "D014-STATIC-ID-GUID-000000000014",
                             IsActive = true,
                             KitchenId = "K005"
@@ -679,6 +801,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 25000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Cà Phê Sữa Đá",
+                            GroupId = "DG007",
                             Id = "D015-STATIC-ID-GUID-000000000015",
                             IsActive = true,
                             KitchenId = "K005"
@@ -689,6 +812,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 35000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Sinh Tố Bơ",
+                            GroupId = "DG007",
                             Id = "D016-STATIC-ID-GUID-000000000016",
                             IsActive = true,
                             KitchenId = "K005"
@@ -699,6 +823,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 45000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Trà Đào Cam Sả",
+                            GroupId = "DG007",
                             Id = "D030-STATIC-ID-GUID-000000000030",
                             IsActive = true,
                             KitchenId = "K005"
@@ -709,6 +834,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 95000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Cocktail Passion Fruit",
+                            GroupId = "DG007",
                             Id = "D031-STATIC-ID-GUID-000000000031",
                             IsActive = true,
                             KitchenId = "K005"
@@ -719,6 +845,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 280000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Lẩu Bò Nhúng Dấm",
+                            GroupId = "DG005",
                             Id = "D032-STATIC-ID-GUID-000000000032",
                             IsActive = true,
                             KitchenId = "K006"
@@ -729,6 +856,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 220000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Lẩu Gà Lá Giang",
+                            GroupId = "DG005",
                             Id = "D033-STATIC-ID-GUID-000000000033",
                             IsActive = true,
                             KitchenId = "K006"
@@ -739,6 +867,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 195000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Nồi Cá Kho Tộ",
+                            GroupId = "DG005",
                             Id = "D034-STATIC-ID-GUID-000000000034",
                             IsActive = true,
                             KitchenId = "K006"
@@ -749,6 +878,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 650000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Tôm Hùm Nướng Phô Mai",
+                            GroupId = "DG004",
                             Id = "D035-STATIC-ID-GUID-000000000035",
                             IsActive = true,
                             KitchenId = "K007"
@@ -759,6 +889,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 420000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Cua Rang Me",
+                            GroupId = "DG004",
                             Id = "D036-STATIC-ID-GUID-000000000036",
                             IsActive = true,
                             KitchenId = "K007"
@@ -769,6 +900,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 380000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Cá Mú Hấp Gừng",
+                            GroupId = "DG004",
                             Id = "D037-STATIC-ID-GUID-000000000037",
                             IsActive = true,
                             KitchenId = "K007"
@@ -779,6 +911,7 @@ namespace Restaurant.Data.Migrations
                             BasePrice = 85000.0,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DishName = "Nghêu Hấp Lá Chuối",
+                            GroupId = "DG004",
                             Id = "D038-STATIC-ID-GUID-000000000038",
                             IsActive = true,
                             KitchenId = "K007"
@@ -1668,11 +1801,19 @@ namespace Restaurant.Data.Migrations
 
             modelBuilder.Entity("Restaurant.Domain.Entities.Dishes", b =>
                 {
+                    b.HasOne("Restaurant.Domain.Entities.DishGroup", "DishGroup")
+                        .WithMany("Dishes")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Restaurant.Domain.Entities.Kitchens", "Kitchen")
                         .WithMany("Dishes")
                         .HasForeignKey("KitchenId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DishGroup");
 
                     b.Navigation("Kitchen");
                 });
@@ -1769,6 +1910,11 @@ namespace Restaurant.Data.Migrations
                     b.Navigation("PrimaryOrders");
 
                     b.Navigation("Tables");
+                });
+
+            modelBuilder.Entity("Restaurant.Domain.Entities.DishGroup", b =>
+                {
+                    b.Navigation("Dishes");
                 });
 
             modelBuilder.Entity("Restaurant.Domain.Entities.Dishes", b =>

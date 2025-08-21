@@ -15,6 +15,7 @@ namespace Restaurant.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderTable> OrderTables { get; set; }
         public DbSet<Dishes> Dishes { get; set; }
+        public DbSet<DishGroup> DishGroups { get; set; }
         public DbSet<AreaDishPrices> AreaDishPrices { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Kitchens> Kitchens { get; set; }
@@ -40,6 +41,9 @@ namespace Restaurant.Data
             
             modelBuilder.Entity<Dishes>()
                 .HasKey(d => d.DishId);
+            
+            modelBuilder.Entity<DishGroup>()
+                .HasKey(dg => dg.GroupId);
             
             modelBuilder.Entity<Kitchens>()
                 .HasKey(k => k.KitchenId);
@@ -81,6 +85,11 @@ namespace Restaurant.Data
                 .WithMany(k => k.Dishes)
                 .HasForeignKey(d => d.KitchenId);
 
+            modelBuilder.Entity<Dishes>()
+                .HasOne(d => d.DishGroup)
+                .WithMany(dg => dg.Dishes)
+                .HasForeignKey(d => d.GroupId);
+
             modelBuilder.Entity<AreaDishPrices>()
                 .HasOne(adp => adp.Area)
                 .WithMany(a => a.AreaDishPrices)
@@ -110,6 +119,73 @@ namespace Restaurant.Data
                 .HasOne(od => od.Area)
                 .WithMany(a => a.OrderDetails)
                 .HasForeignKey(od => od.AreaId);
+
+            // Seed DishGroups with static IDs
+            modelBuilder.Entity<DishGroup>().HasData(
+                new DishGroup 
+                { 
+                    Id = "DG001-STATIC-ID-GUID-00000000001",
+                    GroupId = "DG001", 
+                    GroupName = "Món Khai Vị", 
+                    Description = "Các món ăn khai vị, salad và appetizer", 
+                    IsActive = true, 
+                    CreatedAt = fixedDate 
+                },
+                new DishGroup 
+                { 
+                    Id = "DG002-STATIC-ID-GUID-00000000002",
+                    GroupId = "DG002", 
+                    GroupName = "Món Chính", 
+                    Description = "Các món ăn chính như steak, pasta, cơm, phở", 
+                    IsActive = true, 
+                    CreatedAt = fixedDate 
+                },
+                new DishGroup 
+                { 
+                    Id = "DG003-STATIC-ID-GUID-00000000003",
+                    GroupId = "DG003", 
+                    GroupName = "Món Nướng BBQ", 
+                    Description = "Các món nướng, BBQ và thịt nướng", 
+                    IsActive = true, 
+                    CreatedAt = fixedDate 
+                },
+                new DishGroup 
+                { 
+                    Id = "DG004-STATIC-ID-GUID-00000000004",
+                    GroupId = "DG004", 
+                    GroupName = "Hải Sản", 
+                    Description = "Các món hải sản tươi sống", 
+                    IsActive = true, 
+                    CreatedAt = fixedDate 
+                },
+                new DishGroup 
+                { 
+                    Id = "DG005-STATIC-ID-GUID-00000000005",
+                    GroupId = "DG005", 
+                    GroupName = "Lẩu & Nồi", 
+                    Description = "Các món lẩu, nồi và ăn tập thể", 
+                    IsActive = true, 
+                    CreatedAt = fixedDate 
+                },
+                new DishGroup 
+                { 
+                    Id = "DG006-STATIC-ID-GUID-00000000006",
+                    GroupId = "DG006", 
+                    GroupName = "Tráng Miệng", 
+                    Description = "Các món tráng miệng, bánh ngọt và dessert", 
+                    IsActive = true, 
+                    CreatedAt = fixedDate 
+                },
+                new DishGroup 
+                { 
+                    Id = "DG007-STATIC-ID-GUID-00000000007",
+                    GroupId = "DG007", 
+                    GroupName = "Thức Uống", 
+                    Description = "Đồ uống, cocktail, nước ép và cà phê", 
+                    IsActive = true, 
+                    CreatedAt = fixedDate 
+                }
+            );
 
             // Seed Areas with static IDs
             modelBuilder.Entity<Areas>().HasData(
@@ -245,56 +321,58 @@ namespace Restaurant.Data
                 }
             );
 
-            // Seed Dishes with static IDs
+            // Seed Dishes with static IDs and GroupId assignments
             modelBuilder.Entity<Dishes>().HasData(
-                // Món Âu (K001)
-                new Dishes { Id = "D001-STATIC-ID-GUID-000000000001", DishId = "D001", DishName = "Steak Bò Mỹ", BasePrice = 350000, KitchenId = "K001", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D002-STATIC-ID-GUID-000000000002", DishId = "D002", DishName = "Pasta Carbonara", BasePrice = 180000, KitchenId = "K001", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D003-STATIC-ID-GUID-000000000003", DishId = "D003", DishName = "Salmon Teriyaki", BasePrice = 280000, KitchenId = "K001", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D020-STATIC-ID-GUID-000000000020", DishId = "D020", DishName = "Chicken Cordon Bleu", BasePrice = 220000, KitchenId = "K001", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D021-STATIC-ID-GUID-000000000021", DishId = "D021", DishName = "Lamb Chop Rosemary", BasePrice = 380000, KitchenId = "K001", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D022-STATIC-ID-GUID-000000000022", DishId = "D022", DishName = "Mushroom Risotto", BasePrice = 165000, KitchenId = "K001", IsActive = true, CreatedAt = fixedDate },
+                // Món Chính Âu (K001, DG002)
+                new Dishes { Id = "D001-STATIC-ID-GUID-000000000001", DishId = "D001", DishName = "Steak Bò Mỹ", BasePrice = 350000, KitchenId = "K001", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D002-STATIC-ID-GUID-000000000002", DishId = "D002", DishName = "Pasta Carbonara", BasePrice = 180000, KitchenId = "K001", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D003-STATIC-ID-GUID-000000000003", DishId = "D003", DishName = "Salmon Teriyaki", BasePrice = 280000, KitchenId = "K001", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D020-STATIC-ID-GUID-000000000020", DishId = "D020", DishName = "Chicken Cordon Bleu", BasePrice = 220000, KitchenId = "K001", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D021-STATIC-ID-GUID-000000000021", DishId = "D021", DishName = "Lamb Chop Rosemary", BasePrice = 380000, KitchenId = "K001", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D022-STATIC-ID-GUID-000000000022", DishId = "D022", DishName = "Mushroom Risotto", BasePrice = 165000, KitchenId = "K001", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
 
-                // Món Á (K002)
-                new Dishes { Id = "D004-STATIC-ID-GUID-000000000004", DishId = "D004", DishName = "Phở Bò Đặc Biệt", BasePrice = 75000, KitchenId = "K002", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D005-STATIC-ID-GUID-000000000005", DishId = "D005", DishName = "Bún Chả Hà Nội", BasePrice = 65000, KitchenId = "K002", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D006-STATIC-ID-GUID-000000000006", DishId = "D006", DishName = "Cơm Gà Hải Nam", BasePrice = 85000, KitchenId = "K002", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D007-STATIC-ID-GUID-000000000007", DishId = "D007", DishName = "Lẩu Thái Chua Cay", BasePrice = 250000, KitchenId = "K002", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D023-STATIC-ID-GUID-000000000023", DishId = "D023", DishName = "Pad Thai Tôm", BasePrice = 95000, KitchenId = "K002", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D024-STATIC-ID-GUID-000000000024", DishId = "D024", DishName = "Sushi Set Deluxe", BasePrice = 320000, KitchenId = "K002", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D025-STATIC-ID-GUID-000000000025", DishId = "D025", DishName = "Ramen Tonkotsu", BasePrice = 135000, KitchenId = "K002", IsActive = true, CreatedAt = fixedDate },
+                // Món Chính Á (K002, DG002)
+                new Dishes { Id = "D004-STATIC-ID-GUID-000000000004", DishId = "D004", DishName = "Phở Bò Đặc Biệt", BasePrice = 75000, KitchenId = "K002", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D005-STATIC-ID-GUID-000000000005", DishId = "D005", DishName = "Bún Chả Hà Nội", BasePrice = 65000, KitchenId = "K002", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D006-STATIC-ID-GUID-000000000006", DishId = "D006", DishName = "Cơm Gà Hải Nam", BasePrice = 85000, KitchenId = "K002", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D023-STATIC-ID-GUID-000000000023", DishId = "D023", DishName = "Pad Thai Tôm", BasePrice = 95000, KitchenId = "K002", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D024-STATIC-ID-GUID-000000000024", DishId = "D024", DishName = "Sushi Set Deluxe", BasePrice = 320000, KitchenId = "K002", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D025-STATIC-ID-GUID-000000000025", DishId = "D025", DishName = "Ramen Tonkotsu", BasePrice = 135000, KitchenId = "K002", GroupId = "DG002", IsActive = true, CreatedAt = fixedDate },
 
-                // Món Nướng BBQ (K003)
-                new Dishes { Id = "D008-STATIC-ID-GUID-000000000008", DishId = "D008", DishName = "Sườn Nướng BBQ", BasePrice = 195000, KitchenId = "K003", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D009-STATIC-ID-GUID-000000000009", DishId = "D009", DishName = "Gà Nướng Mật Ong", BasePrice = 165000, KitchenId = "K003", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D010-STATIC-ID-GUID-000000000010", DishId = "D010", DishName = "Bò Nướng Lá Lốt", BasePrice = 145000, KitchenId = "K003", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D026-STATIC-ID-GUID-000000000026", DishId = "D026", DishName = "Chả Cá Lăng", BasePrice = 185000, KitchenId = "K003", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D027-STATIC-ID-GUID-000000000027", DishId = "D027", DishName = "Thịt Nướng Hàn Quốc", BasePrice = 210000, KitchenId = "K003", IsActive = true, CreatedAt = fixedDate },
+                // Lẩu & Nồi (K002, DG005)
+                new Dishes { Id = "D007-STATIC-ID-GUID-000000000007", DishId = "D007", DishName = "Lẩu Thái Chua Cay", BasePrice = 250000, KitchenId = "K002", GroupId = "DG005", IsActive = true, CreatedAt = fixedDate },
 
-                // Dessert (K004)
-                new Dishes { Id = "D011-STATIC-ID-GUID-000000000011", DishId = "D011", DishName = "Tiramisu", BasePrice = 65000, KitchenId = "K004", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D012-STATIC-ID-GUID-000000000012", DishId = "D012", DishName = "Chocolate Lava Cake", BasePrice = 75000, KitchenId = "K004", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D013-STATIC-ID-GUID-000000000013", DishId = "D013", DishName = "Kem Vanilla Pháp", BasePrice = 45000, KitchenId = "K004", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D028-STATIC-ID-GUID-000000000028", DishId = "D028", DishName = "Bánh Flan Caramel", BasePrice = 35000, KitchenId = "K004", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D029-STATIC-ID-GUID-000000000029", DishId = "D029", DishName = "Panna Cotta Berry", BasePrice = 55000, KitchenId = "K004", IsActive = true, CreatedAt = fixedDate },
+                // Món Nướng BBQ (K003, DG003)
+                new Dishes { Id = "D008-STATIC-ID-GUID-000000000008", DishId = "D008", DishName = "Sườn Nướng BBQ", BasePrice = 195000, KitchenId = "K003", GroupId = "DG003", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D009-STATIC-ID-GUID-000000000009", DishId = "D009", DishName = "Gà Nướng Mật Ong", BasePrice = 165000, KitchenId = "K003", GroupId = "DG003", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D010-STATIC-ID-GUID-000000000010", DishId = "D010", DishName = "Bò Nướng Lá Lốt", BasePrice = 145000, KitchenId = "K003", GroupId = "DG003", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D026-STATIC-ID-GUID-000000000026", DishId = "D026", DishName = "Chả Cá Lăng", BasePrice = 185000, KitchenId = "K003", GroupId = "DG003", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D027-STATIC-ID-GUID-000000000027", DishId = "D027", DishName = "Thịt Nướng Hàn Quốc", BasePrice = 210000, KitchenId = "K003", GroupId = "DG003", IsActive = true, CreatedAt = fixedDate },
 
-                // Thức uống (K005)
-                new Dishes { Id = "D014-STATIC-ID-GUID-000000000014", DishId = "D014", DishName = "Mojito Classic", BasePrice = 85000, KitchenId = "K005", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D015-STATIC-ID-GUID-000000000015", DishId = "D015", DishName = "Cà Phê Sữa Đá", BasePrice = 25000, KitchenId = "K005", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D016-STATIC-ID-GUID-000000000016", DishId = "D016", DishName = "Sinh Tố Bơ", BasePrice = 35000, KitchenId = "K005", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D030-STATIC-ID-GUID-000000000030", DishId = "D030", DishName = "Trà Đào Cam Sả", BasePrice = 45000, KitchenId = "K005", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D031-STATIC-ID-GUID-000000000031", DishId = "D031", DishName = "Cocktail Passion Fruit", BasePrice = 95000, KitchenId = "K005", IsActive = true, CreatedAt = fixedDate },
+                // Dessert (K004, DG006)
+                new Dishes { Id = "D011-STATIC-ID-GUID-000000000011", DishId = "D011", DishName = "Tiramisu", BasePrice = 65000, KitchenId = "K004", GroupId = "DG006", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D012-STATIC-ID-GUID-000000000012", DishId = "D012", DishName = "Chocolate Lava Cake", BasePrice = 75000, KitchenId = "K004", GroupId = "DG006", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D013-STATIC-ID-GUID-000000000013", DishId = "D013", DishName = "Kem Vanilla Pháp", BasePrice = 45000, KitchenId = "K004", GroupId = "DG006", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D028-STATIC-ID-GUID-000000000028", DishId = "D028", DishName = "Bánh Flan Caramel", BasePrice = 35000, KitchenId = "K004", GroupId = "DG006", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D029-STATIC-ID-GUID-000000000029", DishId = "D029", DishName = "Panna Cotta Berry", BasePrice = 55000, KitchenId = "K004", GroupId = "DG006", IsActive = true, CreatedAt = fixedDate },
 
-                // Lẩu & Nồi (K006)
-                new Dishes { Id = "D032-STATIC-ID-GUID-000000000032", DishId = "D032", DishName = "Lẩu Bò Nhúng Dấm", BasePrice = 280000, KitchenId = "K006", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D033-STATIC-ID-GUID-000000000033", DishId = "D033", DishName = "Lẩu Gà Lá Giang", BasePrice = 220000, KitchenId = "K006", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D034-STATIC-ID-GUID-000000000034", DishId = "D034", DishName = "Nồi Cá Kho Tộ", BasePrice = 195000, KitchenId = "K006", IsActive = true, CreatedAt = fixedDate },
+                // Thức uống (K005, DG007)
+                new Dishes { Id = "D014-STATIC-ID-GUID-000000000014", DishId = "D014", DishName = "Mojito Classic", BasePrice = 85000, KitchenId = "K005", GroupId = "DG007", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D015-STATIC-ID-GUID-000000000015", DishId = "D015", DishName = "Cà Phê Sữa Đá", BasePrice = 25000, KitchenId = "K005", GroupId = "DG007", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D016-STATIC-ID-GUID-000000000016", DishId = "D016", DishName = "Sinh Tố Bơ", BasePrice = 35000, KitchenId = "K005", GroupId = "DG007", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D030-STATIC-ID-GUID-000000000030", DishId = "D030", DishName = "Trà Đào Cam Sả", BasePrice = 45000, KitchenId = "K005", GroupId = "DG007", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D031-STATIC-ID-GUID-000000000031", DishId = "D031", DishName = "Cocktail Passion Fruit", BasePrice = 95000, KitchenId = "K005", GroupId = "DG007", IsActive = true, CreatedAt = fixedDate },
 
-                // Hải sản (K007)
-                new Dishes { Id = "D035-STATIC-ID-GUID-000000000035", DishId = "D035", DishName = "Tôm Hùm Nướng Phô Mai", BasePrice = 650000, KitchenId = "K007", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D036-STATIC-ID-GUID-000000000036", DishId = "D036", DishName = "Cua Rang Me", BasePrice = 420000, KitchenId = "K007", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D037-STATIC-ID-GUID-000000000037", DishId = "D037", DishName = "Cá Mú Hấp Gừng", BasePrice = 380000, KitchenId = "K007", IsActive = true, CreatedAt = fixedDate },
-                new Dishes { Id = "D038-STATIC-ID-GUID-000000000038", DishId = "D038", DishName = "Nghêu Hấp Lá Chuối", BasePrice = 85000, KitchenId = "K007", IsActive = true, CreatedAt = fixedDate }
+                // Lẩu & Nồi (K006, DG005)
+                new Dishes { Id = "D032-STATIC-ID-GUID-000000000032", DishId = "D032", DishName = "Lẩu Bò Nhúng Dấm", BasePrice = 280000, KitchenId = "K006", GroupId = "DG005", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D033-STATIC-ID-GUID-000000000033", DishId = "D033", DishName = "Lẩu Gà Lá Giang", BasePrice = 220000, KitchenId = "K006", GroupId = "DG005", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D034-STATIC-ID-GUID-000000000034", DishId = "D034", DishName = "Nồi Cá Kho Tộ", BasePrice = 195000, KitchenId = "K006", GroupId = "DG005", IsActive = true, CreatedAt = fixedDate },
+
+                // Hải sản (K007, DG004)
+                new Dishes { Id = "D035-STATIC-ID-GUID-000000000035", DishId = "D035", DishName = "Tôm Hùm Nướng Phô Mai", BasePrice = 650000, KitchenId = "K007", GroupId = "DG004", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D036-STATIC-ID-GUID-000000000036", DishId = "D036", DishName = "Cua Rang Me", BasePrice = 420000, KitchenId = "K007", GroupId = "DG004", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D037-STATIC-ID-GUID-000000000037", DishId = "D037", DishName = "Cá Mú Hấp Gừng", BasePrice = 380000, KitchenId = "K007", GroupId = "DG004", IsActive = true, CreatedAt = fixedDate },
+                new Dishes { Id = "D038-STATIC-ID-GUID-000000000038", DishId = "D038", DishName = "Nghêu Hấp Lá Chuối", BasePrice = 85000, KitchenId = "K007", GroupId = "DG004", IsActive = true, CreatedAt = fixedDate }
             );
 
             // Seed Tables with static IDs
@@ -337,6 +415,7 @@ namespace Restaurant.Data
                 new TableSession { Id = "TS004-STATIC-ID-GUID-00000000004", SessionId = "TS004", TableId = "T014", OpenAt = new DateTime(2025, 1, 15, 14, 30, 0), CloseAt = new DateTime(2025, 1, 15, 16, 0, 0), OpenedBy = "Staff002", ClosedBy = "Staff001", Status = SessionStatus.Closed },
                 new TableSession { Id = "TS005-STATIC-ID-GUID-00000000005", SessionId = "TS005", TableId = "T016", OpenAt = new DateTime(2025, 1, 15, 19, 0, 0), OpenedBy = "Staff004", Status = SessionStatus.Open }
             );
+
 
             // Seed Orders with static IDs
             modelBuilder.Entity<Order>().HasData(
