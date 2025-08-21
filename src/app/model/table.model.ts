@@ -1,8 +1,11 @@
 export interface Table {
-    tableCode: string;
-    tableName: string;
-    capacity: number;
-    isActive: boolean;
-    areaId: string;
-    areaName: string;
+  tableId: string;
+  tableCode: string;
+  tableName: string;
+  capacity: number;
+  isActive: boolean;
+  status: number;     
+  openAt?: string;
+  closeAt?: string;
+  areaId: string;
 }
