@@ -71,10 +71,8 @@ namespace Restaurant.Service.Services
                 CreatedAt = dto.CreatedAt,
                 Id = entityId
             };
-
             _context.Dishes.Add(entity);
             await _context.SaveChangesAsync();
-
             dto.DishId = entity.DishId;
             return dto;
         }
