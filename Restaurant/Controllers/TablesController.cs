@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Domain.DTOs;
+using Restaurant.Domain.DTOs.Request;
 using Restaurant.Service.Interfaces;
 
 namespace Restaurant.Controllers
@@ -75,5 +76,17 @@ namespace Restaurant.Controllers
             }
             return NoContent();
         }
+
+
+        [HttpPost("ViewTable")]
+        public async Task<ActionResult<IEnumerable<TableDto>>> FilterTables([FromBody] TableFilterRequestDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.AreaId))
+                return BadRequest("AreaId is required.");
+
+            var tables = await _tableService.GetTablesByFilterAsync(request.AreaId, request.IsActive);
+            return Ok(tables);
+        }
+
     }
 }

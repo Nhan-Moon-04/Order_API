@@ -2,7 +2,7 @@
 {
     public class Kitchens : BaseEntity
     {
-        public required string KitchenId { get; set; }
+        public required string KitchenId { get; set; } // PK
         public required string KitchenName { get; set; }
         public string? Description { get; set; }
         public bool IsActive { get; set; } = true;

@@ -1,16 +1,19 @@
-﻿namespace Restaurant.Domain.Entities
+﻿using Restaurant.Domain.Enums;
+
+namespace Restaurant.Domain.Entities
 {
     public class Order : BaseEntity
     {
-        public required string OrderId { get; set; }
-        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+        public required string OrderId { get; set; } // PK
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? ClosedAt { get; set; }
         public bool IsPaid { get; set; } = false;
-
-        // FK - references TableCode (T001, T002, etc.), not the GUID Id
-        public required string TableCode { get; set; }
+        public required string PrimaryAreaId { get; set; } // FK → Areas - for primary area determination
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.Open;
 
         // Navigation
-        public virtual Table? Table { get; set; }
+        public virtual Areas? PrimaryArea { get; set; }
+        public virtual ICollection<OrderTable> OrderTables { get; set; } = new List<OrderTable>();
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }
 }

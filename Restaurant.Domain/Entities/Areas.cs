@@ -11,5 +11,7 @@
         // Navigation
         public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
         public virtual ICollection<AreaDishPrices> AreaDishPrices { get; set; } = new List<AreaDishPrices>();
+        public virtual ICollection<Order> PrimaryOrders { get; set; } = new List<Order>();
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }
 }

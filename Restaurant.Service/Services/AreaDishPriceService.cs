@@ -36,7 +36,7 @@ namespace Restaurant.Service.Services
             return await _context.AreaDishPrices
                                  .Include(p => p.Area)
                                  .Include(p => p.Dish)
-                                 .Where(p => p.Id == id)
+                                 .Where(p => p.AreaId == id)
                                  .Select(p => new AreaDishPriceDto
                                  {
                                      Id = p.Id,

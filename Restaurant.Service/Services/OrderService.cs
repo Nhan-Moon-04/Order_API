@@ -18,8 +18,9 @@ namespace Restaurant.Service.Services
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
             var orders = await _context.Orders
-                .Include(o => o.Table)
-                    .ThenInclude(t => t!.Area)
+                .Include(o => o.OrderTables)
+                    .ThenInclude(ot => ot.Table)
+                        .ThenInclude(t => t!.Area)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Dish)
                 .ToListAsync();
@@ -27,11 +28,14 @@ namespace Restaurant.Service.Services
             return orders.Select(order => new OrderDto
             {
                 OrderId = order.OrderId,
-                OrderDate = order.OrderDate,
+                OrderDate = order.CreatedAt,
                 IsPaid = order.IsPaid,
-                TableCode = order.TableCode,
-                TableName = order.Table?.TableName,
-                AreaName = order.Table?.Area?.AreaName,
+                TableCode = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableCode ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableCode ?? string.Empty,
+                TableName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableName ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableName,
+                AreaName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.Area?.AreaName ?? 
+                          order.OrderTables.FirstOrDefault()?.Table?.Area?.AreaName,
                 TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice),
                 OrderDetails = order.OrderDetails.Select(od => new OrderDetailDto
                 {
@@ -48,8 +52,9 @@ namespace Restaurant.Service.Services
         public async Task<OrderDto?> GetOrderByIdAsync(string id)
         {
             var order = await _context.Orders
-                .Include(o => o.Table)
-                    .ThenInclude(t => t!.Area)
+                .Include(o => o.OrderTables)
+                    .ThenInclude(ot => ot.Table)
+                        .ThenInclude(t => t!.Area)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Dish)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
@@ -57,11 +62,14 @@ namespace Restaurant.Service.Services
             return order == null ? null : new OrderDto
             {
                 OrderId = order.OrderId,
-                OrderDate = order.OrderDate,
+                OrderDate = order.CreatedAt,
                 IsPaid = order.IsPaid,
-                TableCode = order.TableCode,
-                TableName = order.Table?.TableName,
-                AreaName = order.Table?.Area?.AreaName,
+                TableCode = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableCode ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableCode ?? string.Empty,
+                TableName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableName ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableName,
+                AreaName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.Area?.AreaName ?? 
+                          order.OrderTables.FirstOrDefault()?.Table?.Area?.AreaName,
                 TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice),
                 OrderDetails = order.OrderDetails.Select(od => new OrderDetailDto
                 {
@@ -78,21 +86,22 @@ namespace Restaurant.Service.Services
         public async Task<IEnumerable<OrderDto>> GetOrdersByTableIdAsync(string tableCode)
         {
             var orders = await _context.Orders
-                .Include(o => o.Table)
-                    .ThenInclude(t => t!.Area)
+                .Include(o => o.OrderTables)
+                    .ThenInclude(ot => ot.Table)
+                        .ThenInclude(t => t!.Area)
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Dish)
-                .Where(o => o.TableCode == tableCode)
+                .Where(o => o.OrderTables.Any(ot => ot.Table!.TableCode == tableCode))
                 .ToListAsync();
 
             return orders.Select(order => new OrderDto
             {
                 OrderId = order.OrderId,
-                OrderDate = order.OrderDate,
+                OrderDate = order.CreatedAt,
                 IsPaid = order.IsPaid,
-                TableCode = order.TableCode,
-                TableName = order.Table?.TableName,
-                AreaName = order.Table?.Area?.AreaName,
+                TableCode = order.OrderTables.FirstOrDefault(ot => ot.Table!.TableCode == tableCode)?.Table?.TableCode ?? string.Empty,
+                TableName = order.OrderTables.FirstOrDefault(ot => ot.Table!.TableCode == tableCode)?.Table?.TableName,
+                AreaName = order.OrderTables.FirstOrDefault(ot => ot.Table!.TableCode == tableCode)?.Table?.Area?.AreaName,
                 TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice)
             });
         }
@@ -100,20 +109,24 @@ namespace Restaurant.Service.Services
         public async Task<IEnumerable<OrderDto>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             var orders = await _context.Orders
-                .Include(o => o.Table)
-                    .ThenInclude(t => t!.Area)
+                .Include(o => o.OrderTables)
+                    .ThenInclude(ot => ot.Table)
+                        .ThenInclude(t => t!.Area)
                 .Include(o => o.OrderDetails)
-                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
                 .ToListAsync();
 
             return orders.Select(order => new OrderDto
             {
                 OrderId = order.OrderId,
-                OrderDate = order.OrderDate,
+                OrderDate = order.CreatedAt,
                 IsPaid = order.IsPaid,
-                TableCode = order.TableCode,
-                TableName = order.Table?.TableName,
-                AreaName = order.Table?.Area?.AreaName,
+                TableCode = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableCode ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableCode ?? string.Empty,
+                TableName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableName ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableName,
+                AreaName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.Area?.AreaName ?? 
+                          order.OrderTables.FirstOrDefault()?.Table?.Area?.AreaName,
                 TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice)
             });
         }
@@ -123,13 +136,31 @@ namespace Restaurant.Service.Services
             var entity = new Order
             {
                 OrderId = dto.OrderId,
-                OrderDate = dto.OrderDate,
+                CreatedAt = dto.OrderDate,
                 IsPaid = dto.IsPaid,
-                TableCode = dto.TableCode
+                PrimaryAreaId = "A001" // Default area - should be determined from business logic
             };
 
             _context.Orders.Add(entity);
             await _context.SaveChangesAsync();
+
+            // If TableCode is provided, create OrderTable relationship
+            if (!string.IsNullOrEmpty(dto.TableCode))
+            {
+                var table = await _context.Tables.FirstOrDefaultAsync(t => t.TableCode == dto.TableCode);
+                if (table != null)
+                {
+                    var orderTable = new OrderTable
+                    {
+                        OrderId = entity.OrderId,
+                        TableId = table.TableId,
+                        IsPrimary = true,
+                        FromTime = DateTime.UtcNow
+                    };
+                    _context.OrderTables.Add(orderTable);
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             return dto;
         }
@@ -139,9 +170,8 @@ namespace Restaurant.Service.Services
             var entity = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (entity == null) return null;
 
-            entity.OrderDate = dto.OrderDate;
+            entity.CreatedAt = dto.OrderDate;
             entity.IsPaid = dto.IsPaid;
-            entity.TableCode = dto.TableCode;
 
             await _context.SaveChangesAsync();
             return dto;
@@ -151,6 +181,7 @@ namespace Restaurant.Service.Services
         {
             var entity = await _context.Orders
                 .Include(o => o.OrderDetails)
+                .Include(o => o.OrderTables)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
             if (entity == null) return false;
 
@@ -172,8 +203,9 @@ namespace Restaurant.Service.Services
         public async Task<IEnumerable<OrderDto>> GetUnpaidOrdersAsync()
         {
             var orders = await _context.Orders
-                .Include(o => o.Table)
-                    .ThenInclude(t => t!.Area)
+                .Include(o => o.OrderTables)
+                    .ThenInclude(ot => ot.Table)
+                        .ThenInclude(t => t!.Area)
                 .Include(o => o.OrderDetails)
                 .Where(o => !o.IsPaid)
                 .ToListAsync();
@@ -181,11 +213,14 @@ namespace Restaurant.Service.Services
             return orders.Select(order => new OrderDto
             {
                 OrderId = order.OrderId,
-                OrderDate = order.OrderDate,
+                OrderDate = order.CreatedAt,
                 IsPaid = order.IsPaid,
-                TableCode = order.TableCode,
-                TableName = order.Table?.TableName,
-                AreaName = order.Table?.Area?.AreaName,
+                TableCode = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableCode ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableCode ?? string.Empty,
+                TableName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.TableName ?? 
+                           order.OrderTables.FirstOrDefault()?.Table?.TableName,
+                AreaName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.Area?.AreaName ?? 
+                          order.OrderTables.FirstOrDefault()?.Table?.Area?.AreaName,
                 TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice)
             });
         }

@@ -71,6 +71,7 @@ namespace Restaurant.Service.Services
         {
             var entity = new Table
             {
+                TableId = Guid.NewGuid().ToString(), // Generate a unique TableId
                 TableCode = dto.TableCode,
                 TableName = dto.TableName,
                 Capacity = dto.Capacity,
@@ -125,5 +126,30 @@ namespace Restaurant.Service.Services
                 AreaName = table.Area?.AreaName
             });
         }
+
+        public async Task<IEnumerable<TableDto>> GetTablesByFilterAsync(string areaId, bool? isActive)
+        {
+            var query = _context.Tables
+                .Include(t => t.Area)
+                .Where(t => t.AreaId == areaId);
+
+            if (isActive.HasValue)
+            {
+                query = query.Where(t => t.IsActive == isActive.Value);
+            }
+
+            var tables = await query.ToListAsync();
+
+            return tables.Select(table => new TableDto
+            {
+                TableCode = table.TableCode,
+                TableName = table.TableName,
+                Capacity = table.Capacity,
+                IsActive = table.IsActive,
+                AreaId = table.AreaId,
+                AreaName = table.Area?.AreaName
+            });
+        }
+
     }
 }
