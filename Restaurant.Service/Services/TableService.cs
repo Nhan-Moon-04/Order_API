@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Restaurant.Data;
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Entities;
+using Restaurant.Domain.Enums;
 using Restaurant.Service.Interfaces;
 
 namespace Restaurant.Service.Services
@@ -28,7 +29,8 @@ namespace Restaurant.Service.Services
                 Capacity = table.Capacity,
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
-                AreaName = table.Area?.AreaName
+                AreaName = table.Area?.AreaName,
+                Status = table.Status.ToString()
             });
         }
 
@@ -45,7 +47,8 @@ namespace Restaurant.Service.Services
                 Capacity = table.Capacity,
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
-                AreaName = table.Area?.AreaName
+                AreaName = table.Area?.AreaName,
+                Status = table.Status.ToString()
             };
         }
 
@@ -63,7 +66,8 @@ namespace Restaurant.Service.Services
                 Capacity = table.Capacity,
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
-                AreaName = table.Area?.AreaName
+                AreaName = table.Area?.AreaName,
+                Status = table.Status.ToString()
             });
         }
 
@@ -127,6 +131,24 @@ namespace Restaurant.Service.Services
             });
         }
 
+        public async Task<IEnumerable<TableDto>> GetTableStatusAsync()
+        {
+            var tables = await _context.Tables
+                .Include(t => t.Area)
+                .ToListAsync();
+
+            return tables.Select(table => new TableDto
+            {
+                TableCode = table.TableCode,
+                TableName = table.TableName,
+                Capacity = table.Capacity,
+                IsActive = table.IsActive,
+                AreaId = table.AreaId,
+                AreaName = table.Area?.AreaName,
+                Status = table.Status.ToString()  
+            });
+        }
+
         public async Task<IEnumerable<TableDto>> GetTablesByFilterAsync(string areaId, bool? isActive)
         {
             var query = _context.Tables
@@ -147,9 +169,116 @@ namespace Restaurant.Service.Services
                 Capacity = table.Capacity,
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
-                AreaName = table.Area?.AreaName
+                AreaName = table.Area?.AreaName,
+                Status = table.Status.ToString()
             });
         }
 
+
+        public async Task<IEnumerable<TableDto>> PostChangeStatusTable(
+            string tableCode, 
+            string status, 
+            DateTime? openAt, 
+            DateTime? closeAt)
+        {
+            var table = await _context.Tables
+                .Include(t => t.Area)
+                .FirstOrDefaultAsync(t => t.TableCode == tableCode);
+                
+            if (table == null) return Enumerable.Empty<TableDto>();
+            
+            if (Enum.TryParse<TableStatus>(status, out TableStatus tableStatus))
+            {
+                table.Status = tableStatus;
+                table.OpenAt = openAt;
+                table.CloseAt = closeAt;
+                await _context.SaveChangesAsync();
+            }
+            
+            return new List<TableDto>
+            {
+                new TableDto
+                {
+                    TableCode = table.TableCode,
+                    TableName = table.TableName,
+                    Capacity = table.Capacity,
+                    IsActive = table.IsActive,
+                    AreaId = table.AreaId,
+                    AreaName = table.Area?.AreaName,
+                    Status = table.Status.ToString(),
+                    OpenAt = table.OpenAt,
+                    CloseAt = table.CloseAt
+                }
+            };
+        }
+
+        public async Task<TableDto?> OpenTableAsync(string tableCode, string areaId, string? openedBy = null)
+        {
+            var table = await _context.Tables
+                .Include(t => t.Area)
+                .FirstOrDefaultAsync(t => t.TableCode == tableCode && t.AreaId == areaId);
+            
+            if (table == null) return null;
+
+            // Check if table is available to open
+            if (table.Status != TableStatus.Available)
+            {
+                throw new InvalidOperationException($"Bàn {tableCode} trong khu {areaId} không thể mở vì đang ở trạng thái {table.Status}");
+            }
+
+            // Update table status to Occupied
+            table.Status = TableStatus.Occupied;
+            table.OpenAt = DateTime.Now;
+            table.CloseAt = null;
+
+            await _context.SaveChangesAsync();
+
+            return new TableDto
+            {
+                TableCode = table.TableCode,
+                TableName = table.TableName,
+                Capacity = table.Capacity,
+                IsActive = table.IsActive,
+                AreaId = table.AreaId,
+                AreaName = table.Area?.AreaName,
+                Status = table.Status.ToString(),
+                OpenAt = table.OpenAt,
+                CloseAt = table.CloseAt
+            };
+        }
+
+        public async Task<TableDto?> CloseTableAsync(string tableCode, string? closedBy = null)
+        {
+            var table = await _context.Tables
+                .Include(t => t.Area)
+                .FirstOrDefaultAsync(t => t.TableCode == tableCode);
+            
+            if (table == null) return null;
+
+            // Check if table is occupied to close
+            if (table.Status != TableStatus.Occupied)
+            {
+                throw new InvalidOperationException($"Bàn {tableCode} không thể đóng vì không đang ở trạng thái Occupied");
+            }
+
+            // Update table status to Available
+            table.Status = TableStatus.Available;
+            table.CloseAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return new TableDto
+            {
+                TableCode = table.TableCode,
+                TableName = table.TableName,
+                Capacity = table.Capacity,
+                IsActive = table.IsActive,
+                AreaId = table.AreaId,
+                AreaName = table.Area?.AreaName,
+                Status = table.Status.ToString(),
+                OpenAt = table.OpenAt,
+                CloseAt = table.CloseAt
+            };
+        }
     }
 }

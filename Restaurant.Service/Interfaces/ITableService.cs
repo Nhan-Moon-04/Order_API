@@ -12,6 +12,15 @@ namespace Restaurant.Service.Interfaces
         Task<bool> DeleteTableAsync(string tableCode);
         Task<IEnumerable<TableDto>> GetAvailableTablesAsync();
         Task<IEnumerable<TableDto>> GetTablesByFilterAsync(string areaId, bool? isActive);
+        Task<IEnumerable<TableDto>> GetTableStatusAsync();
 
+        Task<IEnumerable<TableDto>> PostChangeStatusTable(
+            string tableCode, 
+            string status, 
+            DateTime? openAt, 
+            DateTime? closeAt);
+
+        Task<TableDto?> OpenTableAsync(string tableCode, string areaId, string? openedBy = null);
+        Task<TableDto?> CloseTableAsync(string tableCode, string? closedBy = null);
     }
 }

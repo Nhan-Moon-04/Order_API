@@ -77,7 +77,6 @@ namespace Restaurant.Controllers
             return NoContent();
         }
 
-
         [HttpPost("ViewTable")]
         public async Task<ActionResult<IEnumerable<TableDto>>> FilterTables([FromBody] TableFilterRequestDto request)
         {
@@ -88,5 +87,68 @@ namespace Restaurant.Controllers
             return Ok(tables);
         }
 
+        [HttpGet("status")]
+        public async Task<ActionResult<IEnumerable<TableDto>>> GetTableStatus()
+        {
+            var tables = await _tableService.GetTableStatusAsync();
+            return Ok(tables);
+        }
+
+        /// <summary>
+        /// Mở bàn - Chuyển trạng thái từ Available sang Occupied
+        /// </summary>
+        /// <param name="tableCode">Mã bàn cần mở</param>
+        /// <param name="areaId">Mã khu vực của bàn</param>
+        /// <param name="openedBy">Tên người mở bàn (tùy chọn)</param>
+        /// <returns>Thông tin bàn sau khi mở</returns>
+        [HttpPost("{tableCode}/open")]
+        public async Task<ActionResult<TableDto>> OpenTable(string tableCode, [FromQuery] string areaId, [FromQuery] string? openedBy = null)
+        {
+            try
+            {
+                var result = await _tableService.OpenTableAsync(tableCode, areaId, openedBy);
+                if (result == null)
+                {
+                    return NotFound($"Không tìm thấy bàn với mã: {tableCode} trong khu vực: {areaId}");
+                }
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi mở bàn: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Đóng bàn - Chuyển trạng thái từ Occupied sang Available
+        /// </summary>
+        /// <param name="tableCode">Mã bàn cần đóng</param>
+        /// <param name="closedBy">Tên người đóng bàn (tùy chọn)</param>
+        /// <returns>Thông tin bàn sau khi đóng</returns>
+        [HttpPost("{tableCode}/close")]
+        public async Task<ActionResult<TableDto>> CloseTable(string tableCode, [FromQuery] string? closedBy = null)
+        {
+            try
+            {
+                var result = await _tableService.CloseTableAsync(tableCode, closedBy);
+                if (result == null)
+                {
+                    return NotFound($"Không tìm thấy bàn với mã: {tableCode}");
+                }
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi đóng bàn: {ex.Message}");
+            }
+        }
     }
 }
