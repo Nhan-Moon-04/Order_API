@@ -37,11 +37,11 @@
         @if (tables$().length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @for (table of tables$(); track table.tableCode) {
-            <div [class]="getTableCardClass()">
+            <div [class]="getTableCardClass(table.status)" class="relative">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-lg font-semibold text-gray-800">{{ table.tableName }}</h3>
 
-                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">{{table.status}}</span>
+                    <span [class]="getStatusBadgeClass(table.status)">{{getStatusText(table.status)}}</span>
                 </div>
 
                 <div class="space-y-2 text-sm text-gray-600">
@@ -64,10 +64,9 @@
                 </div>
 
                 <div class="mt-4 flex gap-2">
-                    <button
-                        class="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:from-red-500 hover:to-orange-500 transition-all duration-300"
-                        [disabled]="!table.isActive">
-                        <i class="fas fa-calendar-plus mr-1"></i>
+                    <button [class]="getBookButtonClass(table.status)" [disabled]="!canBookTable(table.status)"
+                        (click)="confirmBooking(table)">
+                        <i class="fas fa-calendar-plus mr-1 bg-green-500"></i>
                         Book
                     </button>
                     <button
@@ -76,6 +75,11 @@
                         Details
                     </button>
                 </div>
+
+                <!-- Overlay phủ toàn bộ card cho các trạng thái không available -->
+                @if (!canBookTable(table.status)) {
+                <div class="absolute inset-0 bg-gray-200 bg-opacity-40 rounded-xl"></div>
+                }
             </div>
             }
         </div>
@@ -90,4 +94,46 @@
         </div>
         }
     </div>
+
+    @if (showConfirmModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity" (click)="closeModal()">
+        </div>
+
+        <!-- Modal content -->
+        <div
+            class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all scale-95 animate-fadeIn z-10">
+            <div class="text-center">
+                <!-- Icon -->
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                    <i class="fas fa-calendar-plus text-orange-600 text-xl"></i>
+                </div>
+
+                <!-- Title -->
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Xác nhận mở bàn</h2>
+
+                <!-- Content -->
+                <p class="text-gray-600 mb-6">
+                    Bạn có chắc muốn mở bàn
+                    "<span class="font-semibold text-gray-800">{{ selectedTable()?.tableName }}</span>"
+                    không?
+                </p>
+
+                <!-- Actions -->
+                <div class="flex justify-center gap-3">
+                    <button (click)="closeModal()"
+                        class="px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-medium shadow-sm">
+                        Hủy
+                    </button>
+                    <button (click)="confirmBookingAction()"
+                        class="px-6 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors font-medium shadow-sm">
+                        Xác nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
 </div>
