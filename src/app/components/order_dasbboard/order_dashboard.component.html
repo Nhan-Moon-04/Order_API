@@ -1,98 +1,164 @@
-<div class="invoice-container">
-    <div class="invoice-header">
-        <h1>CHI TIẾT ĐƠN HÀNG</h1>
-        <h2>HÓA ĐƠN</h2>
+<div class="order-dashboard">
+    <!-- Left Panel - Order Details + Menu (50% width) -->
+    <div class="order-panel">
+        <!-- Order Details Section (50% height) -->
+        <div class="order-details-section">
+            <!-- Header -->
+            <div class="order-header">
+                <div class="flex items-center justify-between">
+                    <a (click)="goBack()" class="back-btn cursor-pointer">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back
+                    </a>
+                    <div class="text-center">
+                        <h1 class="text-xl font-bold">CHI TIẾT BÀN</h1>
+                    </div>
+                    <div class="w-16"></div>
+                </div>
+            </div>
+
+            @if (loading()) {
+            <div class="text-center py-8">
+                <div class="spinner-border text-blue-500"></div>
+                <p class="mt-2 text-gray-600">Đang tải...</p>
+            </div>
+            }
+
+            @if (error()) {
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-4">
+                {{ error() }}
+            </div>
+            }
+
+            @if (order()) {
+            <!-- Order Items Table -->
+            <div class="order-items-container">
+                <div class="grid grid-cols-12 gap-2 text-xs font-semibold text-gray-700 border-b pb-2 mb-2">
+                    <div class="col-span-1">#</div>
+                    <div class="col-span-5">Tên món</div>
+                    <div class="col-span-2 text-center">Số lượng</div>
+                    <div class="col-span-2 text-right">Giá</div>
+                    <div class="col-span-2 text-right">Thành tiền</div>
+                </div>
+
+                @for (item of order()?.orderDetails; track item.orderDetailId; let i = $index) {
+                <div class="grid grid-cols-12 gap-2 items-center py-2 border-b border-gray-100 text-sm">
+                    <div class="col-span-1 text-gray-500">{{ i + 1 }}</div>
+                    <div class="col-span-5 font-medium">{{ item.dishName }}</div>
+                    <div class="col-span-2 text-center">
+                        <span class="px-2 py-1 bg-gray-100 rounded">{{ item.quantity }}</span>
+                    </div>
+                    <div class="col-span-2 text-right">{{ formatCurrency(item.unitPrice) }}</div>
+                    <div class="col-span-2 text-right font-semibold">{{ formatCurrency(item.totalPrice) }}</div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+
+        <!-- Menu Section (50% height) -->
+        <div class="menu-section">
+            <div class="menu-header">
+                THỰC ĐƠN
+            </div>
+
+            <!-- Category Buttons -->
+            <div class="category-container">
+                @for (group of dishGroups(); track group.groupName) {
+                <button (click)="selectGroup(group.groupName)" [class.active]="selectedGroup() === group.groupName"
+                    class="category-btn">
+                    {{ group.groupName }}
+                </button>
+                }
+            </div>
+
+            <!-- Dishes Grid -->
+            <div class="dishes-container">
+                @for (group of dishGroups(); track group.groupName) {
+                @if (selectedGroup() === group.groupName || selectedGroup() === '') {
+                @for (dish of group.dishes; track dish.dishId) {
+                <div class="dish-card" (click)="addDishToOrder(dish)">
+                    <div class="dish-image">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h4 class="dish-name">{{ dish.dishName }}</h4>
+                    <p class="dish-price">{{ formatCurrency(dish.basePrice) }}</p>
+                </div>
+                }
+                }
+                }
+            </div>
+        </div>
     </div>
 
-    <div class="invoice-details">
-        <div class="customer-info">
-            <p><strong>Khách hàng:</strong> Nguyễn Thiên Nhàn</p>
+    <!-- Right Panel - Customer Info + Summary (30% width) -->
+    <div class="summary-panel">
+        <div class="summary-header">
+            <h1>THÔNG TIN HÓA ĐƠN</h1>
         </div>
 
-        <div class="order-items">
-            <div class="item-header">
-                <span>Tên món</span>
-                <span>Số lượng</span>
-                <span>Giá</span>
-                <span>Giảm giá</span>
-                <span>Thuế</span>
-                <span>Thành tiền</span>
+        @if (order()) {
+        <div class="summary-content">
+            <!-- Customer Info -->
+            <div class="customer-info-panel">
+                <h3>Thông tin khách hàng</h3>
+                <div class="customer-info-grid">
+                    <div class="customer-info-item">
+                        <span class="customer-info-label">Khách hàng:</span>
+                        <span class="customer-info-value">{{ order()?.tableName }}</span>
+                    </div>
+                    <div class="customer-info-item">
+                        <span class="customer-info-label">Bàn:</span>
+                        <span class="customer-info-value">{{ order()?.tableCode }}</span>
+                    </div>
+                    <div class="customer-info-item">
+                        <span class="customer-info-label">Khu vực:</span>
+                        <span class="customer-info-value">{{ order()?.areaName }}</span>
+                    </div>
+                    <div class="customer-info-item">
+                        <span class="customer-info-label">Ngày:</span>
+                        <span class="customer-info-value">{{ order()?.orderDate | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="item-row">
-                <div class="item-name">BÁNH SANDWICH MÔNG CỔ 1' VỊ THỊT XÔNG KHÓI VÀ PHÔ MAI</div>
-                <div class="item-quantity">2</div>
-                <div class="item-price">35.000</div>
-                <div class="item-discount">0</div>
-                <div class="item-tax">70.000</div>
-                <div class="item-total">0</div>
+            <!-- Bill Summary -->
+            <div class="bill-summary">
+                <h3>Tổng cộng</h3>
+                <div class="bill-row">
+                    <span class="bill-label">Thành tiền:</span>
+                    <span class="bill-amount">{{ formatCurrency(order()?.totalAmount || 0) }}</span>
+                </div>
+                <div class="bill-row">
+                    <span class="bill-label">Giảm giá:</span>
+                    <span class="bill-amount">0</span>
+                </div>
+                <div class="bill-row">
+                    <span class="bill-label">Thuế:</span>
+                    <span class="bill-amount">0</span>
+                </div>
+                <div class="bill-row total">
+                    <span class="bill-label">TỔNG TIỀN:</span>
+                    <span class="bill-amount">{{ formatCurrency(order()?.totalAmount || 0) }}</span>
+                </div>
             </div>
 
-            <div class="item-row">
-                <div class="item-name">BÁNH SANDWICH MÔNG CỔ PHỦ PHÔ MAI VÀ XÚC XÍCH</div>
-                <div class="item-quantity">1</div>
-                <div class="item-price">35.000</div>
-                <div class="item-discount">0</div>
-                <div class="item-tax">35.000</div>
-                <div class="item-total">0</div>
-            </div>
-
-            <div class="item-row">
-                <div class="item-name">TRỨNG ỐP LA</div>
-                <div class="item-quantity">1</div>
-                <div class="item-price">10.000</div>
-                <div class="item-discount">0</div>
-                <div class="item-tax">10.000</div>
-                <div class="item-total">0</div>
-            </div>
-
-            <div class="item-row">
-                <div class="item-name">BÁNH MI SANDWICH</div>
-                <div class="item-quantity">1</div>
-                <div class="item-price">40.000</div>
-                <div class="item-discount">0</div>
-                <div class="item-tax">40.000</div>
-                <div class="item-total">0</div>
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn kitchen-btn">
+                    <i class="fas fa-utensils mr-2"></i>
+                    Gửi Nhà Bếp
+                </button>
+                <button class="action-btn print-btn">
+                    <i class="fas fa-print mr-2"></i>
+                    In Hóa Đơn
+                </button>
+                <button class="action-btn payment-btn">
+                    <i class="fas fa-check mr-2"></i>
+                    Thanh Toán
+                </button>
             </div>
         </div>
-
-        <div class="summary">
-            <div class="summary-row">
-                <span class="summary-label">Thành tiền:</span>
-                <span class="summary-value">207.500</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Giảm giá:</span>
-                <span class="summary-value">0</span>
-            </div>
-            <div class="summary-row">
-                <span class="summary-label">Thuế:</span>
-                <span class="summary-value">0</span>
-            </div>
-            <div class="summary-row total">
-                <span class="summary-label">Tổng tiền:</span>
-                <span class="summary-value">207.500</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="payment-section">
-        <h3>THANH TOÁN</h3>
-        <div class="payment-options">
-            <div class="payment-row">
-                <button class="payment-btn">Tiền mặt</button>
-                <button class="payment-btn">Chuyển khoản</button>
-                <button class="payment-btn">Thẻ</button>
-            </div>
-            <div class="payment-row">
-                <button class="payment-btn">Ví điện tử</button>
-                <button class="payment-btn">Khác</button>
-            </div>
-        </div>
-
-        <div class="action-buttons">
-            <button class="action-btn print-btn">In hóa đơn</button>
-            <button class="action-btn confirm-btn">Xác nhận thanh toán</button>
-        </div>
+        }
     </div>
 </div>

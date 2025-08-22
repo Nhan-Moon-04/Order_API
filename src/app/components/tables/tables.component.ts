@@ -85,6 +85,18 @@ export class TablesComponent implements OnInit {
         this.router.navigate(['/']);
     }
 
+    goToOrderDashboard(table: any) {
+        // Kiểm tra nếu bàn đang có order (Occupied hoặc có orderId)
+        if (table.orderId) {
+            this.router.navigate(['/order-dashboard', table.orderId]);
+        } else {
+            // Nếu không có orderId, có thể tạo order mới hoặc thông báo
+            // Tạm thời dùng orderId mặc định cho demo
+            const orderId = 'ORD001';
+            this.router.navigate(['/order-dashboard', orderId]);
+        }
+    }
+
     TableStatus = {
         Available: 0,
         Occupied: 1,
