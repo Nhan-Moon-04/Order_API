@@ -40,11 +40,8 @@
             <div [class]="getTableCardClass()">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-lg font-semibold text-gray-800">{{ table.tableName }}</h3>
-                    @if (!table.isActive) {
-                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Inactive</span>
-                    } @else {
-                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Available</span>
-                    }
+
+                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">{{table.status}}</span>
                 </div>
 
                 <div class="space-y-2 text-sm text-gray-600">
