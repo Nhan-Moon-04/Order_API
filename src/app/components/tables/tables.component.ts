@@ -86,15 +86,9 @@ export class TablesComponent implements OnInit {
     }
 
     goToOrderDashboard(table: any) {
-        // Kiểm tra nếu bàn đang có order (Occupied hoặc có orderId)
-        if (table.orderId) {
-            this.router.navigate(['/order-dashboard', table.orderId]);
-        } else {
-            // Nếu không có orderId, có thể tạo order mới hoặc thông báo
-            // Tạm thời dùng orderId mặc định cho demo
-            const orderId = 'ORD001';
-            this.router.navigate(['/order-dashboard', orderId]);
-        }
+        // Navigate using tableCode instead of orderId
+        // The API endpoint will fetch the latest order for this table
+        this.router.navigate(['/order-dashboard', table.tableCode]);
     }
 
     TableStatus = {
@@ -190,11 +184,21 @@ export class TablesComponent implements OnInit {
         const table = this.selectedTable();
         if (!table) return;
 
-        const url = `https://localhost:7136/api/Tables/${table.tableCode}/open?areaId=${this.areaId()}&openedBy=nhan`;
+        const url = `https://localhost:7136/api/TableSessions/table/${table.tableCode}/open`;
 
         console.log('Opening table with URL:', url);
 
-        this.http.post<any>(url, {}).subscribe({
+        // Payload cần stringify để đúng format JSON string
+        const payload = JSON.stringify("NHAN");
+
+        // Thêm headers để đảm bảo Content-Type đúng
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        console.log('Payload being sent:', payload);
+
+        this.http.post<any>(url, payload, { headers }).subscribe({
             next: (res) => {
                 console.log(`Đã mở bàn ${table.tableName} thành công!`, res);
                 alert(`Đã mở bàn ${table.tableName} thành công!`);

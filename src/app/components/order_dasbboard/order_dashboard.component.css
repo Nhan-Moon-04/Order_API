@@ -465,6 +465,13 @@
     border: none;
 }
 
+.close-btn {
+    background: #cc1d49;
+    color: white;
+    border: none;
+}
+
+
 .payment-btn:hover {
     background: #22612e;
     transform: translateY(-1px);

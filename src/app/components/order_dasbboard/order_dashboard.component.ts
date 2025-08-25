@@ -57,7 +57,7 @@ export class OrderDashboardComponent implements OnInit {
     private router = inject(Router);
     private http = inject(HttpClient);
 
-    orderId = signal<string>('');
+    tableId = signal<string>('');
     order = signal<Order | null>(null);
     dishes = signal<Dish[]>([]);
     dishGroups = signal<DishGroup[]>([]);
@@ -67,23 +67,24 @@ export class OrderDashboardComponent implements OnInit {
 
     ngOnInit() {
         this.route.params.subscribe(params => {
-            const id = params['orderId'];
-            if (id) {
-                this.orderId.set(id);
-                this.loadOrder(id);
+            const tableId = params['tableId'];
+            if (tableId) {
+                this.tableId.set(tableId);
+                this.loadOrder(tableId);
                 this.loadDishes();
             }
         });
     }
 
-    private loadOrder(orderId: string) {
+    private loadOrder(tableId: string) {
         this.loading.set(true);
         this.error.set(null);
 
-        this.http.get<Order>(`https://localhost:7136/api/Orders/${orderId}`).pipe(
+        // API endpoint expects tableId to get the latest order for that table
+        this.http.get<Order>(`https://localhost:7136/api/Orders/${tableId}/latest-order`).pipe(
             catchError(err => {
                 console.error('HTTP Error:', err);
-                this.error.set('Failed to load order');
+                this.error.set('Không thể tải thông tin đơn hàng');
                 return of(null);
             })
         ).subscribe(order => {

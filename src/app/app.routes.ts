@@ -6,6 +6,6 @@ import { OrderDashboardComponent } from './components/order_dasbboard/order_dash
 export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'areas/:areaId/tables', component: TablesComponent },
-    { path: 'order-dashboard/:orderId', component: OrderDashboardComponent },
+    { path: 'order-dashboard/:tableId', component: OrderDashboardComponent },
     { path: '**', redirectTo: '' }
 ];
