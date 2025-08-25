@@ -26,6 +26,23 @@ namespace Restaurant.Data
 
             var fixedDate = new DateTime(2025, 01, 01);
 
+            // Configure enum to string conversion
+            modelBuilder.Entity<Table>()
+                .Property(t => t.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<TableSession>()
+                .Property(ts => ts.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.OrderStatus)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<OrderDetail>()
+                .Property(od => od.PriceSource)
+                .HasConversion<string>();
+
             // Configure primary keys using business keys
             modelBuilder.Entity<Areas>()
                 .HasKey(a => a.AreaId);
@@ -67,6 +84,13 @@ namespace Restaurant.Data
                 .HasOne(o => o.PrimaryArea)
                 .WithMany(a => a.PrimaryOrders)
                 .HasForeignKey(o => o.PrimaryAreaId);
+
+            // Configure Order to TableSession relationship
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.TableSession)
+                .WithMany(ts => ts.Orders)
+                .HasForeignKey(o => o.TableSessionId)
+                .OnDelete(DeleteBehavior.NoAction); // Changed from SetNull to NoAction to avoid cascade conflicts
 
             modelBuilder.Entity<OrderTable>()
                 .HasOne(ot => ot.Order)
@@ -409,11 +433,11 @@ namespace Restaurant.Data
 
             // Seed Table Sessions with static IDs
             modelBuilder.Entity<TableSession>().HasData(
-                new TableSession { Id = "TS001-STATIC-ID-GUID-00000000001", SessionId = "TS001", TableId = "T001", OpenAt = new DateTime(2025, 1, 15, 12, 0, 0), OpenedBy = "Staff001", Status = SessionStatus.Open },
+                new TableSession { Id = "TS001-STATIC-ID-GUID-00000000001", SessionId = "TS001", TableId = "T001", OpenAt = new DateTime(2025, 1, 15, 12, 0, 0), OpenedBy = "Staff001", Status = SessionStatus.Available },
                 new TableSession { Id = "TS002-STATIC-ID-GUID-00000000002", SessionId = "TS002", TableId = "T006", OpenAt = new DateTime(2025, 1, 15, 13, 0, 0), CloseAt = new DateTime(2025, 1, 15, 15, 30, 0), OpenedBy = "Staff001", ClosedBy = "Staff002", Status = SessionStatus.Closed },
-                new TableSession { Id = "TS003-STATIC-ID-GUID-00000000003", SessionId = "TS003", TableId = "T011", OpenAt = new DateTime(2025, 1, 15, 18, 0, 0), OpenedBy = "Staff003", Status = SessionStatus.Open },
+                new TableSession { Id = "TS003-STATIC-ID-GUID-00000000003", SessionId = "TS003", TableId = "T011", OpenAt = new DateTime(2025, 1, 15, 18, 0, 0), OpenedBy = "Staff003", Status = SessionStatus.Available },
                 new TableSession { Id = "TS004-STATIC-ID-GUID-00000000004", SessionId = "TS004", TableId = "T014", OpenAt = new DateTime(2025, 1, 15, 14, 30, 0), CloseAt = new DateTime(2025, 1, 15, 16, 0, 0), OpenedBy = "Staff002", ClosedBy = "Staff001", Status = SessionStatus.Closed },
-                new TableSession { Id = "TS005-STATIC-ID-GUID-00000000005", SessionId = "TS005", TableId = "T016", OpenAt = new DateTime(2025, 1, 15, 19, 0, 0), OpenedBy = "Staff004", Status = SessionStatus.Open }
+                new TableSession { Id = "TS005-STATIC-ID-GUID-00000000005", SessionId = "TS005", TableId = "T016", OpenAt = new DateTime(2025, 1, 15, 19, 0, 0), OpenedBy = "Staff004", Status = SessionStatus.Available }
             );
 
 

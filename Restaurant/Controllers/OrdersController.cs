@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Domain.DTOs;
 using Restaurant.Service.Interfaces;
+using Restaurant.Service.Services;
 
 namespace Restaurant.Controllers
 {
@@ -56,6 +57,13 @@ namespace Restaurant.Controllers
             return Ok(orders);
         }
 
+        [HttpGet("session/{tableSessionId}")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByTableSession(string tableSessionId)
+        {
+            var orders = await _orderService.GetOrdersByTableSessionIdAsync(tableSessionId);
+            return Ok(orders);
+        }
+
         [HttpPost]
         public async Task<ActionResult<OrderDto>> CreateOrder(OrderDto orderDto)
         {
@@ -95,5 +103,20 @@ namespace Restaurant.Controllers
             }
             return NoContent();
         }
+
+
+
+
+
+        [HttpGet("{tableId}/latest-order")]
+        public async Task<ActionResult<OrderDto>> GetLatestOrder(string tableId)
+        {
+            var order = await _orderService.GetLatestOrderDetailsByTableIdAsync(tableId);
+            if (order == null)
+                return NotFound();
+            return Ok(order);
+        }
+
+
     }
 }

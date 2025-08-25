@@ -62,29 +62,6 @@ namespace Restaurant.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClosedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
-                    PrimaryAreaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    OrderStatus = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.OrderId);
-                    table.ForeignKey(
-                        name: "FK_Orders_Areas_PrimaryAreaId",
-                        column: x => x.PrimaryAreaId,
-                        principalTable: "Areas",
-                        principalColumn: "AreaId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tables",
                 columns: table => new
                 {
@@ -93,9 +70,7 @@ namespace Restaurant.Data.Migrations
                     TableName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    OpenAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CloseAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AreaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -142,33 +117,6 @@ namespace Restaurant.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderTables",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TableId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    IsPrimary = table.Column<bool>(type: "bit", nullable: false),
-                    FromTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ToTime = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderTables", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderTables_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderTables_Tables_TableId",
-                        column: x => x.TableId,
-                        principalTable: "Tables",
-                        principalColumn: "TableId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TableSessions",
                 columns: table => new
                 {
@@ -178,7 +126,7 @@ namespace Restaurant.Data.Migrations
                     CloseAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     OpenedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClosedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -221,6 +169,35 @@ namespace Restaurant.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClosedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    PrimaryAreaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OrderStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TableSessionId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.OrderId);
+                    table.ForeignKey(
+                        name: "FK_Orders_Areas_PrimaryAreaId",
+                        column: x => x.PrimaryAreaId,
+                        principalTable: "Areas",
+                        principalColumn: "AreaId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_TableSessions_TableSessionId",
+                        column: x => x.TableSessionId,
+                        principalTable: "TableSessions",
+                        principalColumn: "SessionId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderDetails",
                 columns: table => new
                 {
@@ -232,7 +209,7 @@ namespace Restaurant.Data.Migrations
                     UnitPrice = table.Column<double>(type: "float", nullable: false),
                     TableId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AreaId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PriceSource = table.Column<int>(type: "int", nullable: false)
+                    PriceSource = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -256,6 +233,33 @@ namespace Restaurant.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderDetails_Tables_TableId",
+                        column: x => x.TableId,
+                        principalTable: "Tables",
+                        principalColumn: "TableId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderTables",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TableId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsPrimary = table.Column<bool>(type: "bit", nullable: false),
+                    FromTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ToTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderTables", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderTables_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderTables_Tables_TableId",
                         column: x => x.TableId,
                         principalTable: "Tables",
                         principalColumn: "TableId");
@@ -347,39 +351,39 @@ namespace Restaurant.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Orders",
-                columns: new[] { "OrderId", "ClosedAt", "CreatedAt", "Id", "IsPaid", "OrderStatus", "PrimaryAreaId" },
+                columns: new[] { "OrderId", "ClosedAt", "CreatedAt", "Id", "IsPaid", "OrderStatus", "PrimaryAreaId", "TableSessionId" },
                 values: new object[,]
                 {
-                    { "ORD001", null, new DateTime(2025, 1, 15, 12, 30, 0, 0, DateTimeKind.Unspecified), "ORD001-STATIC-ID-GUID-0000000001", false, 0, "A001" },
-                    { "ORD002", new DateTime(2025, 1, 15, 15, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 15, 13, 15, 0, 0, DateTimeKind.Unspecified), "ORD002-STATIC-ID-GUID-0000000002", true, 3, "A003" },
-                    { "ORD003", null, new DateTime(2025, 1, 15, 14, 0, 0, 0, DateTimeKind.Unspecified), "ORD003-STATIC-ID-GUID-0000000003", false, 0, "A002" },
-                    { "ORD004", null, new DateTime(2025, 1, 15, 18, 15, 0, 0, DateTimeKind.Unspecified), "ORD004-STATIC-ID-GUID-0000000004", false, 0, "A002" },
-                    { "ORD005", null, new DateTime(2025, 1, 15, 19, 30, 0, 0, DateTimeKind.Unspecified), "ORD005-STATIC-ID-GUID-0000000005", false, 0, "A007" },
-                    { "ORD006", new DateTime(2025, 1, 14, 22, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 14, 20, 0, 0, 0, DateTimeKind.Unspecified), "ORD006-STATIC-ID-GUID-0000000006", true, 3, "A003" }
+                    { "ORD001", null, new DateTime(2025, 1, 15, 12, 30, 0, 0, DateTimeKind.Unspecified), "ORD001-STATIC-ID-GUID-0000000001", false, "Open", "A001", null },
+                    { "ORD002", new DateTime(2025, 1, 15, 15, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 15, 13, 15, 0, 0, DateTimeKind.Unspecified), "ORD002-STATIC-ID-GUID-0000000002", true, "Paid", "A003", null },
+                    { "ORD003", null, new DateTime(2025, 1, 15, 14, 0, 0, 0, DateTimeKind.Unspecified), "ORD003-STATIC-ID-GUID-0000000003", false, "Open", "A002", null },
+                    { "ORD004", null, new DateTime(2025, 1, 15, 18, 15, 0, 0, DateTimeKind.Unspecified), "ORD004-STATIC-ID-GUID-0000000004", false, "Open", "A002", null },
+                    { "ORD005", null, new DateTime(2025, 1, 15, 19, 30, 0, 0, DateTimeKind.Unspecified), "ORD005-STATIC-ID-GUID-0000000005", false, "Open", "A007", null },
+                    { "ORD006", new DateTime(2025, 1, 14, 22, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 14, 20, 0, 0, 0, DateTimeKind.Unspecified), "ORD006-STATIC-ID-GUID-0000000006", true, "Paid", "A003", null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Tables",
-                columns: new[] { "TableId", "AreaId", "Capacity", "CloseAt", "Id", "IsActive", "OpenAt", "Status", "TableCode", "TableName" },
+                columns: new[] { "TableId", "AreaId", "Capacity", "Id", "IsActive", "Status", "TableCode", "TableName" },
                 values: new object[,]
                 {
-                    { "T001", "A001", 4, null, "T001-STATIC-ID-GUID-000000000001", true, null, 0, "T001", "Bàn A1" },
-                    { "T002", "A001", 6, null, "T002-STATIC-ID-GUID-000000000002", true, null, 0, "T002", "Bàn A2" },
-                    { "T003", "A001", 2, null, "T003-STATIC-ID-GUID-000000000003", true, null, 0, "T003", "Bàn A3" },
-                    { "T004", "A002", 4, null, "T004-STATIC-ID-GUID-000000000004", true, null, 0, "T004", "Bàn B1" },
-                    { "T005", "A002", 8, null, "T005-STATIC-ID-GUID-000000000005", true, null, 0, "T005", "Bàn B2" },
-                    { "T006", "A003", 6, null, "T006-STATIC-ID-GUID-000000000006", true, null, 0, "T006", "Bàn VIP 1" },
-                    { "T007", "A003", 10, null, "T007-STATIC-ID-GUID-000000000007", true, null, 0, "T007", "Bàn VIP 2" },
-                    { "T008", "A004", 4, null, "T008-STATIC-ID-GUID-000000000008", true, null, 0, "T008", "Bàn T2-1" },
-                    { "T009", "A004", 6, null, "T009-STATIC-ID-GUID-000000000009", true, null, 0, "T009", "Bàn T2-2" },
-                    { "T010", "A001", 8, null, "T010-STATIC-ID-GUID-000000000010", true, null, 0, "T010", "Bàn A4" },
-                    { "T011", "A002", 6, null, "T011-STATIC-ID-GUID-000000000011", true, null, 0, "T011", "Bàn B3" },
-                    { "T012", "A003", 12, null, "T012-STATIC-ID-GUID-000000000012", true, null, 0, "T012", "Bàn VIP 3" },
-                    { "T013", "A004", 4, null, "T013-STATIC-ID-GUID-000000000013", true, null, 0, "T013", "Bàn T2-3" },
-                    { "T014", "A006", 2, null, "T014-STATIC-ID-GUID-000000000014", true, null, 0, "T014", "Bàn C1" },
-                    { "T015", "A006", 4, null, "T015-STATIC-ID-GUID-000000000015", true, null, 0, "T015", "Bàn C2" },
-                    { "T016", "A007", 15, null, "T016-STATIC-ID-GUID-000000000016", true, null, 0, "T016", "Phòng Riêng 1" },
-                    { "T017", "A007", 20, null, "T017-STATIC-ID-GUID-000000000017", true, null, 0, "T017", "Phòng Riêng 2" }
+                    { "T001", "A001", 4, "T001-STATIC-ID-GUID-000000000001", true, "Available", "T001", "Bàn A1" },
+                    { "T002", "A001", 6, "T002-STATIC-ID-GUID-000000000002", true, "Available", "T002", "Bàn A2" },
+                    { "T003", "A001", 2, "T003-STATIC-ID-GUID-000000000003", true, "Available", "T003", "Bàn A3" },
+                    { "T004", "A002", 4, "T004-STATIC-ID-GUID-000000000004", true, "Available", "T004", "Bàn B1" },
+                    { "T005", "A002", 8, "T005-STATIC-ID-GUID-000000000005", true, "Available", "T005", "Bàn B2" },
+                    { "T006", "A003", 6, "T006-STATIC-ID-GUID-000000000006", true, "Available", "T006", "Bàn VIP 1" },
+                    { "T007", "A003", 10, "T007-STATIC-ID-GUID-000000000007", true, "Available", "T007", "Bàn VIP 2" },
+                    { "T008", "A004", 4, "T008-STATIC-ID-GUID-000000000008", true, "Available", "T008", "Bàn T2-1" },
+                    { "T009", "A004", 6, "T009-STATIC-ID-GUID-000000000009", true, "Available", "T009", "Bàn T2-2" },
+                    { "T010", "A001", 8, "T010-STATIC-ID-GUID-000000000010", true, "Available", "T010", "Bàn A4" },
+                    { "T011", "A002", 6, "T011-STATIC-ID-GUID-000000000011", true, "Available", "T011", "Bàn B3" },
+                    { "T012", "A003", 12, "T012-STATIC-ID-GUID-000000000012", true, "Available", "T012", "Bàn VIP 3" },
+                    { "T013", "A004", 4, "T013-STATIC-ID-GUID-000000000013", true, "Available", "T013", "Bàn T2-3" },
+                    { "T014", "A006", 2, "T014-STATIC-ID-GUID-000000000014", true, "Available", "T014", "Bàn C1" },
+                    { "T015", "A006", 4, "T015-STATIC-ID-GUID-000000000015", true, "Available", "T015", "Bàn C2" },
+                    { "T016", "A007", 15, "T016-STATIC-ID-GUID-000000000016", true, "Available", "T016", "Phòng Riêng 1" },
+                    { "T017", "A007", 20, "T017-STATIC-ID-GUID-000000000017", true, "Available", "T017", "Phòng Riêng 2" }
                 });
 
             migrationBuilder.InsertData(
@@ -422,25 +426,25 @@ namespace Restaurant.Data.Migrations
                 columns: new[] { "Id", "AreaId", "DishId", "OrderDetailId", "OrderId", "PriceSource", "Quantity", "TableId", "UnitPrice" },
                 values: new object[,]
                 {
-                    { "OD001-STATIC-ID-GUID-0000000001", "A001", "D001", "OD001", "ORD001", 0, 2, "T001", 350000.0 },
-                    { "OD002-STATIC-ID-GUID-0000000002", "A001", "D004", "OD002", "ORD001", 0, 1, "T001", 75000.0 },
-                    { "OD003-STATIC-ID-GUID-0000000003", "A003", "D001", "OD003", "ORD002", 1, 1, "T006", 402500.0 },
-                    { "OD004-STATIC-ID-GUID-0000000004", "A003", "D014", "OD004", "ORD002", 1, 2, "T006", 93500.0 },
-                    { "OD005-STATIC-ID-GUID-0000000005", "A002", "D008", "OD005", "ORD003", 1, 1, "T004", 185250.0 },
-                    { "OD006-STATIC-ID-GUID-0000000006", "A002", "D015", "OD006", "ORD003", 0, 3, "T004", 25000.0 },
-                    { "OD007-STATIC-ID-GUID-0000000007", "A002", "D027", "OD007", "ORD004", 0, 2, "T011", 210000.0 },
-                    { "OD008-STATIC-ID-GUID-0000000008", "A002", "D032", "OD008", "ORD004", 0, 1, "T011", 280000.0 },
-                    { "OD009-STATIC-ID-GUID-0000000009", "A007", "D021", "OD009", "ORD005", 0, 5, "T016", 380000.0 },
-                    { "OD010-STATIC-ID-GUID-0000000010", "A007", "D024", "OD010", "ORD005", 0, 3, "T016", 320000.0 },
-                    { "OD011-STATIC-ID-GUID-0000000011", "A003", "D036", "OD011", "ORD006", 0, 2, "T012", 420000.0 },
-                    { "OD012-STATIC-ID-GUID-0000000012", "A003", "D037", "OD012", "ORD006", 0, 1, "T012", 380000.0 },
-                    { "OD013-STATIC-ID-GUID-0000000013", "A003", "D011", "OD013", "ORD006", 1, 4, "T012", 71500.0 },
-                    { "OD014-STATIC-ID-GUID-0000000014", "A003", "D014", "OD014", "ORD006", 1, 3, "T012", 93500.0 },
-                    { "OD015-STATIC-ID-GUID-0000000015", "A001", "D015", "OD015", "ORD001", 0, 3, "T001", 25000.0 },
-                    { "OD016-STATIC-ID-GUID-0000000016", "A003", "D035", "OD016", "ORD002", 0, 1, "T006", 650000.0 },
-                    { "OD017-STATIC-ID-GUID-0000000017", "A002", "D023", "OD017", "ORD003", 0, 2, "T004", 95000.0 },
-                    { "OD018-STATIC-ID-GUID-0000000018", "A002", "D030", "OD018", "ORD004", 0, 4, "T011", 45000.0 },
-                    { "OD019-STATIC-ID-GUID-0000000019", "A007", "D031", "OD019", "ORD005", 0, 8, "T016", 95000.0 }
+                    { "OD001-STATIC-ID-GUID-0000000001", "A001", "D001", "OD001", "ORD001", "Base", 2, "T001", 350000.0 },
+                    { "OD002-STATIC-ID-GUID-0000000002", "A001", "D004", "OD002", "ORD001", "Base", 1, "T001", 75000.0 },
+                    { "OD003-STATIC-ID-GUID-0000000003", "A003", "D001", "OD003", "ORD002", "Custom", 1, "T006", 402500.0 },
+                    { "OD004-STATIC-ID-GUID-0000000004", "A003", "D014", "OD004", "ORD002", "Custom", 2, "T006", 93500.0 },
+                    { "OD005-STATIC-ID-GUID-0000000005", "A002", "D008", "OD005", "ORD003", "Custom", 1, "T004", 185250.0 },
+                    { "OD006-STATIC-ID-GUID-0000000006", "A002", "D015", "OD006", "ORD003", "Base", 3, "T004", 25000.0 },
+                    { "OD007-STATIC-ID-GUID-0000000007", "A002", "D027", "OD007", "ORD004", "Base", 2, "T011", 210000.0 },
+                    { "OD008-STATIC-ID-GUID-0000000008", "A002", "D032", "OD008", "ORD004", "Base", 1, "T011", 280000.0 },
+                    { "OD009-STATIC-ID-GUID-0000000009", "A007", "D021", "OD009", "ORD005", "Base", 5, "T016", 380000.0 },
+                    { "OD010-STATIC-ID-GUID-0000000010", "A007", "D024", "OD010", "ORD005", "Base", 3, "T016", 320000.0 },
+                    { "OD011-STATIC-ID-GUID-0000000011", "A003", "D036", "OD011", "ORD006", "Base", 2, "T012", 420000.0 },
+                    { "OD012-STATIC-ID-GUID-0000000012", "A003", "D037", "OD012", "ORD006", "Base", 1, "T012", 380000.0 },
+                    { "OD013-STATIC-ID-GUID-0000000013", "A003", "D011", "OD013", "ORD006", "Custom", 4, "T012", 71500.0 },
+                    { "OD014-STATIC-ID-GUID-0000000014", "A003", "D014", "OD014", "ORD006", "Custom", 3, "T012", 93500.0 },
+                    { "OD015-STATIC-ID-GUID-0000000015", "A001", "D015", "OD015", "ORD001", "Base", 3, "T001", 25000.0 },
+                    { "OD016-STATIC-ID-GUID-0000000016", "A003", "D035", "OD016", "ORD002", "Base", 1, "T006", 650000.0 },
+                    { "OD017-STATIC-ID-GUID-0000000017", "A002", "D023", "OD017", "ORD003", "Base", 2, "T004", 95000.0 },
+                    { "OD018-STATIC-ID-GUID-0000000018", "A002", "D030", "OD018", "ORD004", "Base", 4, "T011", 45000.0 },
+                    { "OD019-STATIC-ID-GUID-0000000019", "A007", "D031", "OD019", "ORD005", "Base", 8, "T016", 95000.0 }
                 });
 
             migrationBuilder.InsertData(
@@ -461,11 +465,11 @@ namespace Restaurant.Data.Migrations
                 columns: new[] { "SessionId", "CloseAt", "ClosedBy", "Id", "OpenAt", "OpenedBy", "Status", "TableId" },
                 values: new object[,]
                 {
-                    { "TS001", null, null, "TS001-STATIC-ID-GUID-00000000001", new DateTime(2025, 1, 15, 12, 0, 0, 0, DateTimeKind.Unspecified), "Staff001", 0, "T001" },
-                    { "TS002", new DateTime(2025, 1, 15, 15, 30, 0, 0, DateTimeKind.Unspecified), "Staff002", "TS002-STATIC-ID-GUID-00000000002", new DateTime(2025, 1, 15, 13, 0, 0, 0, DateTimeKind.Unspecified), "Staff001", 1, "T006" },
-                    { "TS003", null, null, "TS003-STATIC-ID-GUID-00000000003", new DateTime(2025, 1, 15, 18, 0, 0, 0, DateTimeKind.Unspecified), "Staff003", 0, "T011" },
-                    { "TS004", new DateTime(2025, 1, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), "Staff001", "TS004-STATIC-ID-GUID-00000000004", new DateTime(2025, 1, 15, 14, 30, 0, 0, DateTimeKind.Unspecified), "Staff002", 1, "T014" },
-                    { "TS005", null, null, "TS005-STATIC-ID-GUID-00000000005", new DateTime(2025, 1, 15, 19, 0, 0, 0, DateTimeKind.Unspecified), "Staff004", 0, "T016" }
+                    { "TS001", null, null, "TS001-STATIC-ID-GUID-00000000001", new DateTime(2025, 1, 15, 12, 0, 0, 0, DateTimeKind.Unspecified), "Staff001", "Available", "T001" },
+                    { "TS002", new DateTime(2025, 1, 15, 15, 30, 0, 0, DateTimeKind.Unspecified), "Staff002", "TS002-STATIC-ID-GUID-00000000002", new DateTime(2025, 1, 15, 13, 0, 0, 0, DateTimeKind.Unspecified), "Staff001", "Closed", "T006" },
+                    { "TS003", null, null, "TS003-STATIC-ID-GUID-00000000003", new DateTime(2025, 1, 15, 18, 0, 0, 0, DateTimeKind.Unspecified), "Staff003", "Available", "T011" },
+                    { "TS004", new DateTime(2025, 1, 15, 16, 0, 0, 0, DateTimeKind.Unspecified), "Staff001", "TS004-STATIC-ID-GUID-00000000004", new DateTime(2025, 1, 15, 14, 30, 0, 0, DateTimeKind.Unspecified), "Staff002", "Closed", "T014" },
+                    { "TS005", null, null, "TS005-STATIC-ID-GUID-00000000005", new DateTime(2025, 1, 15, 19, 0, 0, 0, DateTimeKind.Unspecified), "Staff004", "Available", "T016" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -514,6 +518,11 @@ namespace Restaurant.Data.Migrations
                 column: "PrimaryAreaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_TableSessionId",
+                table: "Orders",
+                column: "TableSessionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderTables_OrderId",
                 table: "OrderTables",
                 column: "OrderId");
@@ -547,22 +556,22 @@ namespace Restaurant.Data.Migrations
                 name: "OrderTables");
 
             migrationBuilder.DropTable(
-                name: "TableSessions");
-
-            migrationBuilder.DropTable(
                 name: "Dishes");
 
             migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Tables");
-
-            migrationBuilder.DropTable(
                 name: "DishGroups");
 
             migrationBuilder.DropTable(
                 name: "Kitchens");
+
+            migrationBuilder.DropTable(
+                name: "TableSessions");
+
+            migrationBuilder.DropTable(
+                name: "Tables");
 
             migrationBuilder.DropTable(
                 name: "Areas");

@@ -12,7 +12,7 @@ using Restaurant.Data;
 namespace Restaurant.Data.Migrations
 {
     [DbContext(typeof(RestaurantDbContext))]
-    [Migration("20250821084749_InitClean")]
+    [Migration("20250825020938_InitClean")]
     partial class InitClean
     {
         /// <inheritdoc />
@@ -1031,16 +1031,22 @@ namespace Restaurant.Data.Migrations
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OrderStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PrimaryAreaId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("TableSessionId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("OrderId");
 
                     b.HasIndex("PrimaryAreaId");
+
+                    b.HasIndex("TableSessionId");
 
                     b.ToTable("Orders");
 
@@ -1051,7 +1057,7 @@ namespace Restaurant.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 15, 12, 30, 0, 0, DateTimeKind.Unspecified),
                             Id = "ORD001-STATIC-ID-GUID-0000000001",
                             IsPaid = false,
-                            OrderStatus = 0,
+                            OrderStatus = "Open",
                             PrimaryAreaId = "A001"
                         },
                         new
@@ -1061,7 +1067,7 @@ namespace Restaurant.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 15, 13, 15, 0, 0, DateTimeKind.Unspecified),
                             Id = "ORD002-STATIC-ID-GUID-0000000002",
                             IsPaid = true,
-                            OrderStatus = 3,
+                            OrderStatus = "Paid",
                             PrimaryAreaId = "A003"
                         },
                         new
@@ -1070,7 +1076,7 @@ namespace Restaurant.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 15, 14, 0, 0, 0, DateTimeKind.Unspecified),
                             Id = "ORD003-STATIC-ID-GUID-0000000003",
                             IsPaid = false,
-                            OrderStatus = 0,
+                            OrderStatus = "Open",
                             PrimaryAreaId = "A002"
                         },
                         new
@@ -1079,7 +1085,7 @@ namespace Restaurant.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 15, 18, 15, 0, 0, DateTimeKind.Unspecified),
                             Id = "ORD004-STATIC-ID-GUID-0000000004",
                             IsPaid = false,
-                            OrderStatus = 0,
+                            OrderStatus = "Open",
                             PrimaryAreaId = "A002"
                         },
                         new
@@ -1088,7 +1094,7 @@ namespace Restaurant.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 15, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Id = "ORD005-STATIC-ID-GUID-0000000005",
                             IsPaid = false,
-                            OrderStatus = 0,
+                            OrderStatus = "Open",
                             PrimaryAreaId = "A007"
                         },
                         new
@@ -1098,7 +1104,7 @@ namespace Restaurant.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 14, 20, 0, 0, 0, DateTimeKind.Unspecified),
                             Id = "ORD006-STATIC-ID-GUID-0000000006",
                             IsPaid = true,
-                            OrderStatus = 3,
+                            OrderStatus = "Paid",
                             PrimaryAreaId = "A003"
                         });
                 });
@@ -1124,8 +1130,9 @@ namespace Restaurant.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("PriceSource")
-                        .HasColumnType("int");
+                    b.Property<string>("PriceSource")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -1156,7 +1163,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D001",
                             OrderDetailId = "OD001",
                             OrderId = "ORD001",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 2,
                             TableId = "T001",
                             UnitPrice = 350000.0
@@ -1168,7 +1175,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D004",
                             OrderDetailId = "OD002",
                             OrderId = "ORD001",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 1,
                             TableId = "T001",
                             UnitPrice = 75000.0
@@ -1180,7 +1187,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D015",
                             OrderDetailId = "OD015",
                             OrderId = "ORD001",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 3,
                             TableId = "T001",
                             UnitPrice = 25000.0
@@ -1192,7 +1199,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D001",
                             OrderDetailId = "OD003",
                             OrderId = "ORD002",
-                            PriceSource = 1,
+                            PriceSource = "Custom",
                             Quantity = 1,
                             TableId = "T006",
                             UnitPrice = 402500.0
@@ -1204,7 +1211,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D014",
                             OrderDetailId = "OD004",
                             OrderId = "ORD002",
-                            PriceSource = 1,
+                            PriceSource = "Custom",
                             Quantity = 2,
                             TableId = "T006",
                             UnitPrice = 93500.0
@@ -1216,7 +1223,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D035",
                             OrderDetailId = "OD016",
                             OrderId = "ORD002",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 1,
                             TableId = "T006",
                             UnitPrice = 650000.0
@@ -1228,7 +1235,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D008",
                             OrderDetailId = "OD005",
                             OrderId = "ORD003",
-                            PriceSource = 1,
+                            PriceSource = "Custom",
                             Quantity = 1,
                             TableId = "T004",
                             UnitPrice = 185250.0
@@ -1240,7 +1247,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D015",
                             OrderDetailId = "OD006",
                             OrderId = "ORD003",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 3,
                             TableId = "T004",
                             UnitPrice = 25000.0
@@ -1252,7 +1259,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D023",
                             OrderDetailId = "OD017",
                             OrderId = "ORD003",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 2,
                             TableId = "T004",
                             UnitPrice = 95000.0
@@ -1264,7 +1271,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D027",
                             OrderDetailId = "OD007",
                             OrderId = "ORD004",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 2,
                             TableId = "T011",
                             UnitPrice = 210000.0
@@ -1276,7 +1283,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D032",
                             OrderDetailId = "OD008",
                             OrderId = "ORD004",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 1,
                             TableId = "T011",
                             UnitPrice = 280000.0
@@ -1288,7 +1295,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D030",
                             OrderDetailId = "OD018",
                             OrderId = "ORD004",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 4,
                             TableId = "T011",
                             UnitPrice = 45000.0
@@ -1300,7 +1307,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D021",
                             OrderDetailId = "OD009",
                             OrderId = "ORD005",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 5,
                             TableId = "T016",
                             UnitPrice = 380000.0
@@ -1312,7 +1319,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D024",
                             OrderDetailId = "OD010",
                             OrderId = "ORD005",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 3,
                             TableId = "T016",
                             UnitPrice = 320000.0
@@ -1324,7 +1331,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D031",
                             OrderDetailId = "OD019",
                             OrderId = "ORD005",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 8,
                             TableId = "T016",
                             UnitPrice = 95000.0
@@ -1336,7 +1343,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D036",
                             OrderDetailId = "OD011",
                             OrderId = "ORD006",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 2,
                             TableId = "T012",
                             UnitPrice = 420000.0
@@ -1348,7 +1355,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D037",
                             OrderDetailId = "OD012",
                             OrderId = "ORD006",
-                            PriceSource = 0,
+                            PriceSource = "Base",
                             Quantity = 1,
                             TableId = "T012",
                             UnitPrice = 380000.0
@@ -1360,7 +1367,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D011",
                             OrderDetailId = "OD013",
                             OrderId = "ORD006",
-                            PriceSource = 1,
+                            PriceSource = "Custom",
                             Quantity = 4,
                             TableId = "T012",
                             UnitPrice = 71500.0
@@ -1372,7 +1379,7 @@ namespace Restaurant.Data.Migrations
                             DishId = "D014",
                             OrderDetailId = "OD014",
                             OrderId = "ORD006",
-                            PriceSource = 1,
+                            PriceSource = "Custom",
                             Quantity = 3,
                             TableId = "T012",
                             UnitPrice = 93500.0
@@ -1475,9 +1482,6 @@ namespace Restaurant.Data.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CloseAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)");
@@ -1485,11 +1489,9 @@ namespace Restaurant.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("OpenAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TableCode")
                         .IsRequired()
@@ -1515,7 +1517,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T001-STATIC-ID-GUID-000000000001",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T001",
                             TableName = "Bàn A1"
                         },
@@ -1526,7 +1528,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T002-STATIC-ID-GUID-000000000002",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T002",
                             TableName = "Bàn A2"
                         },
@@ -1537,7 +1539,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 2,
                             Id = "T003-STATIC-ID-GUID-000000000003",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T003",
                             TableName = "Bàn A3"
                         },
@@ -1548,7 +1550,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 8,
                             Id = "T010-STATIC-ID-GUID-000000000010",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T010",
                             TableName = "Bàn A4"
                         },
@@ -1559,7 +1561,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T004-STATIC-ID-GUID-000000000004",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T004",
                             TableName = "Bàn B1"
                         },
@@ -1570,7 +1572,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 8,
                             Id = "T005-STATIC-ID-GUID-000000000005",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T005",
                             TableName = "Bàn B2"
                         },
@@ -1581,7 +1583,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T011-STATIC-ID-GUID-000000000011",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T011",
                             TableName = "Bàn B3"
                         },
@@ -1592,7 +1594,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T006-STATIC-ID-GUID-000000000006",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T006",
                             TableName = "Bàn VIP 1"
                         },
@@ -1603,7 +1605,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 10,
                             Id = "T007-STATIC-ID-GUID-000000000007",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T007",
                             TableName = "Bàn VIP 2"
                         },
@@ -1614,7 +1616,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 12,
                             Id = "T012-STATIC-ID-GUID-000000000012",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T012",
                             TableName = "Bàn VIP 3"
                         },
@@ -1625,7 +1627,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T008-STATIC-ID-GUID-000000000008",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T008",
                             TableName = "Bàn T2-1"
                         },
@@ -1636,7 +1638,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T009-STATIC-ID-GUID-000000000009",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T009",
                             TableName = "Bàn T2-2"
                         },
@@ -1647,7 +1649,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T013-STATIC-ID-GUID-000000000013",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T013",
                             TableName = "Bàn T2-3"
                         },
@@ -1658,7 +1660,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 2,
                             Id = "T014-STATIC-ID-GUID-000000000014",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T014",
                             TableName = "Bàn C1"
                         },
@@ -1669,7 +1671,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T015-STATIC-ID-GUID-000000000015",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T015",
                             TableName = "Bàn C2"
                         },
@@ -1680,7 +1682,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 15,
                             Id = "T016-STATIC-ID-GUID-000000000016",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T016",
                             TableName = "Phòng Riêng 1"
                         },
@@ -1691,7 +1693,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 20,
                             Id = "T017-STATIC-ID-GUID-000000000017",
                             IsActive = true,
-                            Status = 0,
+                            Status = "Available",
                             TableCode = "T017",
                             TableName = "Phòng Riêng 2"
                         });
@@ -1718,8 +1720,9 @@ namespace Restaurant.Data.Migrations
                     b.Property<string>("OpenedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TableId")
                         .IsRequired()
@@ -1738,7 +1741,7 @@ namespace Restaurant.Data.Migrations
                             Id = "TS001-STATIC-ID-GUID-00000000001",
                             OpenAt = new DateTime(2025, 1, 15, 12, 0, 0, 0, DateTimeKind.Unspecified),
                             OpenedBy = "Staff001",
-                            Status = 0,
+                            Status = "Available",
                             TableId = "T001"
                         },
                         new
@@ -1749,7 +1752,7 @@ namespace Restaurant.Data.Migrations
                             Id = "TS002-STATIC-ID-GUID-00000000002",
                             OpenAt = new DateTime(2025, 1, 15, 13, 0, 0, 0, DateTimeKind.Unspecified),
                             OpenedBy = "Staff001",
-                            Status = 1,
+                            Status = "Closed",
                             TableId = "T006"
                         },
                         new
@@ -1758,7 +1761,7 @@ namespace Restaurant.Data.Migrations
                             Id = "TS003-STATIC-ID-GUID-00000000003",
                             OpenAt = new DateTime(2025, 1, 15, 18, 0, 0, 0, DateTimeKind.Unspecified),
                             OpenedBy = "Staff003",
-                            Status = 0,
+                            Status = "Available",
                             TableId = "T011"
                         },
                         new
@@ -1769,7 +1772,7 @@ namespace Restaurant.Data.Migrations
                             Id = "TS004-STATIC-ID-GUID-00000000004",
                             OpenAt = new DateTime(2025, 1, 15, 14, 30, 0, 0, DateTimeKind.Unspecified),
                             OpenedBy = "Staff002",
-                            Status = 1,
+                            Status = "Closed",
                             TableId = "T014"
                         },
                         new
@@ -1778,7 +1781,7 @@ namespace Restaurant.Data.Migrations
                             Id = "TS005-STATIC-ID-GUID-00000000005",
                             OpenAt = new DateTime(2025, 1, 15, 19, 0, 0, 0, DateTimeKind.Unspecified),
                             OpenedBy = "Staff004",
-                            Status = 0,
+                            Status = "Available",
                             TableId = "T016"
                         });
                 });
@@ -1829,7 +1832,14 @@ namespace Restaurant.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Restaurant.Domain.Entities.TableSession", "TableSession")
+                        .WithMany("Orders")
+                        .HasForeignKey("TableSessionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("PrimaryArea");
+
+                    b.Navigation("TableSession");
                 });
 
             modelBuilder.Entity("Restaurant.Domain.Entities.OrderDetail", b =>
@@ -1946,6 +1956,11 @@ namespace Restaurant.Data.Migrations
                     b.Navigation("OrderTables");
 
                     b.Navigation("TableSessions");
+                });
+
+            modelBuilder.Entity("Restaurant.Domain.Entities.TableSession", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

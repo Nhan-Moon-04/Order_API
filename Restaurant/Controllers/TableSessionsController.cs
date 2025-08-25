@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Enums;
 using Restaurant.Service.Interfaces;
@@ -23,14 +23,12 @@ namespace Restaurant.Controllers
             return Ok(sessions);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("by-id/{id}")]
         public async Task<ActionResult<TableSessionDto>> GetById(string id)
         {
             var session = await _tableSessionService.GetByIdAsync(id);
             if (session == null)
-            {
                 return NotFound();
-            }
             return Ok(session);
         }
 
@@ -59,16 +57,16 @@ namespace Restaurant.Controllers
             return Ok(sessions);
         }
 
-        [HttpGet("table/{tableId}/active")]
-        public async Task<ActionResult<TableSessionDto>> GetActiveSession(string tableId)
-        {
-            var session = await _tableSessionService.GetActiveSessionByTableIdAsync(tableId);
-            if (session == null)
-            {
-                return NotFound();
-            }
-            return Ok(session);
-        }
+        //[HttpGet("table/{tableId}/active")]
+        //public async Task<ActionResult<TableSessionDto>> GetActiveSession(string tableId)
+        //{
+        //    var session = await _tableSessionService.GetActiveSessionByTableIdAsync(tableId);
+        //    if (session == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(session);
+        //}
 
         [HttpGet("daterange")]
         public async Task<ActionResult<IEnumerable<TableSessionDto>>> GetByDateRange(
@@ -142,6 +140,16 @@ namespace Restaurant.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("{tableId}")]
+        public async Task<IActionResult> GetActiveSessionByTableId(string tableId)
+        {
+            var session = await _tableSessionService.GetActiveSessionByTableIdAsync(tableId);
+            if (session == null)
+                return NotFound(new { Message = "Không tìm thấy session đang mở cho bàn này" });
+
+            return Ok(session);
         }
     }
 }

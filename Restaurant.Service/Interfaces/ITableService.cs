@@ -16,9 +16,7 @@ namespace Restaurant.Service.Interfaces
 
         Task<IEnumerable<TableDto>> PostChangeStatusTable(
             string tableCode, 
-            string status, 
-            DateTime? openAt, 
-            DateTime? closeAt);
+            string status);
 
         Task<TableDto?> OpenTableAsync(string tableCode, string areaId, string? openedBy = null);
         Task<TableDto?> CloseTableAsync(string tableCode, string? closedBy = null);

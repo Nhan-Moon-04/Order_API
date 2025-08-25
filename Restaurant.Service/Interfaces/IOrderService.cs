@@ -13,5 +13,7 @@ namespace Restaurant.Service.Interfaces
         Task<bool> DeleteOrderAsync(string id);
         Task<bool> MarkOrderAsPaidAsync(string id);
         Task<IEnumerable<OrderDto>> GetUnpaidOrdersAsync();
+        Task<IEnumerable<OrderDto>> GetOrdersByTableSessionIdAsync(string tableSessionId);
+        Task<OrderDto?> GetLatestOrderDetailsByTableIdAsync(string tableId);
     }
 }

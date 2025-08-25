@@ -11,7 +11,7 @@ namespace Restaurant.Domain.DTOs
         public DateTime? CloseAt { get; set; }
         public string? OpenedBy { get; set; }
         public string? ClosedBy { get; set; }
-        public SessionStatus Status { get; set; } = SessionStatus.Open;
+        public SessionStatus Status { get; set; } = SessionStatus.Available;
 
         // Navigation properties
         public TableDto? Table { get; set; }

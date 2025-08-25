@@ -10,8 +10,6 @@ namespace Restaurant.Domain.Entities
         public int Capacity { get; set; }
         public bool IsActive { get; set; } = true; // Added IsActive property
         public TableStatus Status { get; set; } = TableStatus.Available;
-        public DateTime? OpenAt { get; set; } // NULL when not open
-        public DateTime? CloseAt { get; set; } // NULL when not closed
 
         // FK - references AreaId (A001, A002, etc.)
         public required string AreaId { get; set; }

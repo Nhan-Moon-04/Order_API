@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Restaurant.Data;
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Entities;
@@ -64,34 +64,56 @@ namespace Restaurant.Service.Services
             return sessions.Select(MapToDto);
         }
 
-        public async Task<TableSessionDto?> GetActiveSessionByTableIdAsync(string tableId)
-        {
-            var session = await _context.TableSessions
-                .Include(ts => ts.Table)
-                .FirstOrDefaultAsync(ts => ts.TableId == tableId && ts.Status == SessionStatus.Open);
-
-            return session != null ? MapToDto(session) : null;
-        }
 
         public async Task<TableSessionDto> CreateAsync(TableSessionDto tableSessionDto)
         {
+            // 1. Lấy thông tin table (để lấy AreaId)
+            var table = await _context.Tables
+                .Include(t => t.Area)
+                .FirstOrDefaultAsync(t => t.TableId == tableSessionDto.TableId);
+
+            if (table == null)
+                throw new Exception("Table not found");
+
+            // 2. Tạo TableSession
             var session = new TableSession
             {
                 Id = Guid.NewGuid().ToString(),
-                SessionId = tableSessionDto.SessionId,
+                SessionId = tableSessionDto.SessionId ?? Guid.NewGuid().ToString(),
                 TableId = tableSessionDto.TableId,
-                OpenAt = tableSessionDto.OpenAt,
-                CloseAt = tableSessionDto.CloseAt,
+                OpenAt = DateTime.Now,
                 OpenedBy = tableSessionDto.OpenedBy,
-                ClosedBy = tableSessionDto.ClosedBy,
-                Status = tableSessionDto.Status
+                Status = SessionStatus.Occupied
             };
-
             _context.TableSessions.Add(session);
+
+            // 3. Tạo Order gắn với session
+            var order = new Order
+            {
+                OrderId = Guid.NewGuid().ToString(),
+                CreatedAt = DateTime.Now,
+                IsPaid = false,
+                OrderStatus = OrderStatus.Paid,
+                TableSessionId = session.Id,
+                PrimaryAreaId = table.AreaId
+            };
+            _context.Orders.Add(order);
+
+            // 4. Gắn Order với Table (OrderTable)
+            var orderTable = new OrderTable
+            {
+                OrderId = order.OrderId,
+                TableId = table.TableId,
+                IsPrimary = true
+            };
+            _context.OrderTables.Add(orderTable);
+
             await _context.SaveChangesAsync();
 
+            // 5. Trả lại DTO (đã có session + order gốc)
             return await GetByIdAsync(session.Id) ?? throw new InvalidOperationException("Failed to create session");
         }
+
 
         public async Task<TableSessionDto?> UpdateAsync(string id, TableSessionDto tableSessionDto)
         {
@@ -123,15 +145,28 @@ namespace Restaurant.Service.Services
 
         public async Task<TableSessionDto?> OpenSessionAsync(string tableId, string openedBy)
         {
-            // Check if there's already an active session for this table
-            var existingSession = await _context.TableSessions
-                .FirstOrDefaultAsync(ts => ts.TableId == tableId && ts.Status == SessionStatus.Open);
-
-            if (existingSession != null)
+            // 1. Kiểm tra bàn có tồn tại không
+            var table = await _context.Tables.FindAsync(tableId);
+            if (table == null)
             {
-                return null; // Table already has an active session
+                return null; // Không tìm thấy bàn
             }
 
+            // 2. Kiểm tra xem bàn đã có session đang hoạt động chưa
+            var activeSession = await _context.TableSessions
+                .Where(ts => ts.TableId == tableId
+                          && (ts.Status == SessionStatus.Occupied
+                           || ts.Status == SessionStatus.Reserved
+                           || ts.Status == SessionStatus.Cleaning))
+                .OrderByDescending(ts => ts.OpenAt)
+                .FirstOrDefaultAsync();
+
+            if (activeSession != null)
+            {
+                return null; // Bàn này đang bận, không thể mở thêm
+            }
+
+            // 3. Tạo session mới
             var newSession = new TableSession
             {
                 Id = Guid.NewGuid().ToString(),
@@ -139,23 +174,29 @@ namespace Restaurant.Service.Services
                 TableId = tableId,
                 OpenAt = DateTime.UtcNow,
                 OpenedBy = openedBy,
-                Status = SessionStatus.Open
+                Status = SessionStatus.Occupied
             };
 
             _context.TableSessions.Add(newSession);
-            
-            // Update table status
-            var table = await _context.Tables.FindAsync(tableId);
-            if (table != null)
-            {
-                table.Status = TableStatus.Occupied;
-                table.OpenAt = newSession.OpenAt;
-            }
 
+            // 4. Cập nhật trạng thái bàn
+            table.Status = TableStatus.Occupied;
+
+            // 5. Lưu thay đổi
             await _context.SaveChangesAsync();
 
-            return await GetByIdAsync(newSession.Id);
+            // 6. Trả về DTO
+            return new TableSessionDto
+            {
+                Id = newSession.Id,
+                SessionId = newSession.SessionId,
+                TableId = newSession.TableId,
+                OpenAt = newSession.OpenAt,
+                OpenedBy = newSession.OpenedBy,
+                Status = SessionStatus.Occupied
+            };
         }
+
 
         public async Task<TableSessionDto?> CloseSessionAsync(string sessionId, string closedBy)
         {
@@ -163,7 +204,7 @@ namespace Restaurant.Service.Services
                 .Include(ts => ts.Table)
                 .FirstOrDefaultAsync(ts => ts.SessionId == sessionId);
 
-            if (session == null || session.Status != SessionStatus.Open)
+            if (session == null || session.Status != SessionStatus.Available)
             {
                 return null;
             }
@@ -176,7 +217,6 @@ namespace Restaurant.Service.Services
             if (session.Table != null)
             {
                 session.Table.Status = TableStatus.Available;
-                session.Table.CloseAt = session.CloseAt;
             }
 
             await _context.SaveChangesAsync();
@@ -221,10 +261,39 @@ namespace Restaurant.Service.Services
                 Capacity = table.Capacity,
                 IsActive = table.IsActive,
                 Status = table.Status.ToString(),
-                OpenAt = table.OpenAt,
-                CloseAt = table.CloseAt,
+
                 AreaId = table.AreaId
             };
         }
+
+
+        public async Task<TableSessionDto?> GetActiveSessionByTableIdAsync(string tableId)
+        {
+            var session = await _context.TableSessions
+                .Include(ts => ts.Table)
+                .ThenInclude(t => t.Area) // Include the Area property
+                .FirstOrDefaultAsync(ts => ts.TableId == tableId && ts.Status == SessionStatus.Occupied);
+
+            if (session == null) return null;
+
+            return new TableSessionDto
+            {
+                Id = session.Id,
+                SessionId = session.SessionId,
+                TableId = session.TableId,
+                OpenAt = session.OpenAt,
+                OpenedBy = session.OpenedBy,
+                Status = session.Status,
+                Table = new TableDto
+                {
+                    TableCode = session.Table.TableCode,
+                    TableName = session.Table.TableName,
+                    AreaName = session.Table.Area.AreaName
+                }
+            };
+        }
+
+
+
     }
 }

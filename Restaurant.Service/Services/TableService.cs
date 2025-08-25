@@ -177,9 +177,7 @@ namespace Restaurant.Service.Services
 
         public async Task<IEnumerable<TableDto>> PostChangeStatusTable(
             string tableCode, 
-            string status, 
-            DateTime? openAt, 
-            DateTime? closeAt)
+            string status)
         {
             var table = await _context.Tables
                 .Include(t => t.Area)
@@ -190,8 +188,6 @@ namespace Restaurant.Service.Services
             if (Enum.TryParse<TableStatus>(status, out TableStatus tableStatus))
             {
                 table.Status = tableStatus;
-                table.OpenAt = openAt;
-                table.CloseAt = closeAt;
                 await _context.SaveChangesAsync();
             }
             
@@ -205,9 +201,7 @@ namespace Restaurant.Service.Services
                     IsActive = table.IsActive,
                     AreaId = table.AreaId,
                     AreaName = table.Area?.AreaName,
-                    Status = table.Status.ToString(),
-                    OpenAt = table.OpenAt,
-                    CloseAt = table.CloseAt
+                    Status = table.Status.ToString()
                 }
             };
         }
@@ -226,10 +220,56 @@ namespace Restaurant.Service.Services
                 throw new InvalidOperationException($"Bàn {tableCode} trong khu {areaId} không thể mở vì đang ở trạng thái {table.Status}");
             }
 
-            // Update table status to Occupied
+            // Kiểm tra xem có session đang mở không
+            var existingSession = await _context.TableSessions
+                .FirstOrDefaultAsync(ts => ts.TableId == table.TableId && ts.Status == SessionStatus.Available);
+            
+            if (existingSession != null)
+            {
+                throw new InvalidOperationException($"Bàn {tableCode} đã có session đang mở");
+            }
+
+            // Tạo session mới trong TableSessions
+            var newSession = new TableSession
+            {
+                Id = Guid.NewGuid().ToString(),
+                SessionId = $"TS{DateTime.Now:yyyyMMddHHmmss}_{table.TableCode}",
+                TableId = table.TableId,
+                OpenAt = DateTime.Now,
+                OpenedBy = openedBy ?? "Unknown",
+                Status = SessionStatus.Available
+            };
+
+            _context.TableSessions.Add(newSession);
+
+            // Cập nhật status của bàn thành Occupied
             table.Status = TableStatus.Occupied;
-            table.OpenAt = DateTime.Now;
-            table.CloseAt = null;
+
+            // Tự động tạo Order mới và liên kết với TableSession
+            var newOrder = new Order
+            {
+                Id = Guid.NewGuid().ToString(),
+                OrderId = $"ORD{DateTime.Now:yyyyMMddHHmmss}_{table.TableCode}",
+                CreatedAt = DateTime.Now,
+                PrimaryAreaId = table.AreaId,
+                IsPaid = false,
+                OrderStatus = OrderStatus.Open,
+                TableSessionId = newSession.Id
+            };
+
+            _context.Orders.Add(newOrder);
+
+            // Tạo OrderTable để liên kết Order với Table
+            var orderTable = new OrderTable
+            {
+                Id = Guid.NewGuid().ToString(),
+                OrderId = newOrder.OrderId,
+                TableId = table.TableId,
+                IsPrimary = true,
+                FromTime = DateTime.Now
+            };
+
+            _context.OrderTables.Add(orderTable);
 
             await _context.SaveChangesAsync();
 
@@ -241,11 +281,10 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
-                Status = table.Status.ToString(),
-                OpenAt = table.OpenAt,
-                CloseAt = table.CloseAt
+                Status = table.Status.ToString()
             };
         }
+
 
         public async Task<TableDto?> CloseTableAsync(string tableCode, string? closedBy = null)
         {
@@ -261,9 +300,19 @@ namespace Restaurant.Service.Services
                 throw new InvalidOperationException($"Bàn {tableCode} không thể đóng vì không đang ở trạng thái Occupied");
             }
 
+            // Tìm và đóng session hiện tại
+            var activeSession = await _context.TableSessions
+                .FirstOrDefaultAsync(ts => ts.TableId == table.TableId && ts.Status == SessionStatus.Available);
+            
+            if (activeSession != null)
+            {
+                activeSession.CloseAt = DateTime.Now;
+                activeSession.ClosedBy = closedBy ?? "Unknown";
+                activeSession.Status = SessionStatus.Closed;
+            }
+
             // Update table status to Available
             table.Status = TableStatus.Available;
-            table.CloseAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
@@ -275,9 +324,7 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
-                Status = table.Status.ToString(),
-                OpenAt = table.OpenAt,
-                CloseAt = table.CloseAt
+                Status = table.Status.ToString()
             };
         }
     }

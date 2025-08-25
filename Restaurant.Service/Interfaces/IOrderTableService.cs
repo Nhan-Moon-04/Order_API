@@ -13,5 +13,6 @@ namespace Restaurant.Service.Interfaces
         Task<bool> DeleteAsync(string id);
         Task<OrderTableDto?> GetPrimaryTableByOrderIdAsync(string orderId);
         Task<bool> SetPrimaryTableAsync(string orderId, string tableId);
+        Task<OrderDto?> GetLatestOrderDetailsByTableIdAsync(string tableId);
     }
 }
