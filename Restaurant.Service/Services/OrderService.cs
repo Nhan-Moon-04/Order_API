@@ -328,7 +328,7 @@ namespace Restaurant.Service.Services
                 .Include(o => o.OrderTables)
                     .ThenInclude(ot => ot.Table)
                         .ThenInclude(t => t.Area)
-                .FirstOrDefaultAsync(o => o.TableSessionId == latestSession.SessionId); // nhớ đúng field
+                .FirstOrDefaultAsync(o => o.TableSessionId == latestSession.SessionId); // Fixed: Use SessionId instead of Id
 
             if (order == null)
                 return null;
@@ -346,6 +346,7 @@ namespace Restaurant.Service.Services
                 AreaName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.Area?.AreaName
                             ?? order.OrderTables.FirstOrDefault()?.Table?.Area?.AreaName,
                 TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice),
+                TableSessionId = order.TableSessionId, // Fixed: Add missing TableSessionId
                 OrderDetails = order.OrderDetails.Select(od => new OrderDetailDto
                 {
                     OrderDetailId = od.OrderDetailId,
@@ -356,6 +357,8 @@ namespace Restaurant.Service.Services
                 }).ToList()
             };
         }
+
+
 
     }
 }

@@ -104,10 +104,6 @@ namespace Restaurant.Controllers
             return NoContent();
         }
 
-
-
-
-
         [HttpGet("{tableId}/latest-order")]
         public async Task<ActionResult<OrderDto>> GetLatestOrder(string tableId)
         {
@@ -117,6 +113,44 @@ namespace Restaurant.Controllers
             return Ok(order);
         }
 
+        // New endpoint to get orders by table session ID
+        [HttpGet("by-session/{tableSessionId}")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersBySessionId(string tableSessionId)
+        {
+            var orders = await _orderService.GetOrdersByTableSessionIdAsync(tableSessionId);
+            return Ok(orders);
+        }
 
+        // New endpoint to get active order for a table (based on active session)
+        [HttpGet("table/{tableId}/active")]
+        public async Task<ActionResult<OrderDto>> GetActiveOrderByTableId(string tableId)
+        {
+            var order = await _orderService.GetLatestOrderDetailsByTableIdAsync(tableId);
+            if (order == null)
+                return NotFound(new { Message = "Không có order đang hoạt động cho bàn này" });
+            return Ok(order);
+        }
+
+        // New endpoint to get table info from session ID
+        [HttpGet("session/{tableSessionId}/info")]
+        public async Task<ActionResult<object>> GetTableInfoBySessionId(string tableSessionId)
+        {
+            var orders = await _orderService.GetOrdersByTableSessionIdAsync(tableSessionId);
+            var firstOrder = orders.FirstOrDefault();
+            
+            if (firstOrder == null)
+                return NotFound(new { Message = "Không tìm thấy order cho session này" });
+
+            return Ok(new 
+            {
+                TableSessionId = tableSessionId,
+                TableCode = firstOrder.TableCode,
+                TableName = firstOrder.TableName,
+                AreaName = firstOrder.AreaName,
+                OrderCount = orders.Count(),
+                TotalAmount = orders.Sum(o => o.TotalAmount),
+                Orders = orders
+            });
+        }
     }
 }

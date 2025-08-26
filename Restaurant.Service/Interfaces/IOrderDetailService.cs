@@ -7,9 +7,11 @@ namespace Restaurant.Service.Interfaces
         Task<IEnumerable<OrderDetailDto>> GetAllOrderDetailsAsync();
         Task<OrderDetailDto?> GetOrderDetailByIdAsync(string id);
         Task<IEnumerable<OrderDetailDto>> GetOrderDetailsByOrderIdAsync(string orderId);
-        Task<OrderDetailDto> CreateOrderDetailAsync(OrderDetailDto dto);
+        Task<OrderDetailDto> AddFood(OrderDetailDto dto);
         Task<OrderDetailDto?> UpdateOrderDetailAsync(string id, OrderDetailDto dto);
         Task<bool> DeleteOrderDetailAsync(string id);
         Task<double> GetOrderTotalAsync(string orderId);
+        Task<OrderDetailDto> AddFoodToOrder(string orderId, string dishId, int quantity = 1);
+        Task<IEnumerable<OrderDetailDto>> AddMultipleFoodsToOrder(string orderId, Dictionary<string, int> dishQuantities);
     }
 }

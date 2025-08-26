@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Restaurant.Domain.DTOs;
 using Restaurant.Service.Interfaces;
+using Restaurant.Domain.DTOs.Request;
 
 namespace Restaurant.Controllers
 {
@@ -47,11 +48,55 @@ namespace Restaurant.Controllers
             return Ok(total);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<OrderDetailDto>> CreateOrderDetail(OrderDetailDto orderDetailDto)
+        [HttpPost("add-food")]
+        public async Task<ActionResult<OrderDetailDto>> AddFood(OrderDetailDto orderDetailDto)
         {
-            var createdOrderDetail = await _orderDetailService.CreateOrderDetailAsync(orderDetailDto);
-            return CreatedAtAction(nameof(GetOrderDetail), new { id = createdOrderDetail.OrderDetailId }, createdOrderDetail);
+            try
+            {
+                var createdOrderDetail = await _orderDetailService.AddFood(orderDetailDto);
+                return CreatedAtAction(nameof(GetOrderDetail), new { id = createdOrderDetail.OrderDetailId }, createdOrderDetail);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+
+
+        [HttpPost]
+        public async Task<ActionResult<OrderDetailDto>> AddFoodToOrder([FromBody] AddFoodRequest request)
+        {
+            try
+            {
+                var result = await _orderDetailService.AddFoodToOrder(
+                    request.OrderId,
+                    request.DishId,
+                    request.Quantity
+                );
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpPost("order/{orderId}/multiple-dishes")]
+        public async Task<ActionResult<IEnumerable<OrderDetailDto>>> AddMultipleFoodsToOrder(string orderId, [FromBody] Dictionary<string, int> dishQuantities)
+        {
+            try
+            {
+                var results = await _orderDetailService.AddMultipleFoodsToOrder(orderId, dishQuantities);
+                return Ok(results);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
