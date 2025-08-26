@@ -471,6 +471,20 @@
     border: none;
 }
 
+.close-btn:hover:not(:disabled) {
+    background: #a01439;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.close-btn:disabled {
+    background: #cbd5e0;
+    color: #718096;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 
 .payment-btn:hover {
     background: #22612e;

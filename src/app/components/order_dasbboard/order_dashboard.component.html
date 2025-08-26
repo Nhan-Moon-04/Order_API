@@ -157,9 +157,9 @@
                     <i class="fas fa-check mr-2"></i>
                     Thanh Toán
                 </button>
-                <button class="action-btn close-btn">
-                    <i class="fas fa-check mr-2"></i>
-                    Đóng Bàn
+                <button class="action-btn close-btn" (click)="onCloseTable()" [disabled]="loading()">
+                    <i class="fas fa-times mr-2"></i>
+                    {{ loading() ? 'Đang đóng...' : 'Đóng Bàn' }}
                 </button>
             </div>
         </div>
