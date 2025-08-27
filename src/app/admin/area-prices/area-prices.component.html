@@ -1,0 +1,215 @@
+<div class="min-h-screen bg-gray-50 pt-20">
+    <div class="container-fluid px-4 py-8">
+        <!-- Header with back button -->
+        <div class="flex items-center mb-8">
+            <button (click)="goBack()"
+                class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-300 mr-4">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Quay lại Dashboard
+            </button>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Quản lý Giá Theo Khu Vực</h1>
+                <p class="text-gray-600">Chọn khu vực để quản lý giá món ăn</p>
+            </div>
+        </div>
+
+        <!-- Main Content Layout -->
+        <div class="main-layout">
+            <!-- Left Panel - Areas List (25%) -->
+            <div class="left-panel">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-map-marked-alt text-orange-500 mr-2"></i>
+                    Danh sách khu vực
+                </h2>
+
+                <!-- Loading State for Areas -->
+                @if (loading()) {
+                <div class="text-center py-8">
+                    <div class="spinner-border text-orange-500 w-8 h-8 mx-auto" role="status"></div>
+                    <p class="mt-2 text-gray-600 text-sm">Đang tải...</p>
+                </div>
+                }
+
+                <!-- Error State for Areas -->
+                @if (error()) {
+                <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 mb-4 text-sm">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    {{ error() }}
+                </div>
+                }
+
+                <!-- Areas List -->
+                @if (areas().length > 0) {
+                <div class="space-y-3">
+                    @for (area of areas(); track area.areaId) {
+                    <div class="area-item" [class.selected]="selectedArea()?.areaId === area.areaId"
+                        (click)="selectArea(area)">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="area-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 class="area-title">{{ area.areaName }}</h3>
+                                    <span class="area-status"
+                                        [class]="area.isActive ? 'status-active' : 'status-inactive'">
+                                        {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+
+                <!-- Empty State for Areas -->
+                @if (areas().length === 0 && !loading()) {
+                <div class="text-center py-8">
+                    <i class="fas fa-map-marked-alt text-gray-400 text-3xl mb-2"></i>
+                    <p class="text-gray-500 text-sm">Chưa có khu vực nào</p>
+                </div>
+                }
+            </div>
+
+            <!-- Right Panel - Dish Prices (75%) -->
+            <div class="right-panel">
+                @if (!selectedArea()) {
+                <!-- No Area Selected -->
+                <div class="flex flex-col items-center justify-center h-96 text-gray-500">
+                    <i class="fas fa-utensils text-6xl mb-4 text-gray-300"></i>
+                    <h3 class="text-xl font-semibold mb-2">Chọn khu vực để xem món ăn</h3>
+                    <p class="text-gray-400">Vui lòng chọn một khu vực từ danh sách bên trái</p>
+                </div>
+                } @else {
+                <!-- Selected Area Header -->
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-utensils text-orange-500 mr-3"></i>
+                        Món ăn trong {{ selectedArea()?.areaName }}
+                    </h2>
+                    <p class="text-gray-600 mt-1">Quản lý giá món ăn cho khu vực này</p>
+                </div>
+
+                <!-- Loading State for Dishes -->
+                @if (loadingDishes()) {
+                <div class="text-center py-12">
+                    <div class="spinner-border text-orange-500 w-12 h-12 mx-auto" role="status"></div>
+                    <p class="mt-3 text-gray-600">Đang tải danh sách món ăn...</p>
+                </div>
+                }
+
+                <!-- Error State for Dishes -->
+                @if (dishError()) {
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    {{ dishError() }}
+                </div>
+                }
+
+                <!-- Dish Prices List -->
+                @if (dishPrices().length > 0 && !loadingDishes()) {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @for (dishPrice of dishPrices(); track dishPrice.id) {
+                    <div class="dish-card">
+                        <div class="dish-header">
+                            <div class="dish-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <span class="dish-status"
+                                [class]="dishPrice.isActive ? 'status-active' : 'status-inactive'">
+                                {{ dishPrice.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                            </span>
+                        </div>
+                        <div class="dish-info">
+                            <h4 class="dish-name">{{ dishPrice.dishName || 'Món ăn #' + dishPrice.dishId }}</h4>
+                            <div class="dish-price">
+                                <span class="price-label">Giá khu vực:</span>
+                                <span class="price-value">{{ dishPrice.customPrice | currency:'VND':'symbol':'1.0-0'
+                                    }}</span>
+                            </div>
+                            @if (dishPrice.basePrice) {
+                            <div class="dish-base-price">
+                                <span class="base-price-label">Giá gốc:</span>
+                                <span class="base-price-value">{{ dishPrice.basePrice | currency:'VND':'symbol':'1.0-0'
+                                    }}</span>
+                            </div>
+                            }
+                            <div class="dish-date">
+                                <i class="fas fa-calendar text-orange-400 mr-1"></i>
+                                <span class="text-xs text-gray-500">{{ dishPrice.effectiveDate | date:'dd/MM/yyyy'
+                                    }}</span>
+                            </div>
+                        </div>
+                        <div class="dish-actions">
+                            <button class="btn-edit" (click)="openEditModal(dishPrice)">
+                                <i class="fas fa-edit mr-1"></i>
+                                Sửa giá
+                            </button>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+
+                <!-- Empty State for Dishes -->
+                @if (dishPrices().length === 0 && !loadingDishes() && !dishError()) {
+                <div class="text-center py-12">
+                    <i class="fas fa-utensils text-gray-400 text-6xl mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có món ăn nào</h3>
+                    <p class="text-gray-500">Khu vực này chưa có món ăn được cấu hình giá.</p>
+                </div>
+                }
+                }
+            </div>
+        </div>
+    </div>
+    @if (showEditModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Simple Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-30" (click)="closeEditModal()"></div>
+
+        <!-- Simple Modal -->
+        <div class="relative bg-white rounded border shadow-lg max-w-sm w-full p-6 z-10">
+            <!-- Simple Title -->
+            <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Chỉnh sửa giá</h3>
+
+            <!-- Dish Name -->
+            @if (editingDish()) {
+            <div class="mb-4 text-center">
+                <p class="font-medium text-gray-800">{{ editingDish()?.dishName }}</p>
+                <p class="text-sm text-gray-500">{{ selectedArea()?.areaName }}</p>
+            </div>
+            }
+
+            <!-- Simple Price Input -->
+            <div class="mb-4">
+                <label class="block text-sm text-gray-700 mb-2">Giá mới (VND):</label>
+                <input type="number" [(ngModel)]="newPrice"
+                    class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-right"
+                    placeholder="0" min="0">
+            </div>
+
+            <!-- Simple Buttons -->
+            <div class="flex gap-3">
+                <button (click)="closeEditModal()"
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                    [disabled]="updatingPrice()">
+                    Hủy
+                </button>
+                <button (click)="updatePrice()"
+                    class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    [disabled]="updatingPrice() || !newPrice() || newPrice() < 0">
+                    @if (updatingPrice()) {
+                    Đang lưu...
+                    } @else {
+                    Lưu
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>
