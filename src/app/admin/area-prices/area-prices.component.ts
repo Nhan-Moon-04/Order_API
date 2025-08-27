@@ -7,6 +7,12 @@ import { Observable, catchError, of, forkJoin, map } from 'rxjs';
 import { Area } from '../../model/area.model';
 import { AreaDishPrice, AreaDishPriceDisplay } from '../../model/area-dish-price.model';
 import { Dish } from '../../model/dish.model';
+import {
+  ChangeQuantityRequest,
+  RemoveFoodRequest,
+  ChangeQuantityResponse,
+  RemoveFoodResponse,
+} from '../../model/order-quantity-request.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -33,6 +39,18 @@ export class AreaPricesComponent implements OnInit {
   editingDish = signal<AreaDishPriceDisplay | null>(null);
   newPrice = signal<number>(0);
   updatingPrice = signal(false);
+
+  // Quantity Management Modal
+  showQuantityModal = signal(false);
+  editingQuantity = signal<AreaDishPriceDisplay | null>(null);
+  currentOrderId = signal<string>('');
+  newQuantity = signal<number>(1);
+  updatingQuantity = signal(false);
+
+  // Remove Food Modal
+  showRemoveModal = signal(false);
+  removingDish = signal<AreaDishPriceDisplay | null>(null);
+  removingFood = signal(false);
 
   ngOnInit() {
     this.loadAreas();
@@ -178,6 +196,114 @@ export class AreaPricesComponent implements OnInit {
           console.error('Error updating price:', err);
           alert('Lỗi cập nhật giá!');
           this.updatingPrice.set(false);
+        },
+      });
+  }
+
+  // Quantity Management Methods
+  openQuantityModal(dish: AreaDishPriceDisplay, orderId: string) {
+    this.editingQuantity.set(dish);
+    this.currentOrderId.set(orderId);
+    this.newQuantity.set(1); // Default quantity
+    this.showQuantityModal.set(true);
+  }
+
+  closeQuantityModal() {
+    this.showQuantityModal.set(false);
+    this.editingQuantity.set(null);
+    this.currentOrderId.set('');
+    this.newQuantity.set(1);
+  }
+
+  changeQuantity() {
+    const dish = this.editingQuantity();
+    const orderId = this.currentOrderId();
+    if (!dish || !orderId) return;
+
+    this.updatingQuantity.set(true);
+
+    const request: ChangeQuantityRequest = {
+      orderId: orderId,
+      dishId: dish.dishId,
+      newQuantity: this.newQuantity(),
+    };
+
+    this.http
+      .post<ChangeQuantityResponse>(
+        'https://localhost:7136/api/OrderDetails/change-quantity',
+        request
+      )
+      .pipe(
+        catchError((err) => {
+          console.error('Error changing quantity:', err);
+          alert('Lỗi thay đổi số lượng: ' + (err.error?.message || err.message));
+          return of(null);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            console.log('Quantity changed successfully:', response);
+            alert(`Đã cập nhật số lượng ${dish.dishName} thành ${response.quantity}`);
+            this.closeQuantityModal();
+          }
+          this.updatingQuantity.set(false);
+        },
+        error: (err) => {
+          console.error('Error changing quantity:', err);
+          alert('Lỗi thay đổi số lượng!');
+          this.updatingQuantity.set(false);
+        },
+      });
+  }
+
+  // Remove Food Methods
+  openRemoveModal(dish: AreaDishPriceDisplay, orderId: string) {
+    this.removingDish.set(dish);
+    this.currentOrderId.set(orderId);
+    this.showRemoveModal.set(true);
+  }
+
+  closeRemoveModal() {
+    this.showRemoveModal.set(false);
+    this.removingDish.set(null);
+    this.currentOrderId.set('');
+  }
+
+  removeFood() {
+    const dish = this.removingDish();
+    const orderId = this.currentOrderId();
+    if (!dish || !orderId) return;
+
+    this.removingFood.set(true);
+
+    const request: RemoveFoodRequest = {
+      orderId: orderId,
+      dishId: dish.dishId,
+    };
+
+    this.http
+      .post<RemoveFoodResponse>('https://localhost:7136/api/OrderDetails/RemoveFood', request)
+      .pipe(
+        catchError((err) => {
+          console.error('Error removing food:', err);
+          alert('Lỗi xóa món ăn: ' + (err.error?.message || err.message));
+          return of(null);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if (response && response.success) {
+            console.log('Food removed successfully:', response);
+            alert(response.message);
+            this.closeRemoveModal();
+          }
+          this.removingFood.set(false);
+        },
+        error: (err) => {
+          console.error('Error removing food:', err);
+          alert('Lỗi xóa món ăn!');
+          this.removingFood.set(false);
         },
       });
   }

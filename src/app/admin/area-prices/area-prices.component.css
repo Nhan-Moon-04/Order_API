@@ -537,3 +537,46 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Additional button styles for new functions */
+.btn-quantity {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-quantity:hover {
+  background-color: #15803d;
+}
+
+.btn-remove {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-remove:hover {
+  background-color: #b91c1c;
+}
+
+.dish-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

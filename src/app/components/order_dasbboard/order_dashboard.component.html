@@ -35,8 +35,8 @@
             <div class="order-items-container">
                 <div class="grid grid-cols-12 gap-2 text-xs font-semibold text-gray-700 border-b pb-2 mb-2">
                     <div class="col-span-1">#</div>
-                    <div class="col-span-5">Tên món</div>
-                    <div class="col-span-2 text-center">Số lượng</div>
+                    <div class="col-span-4">Tên món</div>
+                    <div class="col-span-3 text-center">Số lượng</div>
                     <div class="col-span-2 text-right">Giá</div>
                     <div class="col-span-2 text-right">Thành tiền</div>
                 </div>
@@ -44,9 +44,27 @@
                 @for (item of order()?.orderDetails; track item.orderDetailId; let i = $index) {
                 <div class="grid grid-cols-12 gap-2 items-center py-2 border-b border-gray-100 text-sm">
                     <div class="col-span-1 text-gray-500">{{ i + 1 }}</div>
-                    <div class="col-span-5 font-medium">{{ item.dishName }}</div>
-                    <div class="col-span-2 text-center">
-                        <span class="px-2 py-1 bg-gray-100 rounded">{{ item.quantity }}</span>
+                    <div class="col-span-4 font-medium">{{ item.dishName }}</div>
+                    <div class="col-span-3 text-center">
+                        <div class="flex items-center justify-center gap-1">
+                            <!-- Nút giảm số lượng -->
+                            <button (click)="updateDishQuantity(item.dishId, item.quantity - 1)"
+                                class="quantity-btn decrease-btn" [disabled]="loading()">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <!-- Hiển thị số lượng -->
+                            <span class="quantity-display">{{ item.quantity }}</span>
+                            <!-- Nút tăng số lượng -->
+                            <button (click)="updateDishQuantity(item.dishId, item.quantity + 1)"
+                                class="quantity-btn increase-btn" [disabled]="loading()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <!-- Nút xóa món -->
+                            <button (click)="removeDishFromOrder(item.dishId)" class="remove-btn" [disabled]="loading()"
+                                title="Xóa món khỏi order">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-span-2 text-right">{{ formatCurrency(item.unitPrice) }}</div>
                     <div class="col-span-2 text-right font-semibold">{{ formatCurrency(item.totalPrice) }}</div>

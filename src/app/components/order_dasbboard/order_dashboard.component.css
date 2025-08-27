@@ -659,3 +659,87 @@
 .dishes-container::-webkit-scrollbar-thumb:hover {
     background: #a0aec0;
 }
+
+/* Quantity control buttons */
+.quantity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 10px;
+}
+
+.quantity-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.decrease-btn {
+    color: #e53e3e;
+    border-color: #e53e3e;
+}
+
+.decrease-btn:hover:not(:disabled) {
+    background: #e53e3e;
+    color: white;
+}
+
+.increase-btn {
+    color: #38a169;
+    border-color: #38a169;
+}
+
+.increase-btn:hover:not(:disabled) {
+    background: #38a169;
+    color: white;
+}
+
+.quantity-display {
+    background: #edf2f7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+    font-size: 12px;
+    margin: 0 4px;
+}
+
+.remove-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #e53e3e;
+    border-radius: 4px;
+    background: white;
+    color: #e53e3e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 10px;
+    margin-left: 4px;
+}
+
+.remove-btn:hover:not(:disabled) {
+    background: #e53e3e;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.remove-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

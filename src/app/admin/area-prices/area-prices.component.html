@@ -147,6 +147,16 @@
                                 <i class="fas fa-edit mr-1"></i>
                                 Sửa giá
                             </button>
+                            <button class="btn-quantity"
+                                (click)="openQuantityModal(dishPrice, 'e6847093-5ccb-417e-b49f-67630cc26386')">
+                                <i class="fas fa-sort-numeric-up mr-1"></i>
+                                Đổi SL
+                            </button>
+                            <button class="btn-remove"
+                                (click)="openRemoveModal(dishPrice, 'e6847093-5ccb-417e-b49f-67630cc26386')">
+                                <i class="fas fa-trash mr-1"></i>
+                                Xóa
+                            </button>
                         </div>
                     </div>
                     }
@@ -205,6 +215,94 @@
                     Đang lưu...
                     } @else {
                     Lưu
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Quantity Modal -->
+    @if (showQuantityModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Simple Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-30" (click)="closeQuantityModal()"></div>
+
+        <!-- Simple Modal -->
+        <div class="relative bg-white rounded border shadow-lg max-w-sm w-full p-6 z-10">
+            <!-- Simple Title -->
+            <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Thay đổi số lượng</h3>
+
+            <!-- Dish Name -->
+            @if (editingQuantity()) {
+            <div class="mb-4 text-center">
+                <p class="font-medium text-gray-800">{{ editingQuantity()?.dishName }}</p>
+                <p class="text-sm text-gray-500">Order ID: {{ currentOrderId() }}</p>
+            </div>
+            }
+
+            <!-- Simple Quantity Input -->
+            <div class="mb-4">
+                <label class="block text-sm text-gray-700 mb-2">Số lượng mới:</label>
+                <input type="number" [(ngModel)]="newQuantity"
+                    class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500 text-center"
+                    placeholder="1" min="1" max="999">
+            </div>
+
+            <!-- Simple Buttons -->
+            <div class="flex gap-3">
+                <button (click)="closeQuantityModal()"
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                    [disabled]="updatingQuantity()">
+                    Hủy
+                </button>
+                <button (click)="changeQuantity()"
+                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    [disabled]="updatingQuantity() || !newQuantity() || newQuantity() < 1">
+                    @if (updatingQuantity()) {
+                    Đang cập nhật...
+                    } @else {
+                    Cập nhật
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Remove Food Modal -->
+    @if (showRemoveModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Simple Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-30" (click)="closeRemoveModal()"></div>
+
+        <!-- Simple Modal -->
+        <div class="relative bg-white rounded border shadow-lg max-w-sm w-full p-6 z-10">
+            <!-- Simple Title -->
+            <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Xác nhận xóa món</h3>
+
+            <!-- Dish Name -->
+            @if (removingDish()) {
+            <div class="mb-4 text-center">
+                <p class="font-medium text-gray-800">{{ removingDish()?.dishName }}</p>
+                <p class="text-sm text-gray-500">Order ID: {{ currentOrderId() }}</p>
+                <p class="text-sm text-red-600 mt-2">Món ăn sẽ bị xóa hoàn toàn khỏi order!</p>
+            </div>
+            }
+
+            <!-- Simple Buttons -->
+            <div class="flex gap-3">
+                <button (click)="closeRemoveModal()"
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                    [disabled]="removingFood()">
+                    Hủy
+                </button>
+                <button (click)="removeFood()" class="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    [disabled]="removingFood()">
+                    @if (removingFood()) {
+                    Đang xóa...
+                    } @else {
+                    Xóa món
                     }
                 </button>
             </div>
