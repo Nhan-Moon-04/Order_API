@@ -31,6 +31,7 @@
   display: flex;
   flex-direction: column;
   background: #fafafa;
+  position: relative;
 }
 
 /* Menu section - takes 50% of left panel */
@@ -517,6 +518,46 @@
 
 @keyframes spinner-border {
   to {
+    transform: rotate(360deg);
+  }
+}
+
+/* New smooth loading overlay */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(250, 250, 250, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(1px);
+  transition: opacity 0.2s ease;
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.simple-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: simple-spin 0.8s ease-in-out infinite;
+}
+
+@keyframes simple-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }

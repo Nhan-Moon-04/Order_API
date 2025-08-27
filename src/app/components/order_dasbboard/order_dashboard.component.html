@@ -18,9 +18,10 @@
             </div>
 
             @if (loading()) {
-            <div class="text-center py-8">
-                <div class="spinner-border text-blue-500"></div>
-                <p class="mt-2 text-gray-600">Đang tải...</p>
+            <div class="loading-overlay">
+                <div class="loading-content">
+                    <div class="simple-spinner"></div>
+                </div>
             </div>
             }
 
@@ -59,9 +60,8 @@
                                             class="quantity-btn decrease-btn" [disabled]="loading()">
                                             <i class="fas fa-minus"></i>
                                         </button>
-                                        <!-- Hiển thị số lượng (ở giữa) -->
                                         <span class="quantity-display">{{ item.quantity }}</span>
-                                        <!-- Nút tăng số lượng (bên phải) -->
+
                                         <button (click)="updateDishQuantity(item.dishId, item.quantity + 1)"
                                             class="quantity-btn increase-btn" [disabled]="loading()">
                                             <i class="fas fa-plus"></i>

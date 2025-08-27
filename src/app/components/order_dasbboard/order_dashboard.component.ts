@@ -115,6 +115,7 @@ export class OrderDashboardComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   selectedGroup = signal<string>('');
+  processingDishIds = signal<Set<string>>(new Set());
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
