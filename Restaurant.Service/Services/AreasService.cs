@@ -58,5 +58,12 @@ namespace Restaurant.Service.Services
             dto.AreaId = area.AreaId;
             return dto;
         }
+
+
+       public async Task<int> CountAresa()
+        {
+            var count = await _context.Areas.CountAsync();
+            return count;
+        }
     }
 }

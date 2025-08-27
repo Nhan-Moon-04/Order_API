@@ -16,6 +16,7 @@ namespace Restaurant.Service.Services
             _context = context;
         }
 
+        #region GET
         public async Task<IEnumerable<OrderDetailDto>> GetAllOrderDetailsAsync()
         {
             var orderDetails = await _context.OrderDetails
@@ -23,60 +24,35 @@ namespace Restaurant.Service.Services
                     .ThenInclude(d => d!.Kitchen)
                 .ToListAsync();
 
-            return orderDetails.Select(od => new OrderDetailDto
-            {
-                OrderDetailId = od.OrderDetailId,
-                OrderId = od.OrderId,
-                DishId = od.DishId,
-                Quantity = od.Quantity,
-                UnitPrice = od.UnitPrice,
-                DishName = od.Dish?.DishName,
-                KitchenName = od.Dish?.Kitchen?.KitchenName
-            });
+            return orderDetails.Select(od => ToDto(od));
         }
 
         public async Task<OrderDetailDto?> GetOrderDetailByIdAsync(string id)
         {
-            var orderDetail = await _context.OrderDetails
-                .Include(od => od.Dish)
+            var od = await _context.OrderDetails
+                .Include(x => x.Dish)
                     .ThenInclude(d => d!.Kitchen)
-                .FirstOrDefaultAsync(od => od.OrderDetailId == id);
+                .FirstOrDefaultAsync(x => x.OrderDetailId == id);
 
-            return orderDetail == null ? null : new OrderDetailDto
-            {
-                OrderDetailId = orderDetail.OrderDetailId,
-                OrderId = orderDetail.OrderId,
-                DishId = orderDetail.DishId,
-                Quantity = orderDetail.Quantity,
-                UnitPrice = orderDetail.UnitPrice,
-                DishName = orderDetail.Dish?.DishName,
-                KitchenName = orderDetail.Dish?.Kitchen?.KitchenName
-            };
+            return od == null ? null : ToDto(od);
         }
 
         public async Task<IEnumerable<OrderDetailDto>> GetOrderDetailsByOrderIdAsync(string orderId)
         {
-            var orderDetails = await _context.OrderDetails
+            var list = await _context.OrderDetails
                 .Include(od => od.Dish)
                     .ThenInclude(d => d!.Kitchen)
                 .Where(od => od.OrderId == orderId)
                 .ToListAsync();
 
-            return orderDetails.Select(od => new OrderDetailDto
-            {
-                OrderDetailId = od.OrderDetailId,
-                OrderId = od.OrderId,
-                DishId = od.DishId,
-                Quantity = od.Quantity,
-                UnitPrice = od.UnitPrice,
-                DishName = od.Dish?.DishName,
-                KitchenName = od.Dish?.Kitchen?.KitchenName
-            });
+            return list.Select(od => ToDto(od));
         }
+        #endregion
 
+        #region ADD
         public async Task<OrderDetailDto> AddFood(OrderDetailDto dto)
         {
-            // 1. Validation: Check if Order exists
+            // Kiểm tra Order
             var order = await _context.Orders
                 .Include(o => o.OrderTables)
                     .ThenInclude(ot => ot.Table)
@@ -85,7 +61,7 @@ namespace Restaurant.Service.Services
             if (order == null)
                 throw new ArgumentException($"Order với ID {dto.OrderId} không tồn tại");
 
-            // 2. Validation: Check if Dish exists and is active
+            // Kiểm tra Dish
             var dish = await _context.Dishes
                 .Include(d => d.Kitchen)
                 .FirstOrDefaultAsync(d => d.DishId == dto.DishId && d.IsActive);
@@ -93,21 +69,19 @@ namespace Restaurant.Service.Services
             if (dish == null)
                 throw new ArgumentException($"Món ăn với ID {dto.DishId} không tồn tại hoặc đã bị vô hiệu hóa");
 
-            // 3. Determine pricing based on area
-            double unitPrice = dish.BasePrice; // Default to base price
+            // Tính giá
+            double unitPrice = dish.BasePrice;
             var primaryTable = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary);
             string? areaId = primaryTable?.Table?.AreaId ?? order.PrimaryAreaId;
             PriceSource priceSource = PriceSource.Base;
 
-            // Check for area-specific pricing
             if (!string.IsNullOrEmpty(areaId))
             {
                 var areaDishPrice = await _context.AreaDishPrices
-                    .FirstOrDefaultAsync(adp => adp.AreaId == areaId 
-                                              && adp.DishId == dto.DishId 
-                                              && adp.IsActive 
+                    .FirstOrDefaultAsync(adp => adp.AreaId == areaId
+                                              && adp.DishId == dto.DishId
+                                              && adp.IsActive
                                               && adp.EffectiveDate <= DateTime.UtcNow);
-
                 if (areaDishPrice != null)
                 {
                     unitPrice = areaDishPrice.CustomPrice;
@@ -115,34 +89,21 @@ namespace Restaurant.Service.Services
                 }
             }
 
-            // 4. Check if this dish already exists in the order
-            var existingOrderDetail = await _context.OrderDetails
+            // Nếu món đã có trong order thì update số lượng
+            var existing = await _context.OrderDetails
                 .FirstOrDefaultAsync(od => od.OrderId == dto.OrderId && od.DishId == dto.DishId);
 
-            if (existingOrderDetail != null)
+            if (existing != null)
             {
-                // Update quantity instead of creating new record
-                existingOrderDetail.Quantity += dto.Quantity;
-                existingOrderDetail.UnitPrice = unitPrice; // Update to current price
-                existingOrderDetail.PriceSource = priceSource;
-
+                existing.Quantity += dto.Quantity;
+                existing.UnitPrice = unitPrice;
+                existing.PriceSource = priceSource;
                 await _context.SaveChangesAsync();
-
-                // Return updated DTO
-                return new OrderDetailDto
-                {
-                    OrderDetailId = existingOrderDetail.OrderDetailId,
-                    OrderId = existingOrderDetail.OrderId,
-                    DishId = existingOrderDetail.DishId,
-                    Quantity = existingOrderDetail.Quantity,
-                    UnitPrice = existingOrderDetail.UnitPrice,
-                    DishName = dish.DishName,
-                    KitchenName = dish.Kitchen?.KitchenName
-                };
+                return ToDto(existing, dish);
             }
 
-            // 5. Create new OrderDetail
-            var newOrderDetail = new OrderDetail
+            // Nếu chưa có thì thêm mới
+            var entity = new OrderDetail
             {
                 Id = Guid.NewGuid().ToString(),
                 OrderDetailId = dto.OrderDetailId ?? Guid.NewGuid().ToString(),
@@ -155,27 +116,40 @@ namespace Restaurant.Service.Services
                 PriceSource = priceSource
             };
 
-            _context.OrderDetails.Add(newOrderDetail);
+            _context.OrderDetails.Add(entity);
             await _context.SaveChangesAsync();
-
-            // 6. Return complete DTO with navigation properties
-            var result = await _context.OrderDetails
-                .Include(od => od.Dish)
-                    .ThenInclude(d => d!.Kitchen)
-                .FirstOrDefaultAsync(od => od.OrderDetailId == newOrderDetail.OrderDetailId);
-
-            return new OrderDetailDto
-            {
-                OrderDetailId = result!.OrderDetailId,
-                OrderId = result.OrderId,
-                DishId = result.DishId,
-                Quantity = result.Quantity,
-                UnitPrice = result.UnitPrice,
-                DishName = result.Dish?.DishName,
-                KitchenName = result.Dish?.Kitchen?.KitchenName
-            };
+            return ToDto(entity, dish);
         }
 
+        public async Task<OrderDetailDto> AddFoodToOrder(string orderId, string dishId, int quantity = 1)
+        {
+            return await AddFood(new OrderDetailDto
+            {
+                OrderDetailId = Guid.NewGuid().ToString(),
+                OrderId = orderId,
+                DishId = dishId,
+                Quantity = quantity
+            });
+        }
+
+        public async Task<IEnumerable<OrderDetailDto>> AddMultipleFoodsToOrder(string orderId, Dictionary<string, int> dishQuantities)
+        {
+            var results = new List<OrderDetailDto>();
+            foreach (var kvp in dishQuantities)
+            {
+                var result = await AddFood(new OrderDetailDto
+                {
+                    OrderId = orderId,
+                    DishId = kvp.Key,
+                    Quantity = kvp.Value
+                });
+                results.Add(result);
+            }
+            return results;
+        }
+        #endregion
+
+        #region UPDATE / REMOVE
         public async Task<OrderDetailDto?> UpdateOrderDetailAsync(string id, OrderDetailDto dto)
         {
             var entity = await _context.OrderDetails.FirstOrDefaultAsync(od => od.OrderDetailId == id);
@@ -189,6 +163,27 @@ namespace Restaurant.Service.Services
             return dto;
         }
 
+        public async Task<OrderDetailDto?> UpdateFoodQuantity(string orderId, string dishId, int delta)
+        {
+            var entity = await _context.OrderDetails
+                .Include(od => od.Dish)
+                .FirstOrDefaultAsync(od => od.OrderId == orderId && od.DishId == dishId);
+
+            if (entity == null)
+                throw new ArgumentException($"Món {dishId} không tồn tại trong order {orderId}");
+
+            entity.Quantity += delta;
+            if (entity.Quantity <= 0)
+            {
+                _context.OrderDetails.Remove(entity);
+                await _context.SaveChangesAsync();
+                return null;
+            }
+
+            await _context.SaveChangesAsync();
+            return ToDto(entity);
+        }
+
         public async Task<bool> DeleteOrderDetailAsync(string id)
         {
             var entity = await _context.OrderDetails.FirstOrDefaultAsync(od => od.OrderDetailId == id);
@@ -199,33 +194,87 @@ namespace Restaurant.Service.Services
             return true;
         }
 
-        public async Task<double> GetOrderTotalAsync(string orderId)
+        public async Task<bool> DeleteFoodFromOrder(string orderId, string dishId)
         {
-            var orderDetails = await _context.OrderDetails
-                .Where(od => od.OrderId == orderId)
-                .ToListAsync();
+            var entity = await _context.OrderDetails
+                .FirstOrDefaultAsync(od => od.OrderId == orderId && od.DishId == dishId);
 
-            return orderDetails.Sum(od => od.TotalPrice);
+            if (entity == null)
+                throw new ArgumentException($"Món {dishId} không tồn tại trong order {orderId}");
+
+            _context.OrderDetails.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        // Overloaded AddFood method for easier usage
-        public async Task<OrderDetailDto> AddFoodToOrder(string orderId, string dishId, int quantity = 1)
+        // RemoveFood methods implementation
+        public async Task<OrderDetailDto?> RemoveFood(OrderDetailDto dto)
+        {
+            // 1. Validation: Check if Order exists
+            var order = await _context.Orders
+                .Include(o => o.OrderTables)
+                    .ThenInclude(ot => ot.Table)
+                .FirstOrDefaultAsync(o => o.OrderId == dto.OrderId);
+
+            if (order == null)
+                throw new ArgumentException($"Order với ID {dto.OrderId} không tồn tại");
+
+            // 2. Validation: Check if Dish exists
+            var dish = await _context.Dishes
+                .Include(d => d.Kitchen)
+                .FirstOrDefaultAsync(d => d.DishId == dto.DishId);
+
+            if (dish == null)
+                throw new ArgumentException($"Món ăn với ID {dto.DishId} không tồn tại");
+
+            // 3. Check if this dish exists in the order
+            var existingOrderDetail = await _context.OrderDetails
+                .Include(od => od.Dish)
+                    .ThenInclude(d => d!.Kitchen)
+                .FirstOrDefaultAsync(od => od.OrderId == dto.OrderId && od.DishId == dto.DishId);
+
+            if (existingOrderDetail == null)
+                throw new ArgumentException($"Món ăn {dish.DishName} không có trong order này");
+
+            // 4. Check if quantity to remove is valid
+            if (dto.Quantity <= 0)
+                throw new ArgumentException("Số lượng cần xóa phải lớn hơn 0");
+
+            if (dto.Quantity >= existingOrderDetail.Quantity)
+            {
+                // Remove the entire order detail if quantity to remove >= existing quantity
+                _context.OrderDetails.Remove(existingOrderDetail);
+                await _context.SaveChangesAsync();
+                
+                // Return null to indicate the item was completely removed
+                return null;
+            }
+            else
+            {
+                // Reduce the quantity
+                existingOrderDetail.Quantity -= dto.Quantity;
+                await _context.SaveChangesAsync();
+
+                // Return updated DTO
+                return ToDto(existingOrderDetail);
+            }
+        }
+
+        public async Task<OrderDetailDto?> RemoveFoodFromOrder(string orderId, string dishId, int quantity = 1)
         {
             var dto = new OrderDetailDto
             {
-                OrderDetailId = Guid.NewGuid().ToString(),
                 OrderId = orderId,
                 DishId = dishId,
                 Quantity = quantity
             };
 
-            return await AddFood(dto);
+            return await RemoveFood(dto);
         }
 
-        // Method to add multiple dishes at once
-        public async Task<IEnumerable<OrderDetailDto>> AddMultipleFoodsToOrder(string orderId, Dictionary<string, int> dishQuantities)
+        public async Task<IEnumerable<OrderDetailDto?>> RemoveMultipleFoodsFromOrder(string orderId, Dictionary<string, int> dishQuantities)
         {
-            var results = new List<OrderDetailDto>();
+            var results = new List<OrderDetailDto?>();
 
             foreach (var kvp in dishQuantities)
             {
@@ -236,11 +285,39 @@ namespace Restaurant.Service.Services
                     Quantity = kvp.Value
                 };
 
-                var result = await AddFood(dto);
+                var result = await RemoveFood(dto);
                 results.Add(result);
             }
 
             return results;
         }
+        #endregion
+
+        #region TOTAL
+        public async Task<double> GetOrderTotalAsync(string orderId)
+        {
+            var list = await _context.OrderDetails
+                .Where(od => od.OrderId == orderId)
+                .ToListAsync();
+
+            return list.Sum(od => od.TotalPrice);
+        }
+        #endregion
+
+        #region HELPER
+        private static OrderDetailDto ToDto(OrderDetail entity, Dishes? dish = null)
+        {
+            return new OrderDetailDto
+            {
+                OrderDetailId = entity.OrderDetailId,
+                OrderId = entity.OrderId,
+                DishId = entity.DishId,
+                Quantity = entity.Quantity,
+                UnitPrice = entity.UnitPrice,
+                DishName = dish?.DishName ?? entity.Dish?.DishName,
+                KitchenName = dish?.Kitchen?.KitchenName ?? entity.Dish?.Kitchen?.KitchenName
+            };
+        }
+        #endregion
     }
 }

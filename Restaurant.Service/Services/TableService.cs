@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Restaurant.Data;
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Entities;
 using Restaurant.Domain.Enums;
 using Restaurant.Service.Interfaces;
+using System.Data;
+using Dapper;
 
 namespace Restaurant.Service.Services
 {
@@ -327,5 +331,38 @@ namespace Restaurant.Service.Services
                 Status = table.Status.ToString()
             };
         }
+
+
+
+
+
+
+
+
+        public class TableDapperService
+        {
+            private readonly string _connectionString;
+
+            public TableDapperService(IConfiguration configuration)
+            {
+                _connectionString = configuration.GetConnectionString("DefaultConnection");
+            }
+
+            public async Task<int> GetTotalTablesAsync()
+            {
+                using (IDbConnection db = new SqlConnection(_connectionString))
+                {
+                    string sql = "SELECT COUNT(*) FROM Tables";
+                    var result = await db.ExecuteScalarAsync<int>(sql);
+                    return result;
+                }
+            }
+        }
+
     }
+
+
+
+
+
 }

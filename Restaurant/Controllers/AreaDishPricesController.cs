@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Domain.DTOs;
+using Restaurant.Domain.DTOs.Request;
 using Restaurant.Service.Interfaces;
+using Restaurant.Service.Services;
 
 namespace Restaurant.API.Controllers
 {
@@ -21,19 +23,41 @@ namespace Restaurant.API.Controllers
             return Ok(await _service.GetAllAsync());
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AreaDishPriceDto>> Get(string id)
+        [HttpPost("Prices")]
+        public async Task<ActionResult<IEnumerable<AreaDishPriceDto>>> Get([FromBody] GetAreaDishPrice request)
         {
-            var dto = await _service.GetByIdAsync(id);
-            return dto == null ? NotFound() : Ok(dto);
+            if (string.IsNullOrWhiteSpace(request.Area))
+                return BadRequest("Id is required.");
+
+            var tables = await _service.GetByIdAsync(request.Area);
+            return Ok(tables);
         }
+
 
         [HttpPost]
         public async Task<ActionResult<AreaDishPriceDto>> Create([FromBody] AreaDishPriceDto dto)
         {
             var created = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(Get), new { areaId = created.AreaId, dishId = created.DishId }, created);
         }
+
+
+
+
+        [HttpPost("update-price")]
+        public async Task<ActionResult<AreaDishPriceDto>> UpdatePrice([FromBody] UpdatePriceRequest request)
+        {
+            try
+            {
+                var result = await _service.UpdatePriceAsync(request.Id, request.CustomPrice);
+                return Ok(new { message = "Cập nhật giá thành công" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] AreaDishPriceDto dto)

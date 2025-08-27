@@ -65,7 +65,6 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-// ===== CORS: đặt đúng thứ tự trong pipeline =====
 app.UseCors(AllowAngularDev); // Đặt TRƯỚC UseAuthorization & MapControllers
 
 

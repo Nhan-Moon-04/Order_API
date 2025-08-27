@@ -20,5 +20,8 @@ namespace Restaurant.Service.Interfaces
 
         Task<TableDto?> OpenTableAsync(string tableCode, string areaId, string? openedBy = null);
         Task<TableDto?> CloseTableAsync(string tableCode, string? closedBy = null);
+
+
+
     }
 }

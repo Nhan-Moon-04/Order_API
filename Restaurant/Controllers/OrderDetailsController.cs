@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Domain.DTOs;
-using Restaurant.Service.Interfaces;
 using Restaurant.Domain.DTOs.Request;
+using Restaurant.Service.Interfaces;
 
 namespace Restaurant.Controllers
 {
@@ -99,6 +99,85 @@ namespace Restaurant.Controllers
             }
         }
 
+        [HttpPost("remove-food")]
+        public async Task<ActionResult<OrderDetailDto>> RemoveFood(OrderDetailDto orderDetailDto)
+        {
+            try
+            {
+                var result = await _orderDetailService.RemoveFood(orderDetailDto);
+                if (result == null)
+                {
+                    return Ok(new { message = "Món ăn đã được xóa hoàn toàn khỏi order", isCompletelyRemoved = true });
+                }
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("order/{orderId}/dish/{dishId}/remove")]
+        public async Task<ActionResult<OrderDetailDto>> RemoveFoodFromOrder(string orderId, string dishId, [FromQuery] int quantity = 1)
+        {
+            try
+            {
+                var result = await _orderDetailService.RemoveFoodFromOrder(orderId, dishId, quantity);
+                if (result == null)
+                {
+                    return Ok(new { message = "Món ăn đã được xóa hoàn toàn khỏi order", isCompletelyRemoved = true });
+                }
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("order/{orderId}/remove-multiple-dishes")]
+        public async Task<ActionResult<IEnumerable<OrderDetailDto?>>> RemoveMultipleFoodsFromOrder(string orderId, [FromBody] Dictionary<string, int> dishQuantities)
+        {
+            try
+            {
+                var results = await _orderDetailService.RemoveMultipleFoodsFromOrder(orderId, dishQuantities);
+                return Ok(results);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("remove-food-v2")]
+        public async Task<ActionResult<OrderDetailDto>> RemoveFoodV2([FromBody] RemoveFoodRequest request)
+        {
+            try
+            {
+                var dto = new OrderDetailDto
+                {
+                    OrderId = request.OrderId,
+                    DishId = request.DishId,
+                    Quantity = request.Quantity
+                };
+
+                var result = await _orderDetailService.RemoveFood(dto);
+                if (result == null)
+                {
+                    return Ok(new { 
+                        message = "Món ăn đã được xóa hoàn toàn khỏi order", 
+                        isCompletelyRemoved = true,
+                        reason = request.Reason ?? "Không có lý do"
+                    });
+                }
+                return Ok(new { orderDetail = result, reason = request.Reason });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrderDetail(string id, OrderDetailDto orderDetailDto)
         {
@@ -120,5 +199,8 @@ namespace Restaurant.Controllers
             }
             return NoContent();
         }
+
+
+
     }
 }

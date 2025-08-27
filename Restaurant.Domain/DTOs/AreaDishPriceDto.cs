@@ -7,5 +7,9 @@
         public required string DishId { get; set; }
         public double CustomPrice { get; set; }
         public DateTime EffectiveDate { get; set; }
+        public string? AreaName { get; set; }
+        public string? DishName { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

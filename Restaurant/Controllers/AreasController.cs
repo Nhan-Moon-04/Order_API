@@ -41,5 +41,12 @@ namespace Restaurant.API.Controllers
             var created = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = created.AreaId }, created);
         }   
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> CountAreas()
+        {
+            var count = await _service.CountAresa();
+            return Ok(count);
+        }
     }
 }

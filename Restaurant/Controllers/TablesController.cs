@@ -150,5 +150,13 @@ namespace Restaurant.Controllers
                 return StatusCode(500, $"Lỗi khi đóng bàn: {ex.Message}");
             }
         }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> CountTables()
+        {
+            var tables = await _tableService.GetAllTablesAsync();
+            var count = tables.Count();
+            return Ok(count);
+        }
     }
 }
