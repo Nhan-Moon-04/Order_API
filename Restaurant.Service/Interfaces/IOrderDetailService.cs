@@ -1,4 +1,4 @@
-using Restaurant.Domain.DTOs;
+﻿using Restaurant.Domain.DTOs;
 
 namespace Restaurant.Service.Interfaces
 {
@@ -13,8 +13,13 @@ namespace Restaurant.Service.Interfaces
         Task<double> GetOrderTotalAsync(string orderId);
         Task<OrderDetailDto> AddFoodToOrder(string orderId, string dishId, int quantity = 1);
         Task<IEnumerable<OrderDetailDto>> AddMultipleFoodsToOrder(string orderId, Dictionary<string, int> dishQuantities);
-        Task<OrderDetailDto?> RemoveFood(OrderDetailDto dto);
-        Task<OrderDetailDto?> RemoveFoodFromOrder(string orderId, string dishId, int quantity = 1);
+        
+        // Xóa hoàn toàn món ăn khỏi order
+        Task<bool> RemoveFood(OrderDetailDto dto);
+        Task<bool> RemoveFoodFromOrder(string orderId, string dishId);
         Task<IEnumerable<OrderDetailDto?>> RemoveMultipleFoodsFromOrder(string orderId, Dictionary<string, int> dishQuantities);
+        
+        // Thay đổi số lượng món ăn
+        Task<OrderDetailDto?> ChangeQuantityFood(string orderId, string dishId, int newQuantity);
     }
 }

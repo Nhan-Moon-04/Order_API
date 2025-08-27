@@ -146,8 +146,14 @@ namespace Restaurant.Service.Services
 
             public async Task<TableSessionDto?> OpenSessionAsync(string tableId, string openedBy)
             {
-                // 1. Kiểm tra bàn có tồn tại không
-                var table = await _context.Tables
+
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
+            var hanoiNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+
+
+            // 1. Kiểm tra bàn có tồn tại không
+            var table = await _context.Tables
                     .Include(t => t.Area) // lấy luôn Area để dùng cho Order
                     .FirstOrDefaultAsync(t => t.TableId == tableId);
 
@@ -172,7 +178,7 @@ namespace Restaurant.Service.Services
                     Id = Guid.NewGuid().ToString(),
                     SessionId = $"TS{DateTime.Now:yyyyMMddHHmmss}",
                     TableId = tableId,
-                    OpenAt = DateTime.UtcNow,
+                    OpenAt = hanoiNow,
                     OpenedBy = openedBy,
                     Status = SessionStatus.Occupied
                 };
@@ -182,7 +188,7 @@ namespace Restaurant.Service.Services
                 var newOrder = new Order
                 {
                     OrderId = Guid.NewGuid().ToString(),
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = hanoiNow,
                     IsPaid = false,
                     OrderStatus = OrderStatus.Open,
                     TableSessionId = newSession.SessionId,
@@ -196,7 +202,7 @@ namespace Restaurant.Service.Services
                     OrderId = newOrder.OrderId,
                     TableId = table.TableId,
                     IsPrimary = true,
-                    FromTime = DateTime.UtcNow
+                    FromTime = hanoiNow
                 };
                 _context.OrderTables.Add(orderTable);
 
@@ -222,6 +228,11 @@ namespace Restaurant.Service.Services
 
         public async Task<TableSessionDto?> CloseSessionAsync(string sessionId, string closedBy)
         {
+
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
+            var hanoiNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+
             var session = await _context.TableSessions
                 .Include(ts => ts.Table)
                 .FirstOrDefaultAsync(ts => ts.SessionId == sessionId);
@@ -232,11 +243,11 @@ namespace Restaurant.Service.Services
             }
 
             // 1. Cập nhật thông tin session
-            session.CloseAt = DateTime.UtcNow;
+            session.CloseAt = hanoiNow;
             session.ClosedBy = closedBy;
             session.Status = SessionStatus.Closed;
 
-            // 2. Đóng tất cả orders thuộc session này
+            // 2. Đóng tất cả orders thuộc session 
             var orders = await _context.Orders
                 .Where(o => o.TableSessionId == session.SessionId && o.OrderStatus == OrderStatus.Open)
                 .ToListAsync();
@@ -244,6 +255,7 @@ namespace Restaurant.Service.Services
             foreach (var order in orders)
             {
                 order.OrderStatus = OrderStatus.Closed;
+                order.ClosedAt = session.CloseAt;
             }
 
             // 3. Cập nhật OrderTable (đặt thời điểm kết thúc FromTime)
@@ -253,7 +265,7 @@ namespace Restaurant.Service.Services
 
             foreach (var ot in orderTables)
             {
-                ot.ToTime = DateTime.UtcNow;
+                ot.ToTime = hanoiNow;
             }
 
             // 4. Cập nhật trạng thái bàn

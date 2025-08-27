@@ -62,9 +62,6 @@ namespace Restaurant.Controllers
             }
         }
 
-
-
-
         [HttpPost]
         public async Task<ActionResult<OrderDetailDto>> AddFoodToOrder([FromBody] AddFoodRequest request)
         {
@@ -84,7 +81,6 @@ namespace Restaurant.Controllers
             }
         }
 
-
         [HttpPost("order/{orderId}/multiple-dishes")]
         public async Task<ActionResult<IEnumerable<OrderDetailDto>>> AddMultipleFoodsToOrder(string orderId, [FromBody] Dictionary<string, int> dishQuantities)
         {
@@ -99,17 +95,16 @@ namespace Restaurant.Controllers
             }
         }
 
+        /// <summary>
+        /// Xóa hoàn toàn món ăn khỏi order (không quan tâm số lượng)
+        /// </summary>
         [HttpPost("remove-food")]
-        public async Task<ActionResult<OrderDetailDto>> RemoveFood(OrderDetailDto orderDetailDto)
+        public async Task<ActionResult> RemoveFood(OrderDetailDto orderDetailDto)
         {
             try
             {
                 var result = await _orderDetailService.RemoveFood(orderDetailDto);
-                if (result == null)
-                {
-                    return Ok(new { message = "Món ăn đã được xóa hoàn toàn khỏi order", isCompletelyRemoved = true });
-                }
-                return Ok(result);
+                return Ok(new { message = "Món ăn đã được xóa hoàn toàn khỏi order", success = result });
             }
             catch (ArgumentException ex)
             {
@@ -117,16 +112,43 @@ namespace Restaurant.Controllers
             }
         }
 
-        [HttpPost("order/{orderId}/dish/{dishId}/remove")]
-        public async Task<ActionResult<OrderDetailDto>> RemoveFoodFromOrder(string orderId, string dishId, [FromQuery] int quantity = 1)
+        /// <summary>
+        /// Xóa hoàn toàn món ăn khỏi order (không quan tâm số lượng)
+        /// </summary>
+        [HttpPost("RemoveFood")]
+        public async Task<ActionResult> RemoveFoodFromOrder([FromBody] RemoveFoodRequest request)
         {
             try
             {
-                var result = await _orderDetailService.RemoveFoodFromOrder(orderId, dishId, quantity);
+                var result = await _orderDetailService.RemoveFoodFromOrder(
+                    request.OrderId,
+                    request.DishId
+                );
+
+                return Ok(new { message = "Món ăn đã được xóa hoàn toàn khỏi order", success = result });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("change-quantity")]
+        public async Task<ActionResult<OrderDetailDto>> ChangeQuantityFood([FromBody] ChangeQuantityRequest request)
+        {
+            try
+            {
+                var result = await _orderDetailService.ChangeQuantityFood(
+                    request.OrderId,
+                    request.DishId,
+                    request.NewQuantity
+                );
+
                 if (result == null)
                 {
-                    return Ok(new { message = "Món ăn đã được xóa hoàn toàn khỏi order", isCompletelyRemoved = true });
+                    return Ok(new { message = "Món ăn đã được xóa khỏi order do số lượng = 0", isRemoved = true });
                 }
+
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -142,35 +164,6 @@ namespace Restaurant.Controllers
             {
                 var results = await _orderDetailService.RemoveMultipleFoodsFromOrder(orderId, dishQuantities);
                 return Ok(results);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpPost("remove-food-v2")]
-        public async Task<ActionResult<OrderDetailDto>> RemoveFoodV2([FromBody] RemoveFoodRequest request)
-        {
-            try
-            {
-                var dto = new OrderDetailDto
-                {
-                    OrderId = request.OrderId,
-                    DishId = request.DishId,
-                    Quantity = request.Quantity
-                };
-
-                var result = await _orderDetailService.RemoveFood(dto);
-                if (result == null)
-                {
-                    return Ok(new { 
-                        message = "Món ăn đã được xóa hoàn toàn khỏi order", 
-                        isCompletelyRemoved = true,
-                        reason = request.Reason ?? "Không có lý do"
-                    });
-                }
-                return Ok(new { orderDetail = result, reason = request.Reason });
             }
             catch (ArgumentException ex)
             {
@@ -199,8 +192,5 @@ namespace Restaurant.Controllers
             }
             return NoContent();
         }
-
-
-
     }
 }

@@ -207,13 +207,13 @@ namespace Restaurant.Service.Services
             return true;
         }
 
-        // RemoveFood methods implementation
-        public async Task<OrderDetailDto?> RemoveFood(OrderDetailDto dto)
+        /// <summary>
+        /// Xóa hoàn toàn món ăn khỏi order (không quan tâm số lượng)
+        /// </summary>
+        public async Task<bool> RemoveFood(OrderDetailDto dto)
         {
             // 1. Validation: Check if Order exists
             var order = await _context.Orders
-                .Include(o => o.OrderTables)
-                    .ThenInclude(ot => ot.Table)
                 .FirstOrDefaultAsync(o => o.OrderId == dto.OrderId);
 
             if (order == null)
@@ -221,7 +221,6 @@ namespace Restaurant.Service.Services
 
             // 2. Validation: Check if Dish exists
             var dish = await _context.Dishes
-                .Include(d => d.Kitchen)
                 .FirstOrDefaultAsync(d => d.DishId == dto.DishId);
 
             if (dish == null)
@@ -229,47 +228,72 @@ namespace Restaurant.Service.Services
 
             // 3. Check if this dish exists in the order
             var existingOrderDetail = await _context.OrderDetails
-                .Include(od => od.Dish)
-                    .ThenInclude(d => d!.Kitchen)
                 .FirstOrDefaultAsync(od => od.OrderId == dto.OrderId && od.DishId == dto.DishId);
 
             if (existingOrderDetail == null)
                 throw new ArgumentException($"Món ăn {dish.DishName} không có trong order này");
 
-            // 4. Check if quantity to remove is valid
-            if (dto.Quantity <= 0)
-                throw new ArgumentException("Số lượng cần xóa phải lớn hơn 0");
+            // 4. Remove the entire order detail (complete removal)
+            _context.OrderDetails.Remove(existingOrderDetail);
+            await _context.SaveChangesAsync();
 
-            if (dto.Quantity >= existingOrderDetail.Quantity)
-            {
-                // Remove the entire order detail if quantity to remove >= existing quantity
-                _context.OrderDetails.Remove(existingOrderDetail);
-                await _context.SaveChangesAsync();
-                
-                // Return null to indicate the item was completely removed
-                return null;
-            }
-            else
-            {
-                // Reduce the quantity
-                existingOrderDetail.Quantity -= dto.Quantity;
-                await _context.SaveChangesAsync();
-
-                // Return updated DTO
-                return ToDto(existingOrderDetail);
-            }
+            return true;
         }
 
-        public async Task<OrderDetailDto?> RemoveFoodFromOrder(string orderId, string dishId, int quantity = 1)
+        /// <summary>
+        /// Xóa hoàn toàn món ăn khỏi order (không quan tâm số lượng)
+        /// </summary>
+        public async Task<bool> RemoveFoodFromOrder(string orderId, string dishId)
         {
             var dto = new OrderDetailDto
             {
                 OrderId = orderId,
                 DishId = dishId,
-                Quantity = quantity
             };
-
             return await RemoveFood(dto);
+        }
+
+
+        public async Task<OrderDetailDto?> ChangeQuantityFood(string orderId, string dishId, int newQuantity)
+        {
+            // 1. Validation
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null)
+                throw new ArgumentException($"Order với ID {orderId} không tồn tại");
+
+            // 2. Validations
+            var dish = await _context.Dishes
+                .Include(d => d.Kitchen)
+                .FirstOrDefaultAsync(d => d.DishId == dishId);
+
+            if (dish == null)
+                throw new ArgumentException($"Món ăn với ID {dishId} không tồn tại");
+
+            var existingOrderDetail = await _context.OrderDetails
+                .Include(od => od.Dish)
+                    .ThenInclude(d => d!.Kitchen)
+                .FirstOrDefaultAsync(od => od.OrderId == orderId && od.DishId == dishId);
+
+            if (existingOrderDetail == null)
+                throw new ArgumentException($"Món ăn {dish.DishName} không có trong order này");
+
+            if (newQuantity < 0)
+                throw new ArgumentException("Số lượng không thể âm");
+
+            if (newQuantity == 0)
+            {
+                _context.OrderDetails.Remove(existingOrderDetail);
+                await _context.SaveChangesAsync();
+                return null;
+            }
+
+            // 6. Update
+            existingOrderDetail.Quantity = newQuantity;
+            await _context.SaveChangesAsync();
+
+            return ToDto(existingOrderDetail);
         }
 
         public async Task<IEnumerable<OrderDetailDto?>> RemoveMultipleFoodsFromOrder(string orderId, Dictionary<string, int> dishQuantities)
@@ -278,15 +302,9 @@ namespace Restaurant.Service.Services
 
             foreach (var kvp in dishQuantities)
             {
-                var dto = new OrderDetailDto
-                {
-                    OrderId = orderId,
-                    DishId = kvp.Key,
-                    Quantity = kvp.Value
-                };
-
-                var result = await RemoveFood(dto);
-                results.Add(result);
+                var success = await RemoveFoodFromOrder(orderId, kvp.Key);
+                // Returning null for removed items to indicate they were completely removed
+                results.Add(null);
             }
 
             return results;
