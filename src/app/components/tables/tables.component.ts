@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { Table } from '../../model/table.model';
@@ -18,6 +19,7 @@ import { environment } from '../../../environments/environment';
 export class TablesComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private location = inject(Location);
     private http = inject(HttpClient);
 
     areaId = signal<string>('');
@@ -82,10 +84,16 @@ export class TablesComponent implements OnInit {
 
 
     goBack() {
-        this.router.navigate(['/']);
+        this.location.back();
     }
 
     goToOrderDashboard(table: any) {
+        // Kiểm tra xem có thể xem details không
+        if (!this.canViewDetails(table.status)) {
+            alert('Không thể xem chi tiết vì bàn chưa có đơn hàng!');
+            return;
+        }
+        
         // Navigate using tableCode instead of orderId
         // The API endpoint will fetch the latest order for this table
         this.router.navigate(['/order-dashboard', table.tableCode]);
@@ -164,12 +172,28 @@ export class TablesComponent implements OnInit {
         return statusNum === this.TableStatus.Available;
     }
 
+    canViewDetails(status: string | number): boolean {
+        const statusNum = this.getStatusNumber(status);
+        // Chỉ có thể xem details khi bàn đang có khách (Occupied) hoặc Reserved
+        // Không thể xem details khi Available vì chưa có đơn hàng
+        return statusNum === this.TableStatus.Occupied || statusNum === this.TableStatus.Reserved;
+    }
+
     getBookButtonClass(status: string | number): string {
         const base = 'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative z-10';
         if (this.canBookTable(status)) {
             return `${base} bg-orange-600 transition-colors`;
         } else {
             return `${base} bg-gray-400 text-gray-200 cursor-not-allowed`;
+        }
+    }
+
+    getDetailsButtonClass(status: string | number): string {
+        const base = 'flex-1 border-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300';
+        if (this.canViewDetails(status)) {
+            return `${base} border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white`;
+        } else {
+            return `${base} border-gray-300 text-gray-400 cursor-not-allowed`;
         }
     }
 

@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 
@@ -76,6 +77,7 @@ interface TableSession {
 export class OrderDashboardComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private location = inject(Location);
     private http = inject(HttpClient);
 
     tableId = signal<string>('');
@@ -423,6 +425,6 @@ export class OrderDashboardComponent implements OnInit {
     }
 
     goBack() {
-        this.router.navigate(['/']);
+        this.location.back();
     }
 }
