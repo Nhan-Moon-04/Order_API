@@ -32,44 +32,57 @@
 
             @if (order()) {
             <!-- Order Items Table -->
-            <div class="order-items-container">
-                <div class="grid grid-cols-12 gap-2 text-xs font-semibold text-gray-700 border-b pb-2 mb-2">
-                    <div class="col-span-1">#</div>
-                    <div class="col-span-4">Tên món</div>
-                    <div class="col-span-3 text-center">Số lượng</div>
-                    <div class="col-span-2 text-right">Giá</div>
-                    <div class="col-span-2 text-right">Thành tiền</div>
+            <div class="order-items-container mt-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="text-center" style="width: 5%">#</th>
+                                <th scope="col" style="width: 30%">Tên món</th>
+                                <th scope="col" class="text-center" style="width: 15%">Số lượng</th>
+                                <th scope="col" class="text-end" style="width: 12%">Giá</th>
+                                <th scope="col" class="text-end" style="width: 12%">Giảm giá</th>
+                                <th scope="col" class="text-end" style="width: 12%">Thuế</th>
+                                <th scope="col" class="text-end" style="width: 12%">Thành tiền</th>
+                                <th scope="col" class="text-center" style="width: 5%">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (item of order()?.orderDetails; track item.orderDetailId; let i = $index) {
+                            <tr>
+                                <td class="text-center text-muted">{{ i + 1 }}</td>
+                                <td class="fw-medium">{{ item.dishName }}</td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center gap-1">
+                                        <!-- Nút giảm số lượng (bên trái) -->
+                                        <button (click)="updateDishQuantity(item.dishId, item.quantity - 1)"
+                                            class="quantity-btn decrease-btn" [disabled]="loading()">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <!-- Hiển thị số lượng (ở giữa) -->
+                                        <span class="quantity-display">{{ item.quantity }}</span>
+                                        <!-- Nút tăng số lượng (bên phải) -->
+                                        <button (click)="updateDishQuantity(item.dishId, item.quantity + 1)"
+                                            class="quantity-btn increase-btn" [disabled]="loading()">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="text-end">{{ formatCurrency(item.unitPrice) }}</td>
+                                <td class="text-end"></td>
+                                <td class="text-end"></td>
+                                <td class="text-end fw-semibold">{{ formatCurrency(item.totalPrice) }}</td>
+                                <td class="text-center">
+                                    <button (click)="removeDishFromOrder(item.dishId)" class="remove-btn"
+                                        [disabled]="loading()" title="Xóa món khỏi order">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-
-                @for (item of order()?.orderDetails; track item.orderDetailId; let i = $index) {
-                <div class="grid grid-cols-12 gap-2 items-center py-2 border-b border-gray-100 text-sm">
-                    <div class="col-span-1 text-gray-500">{{ i + 1 }}</div>
-                    <div class="col-span-4 font-medium">{{ item.dishName }}</div>
-                    <div class="col-span-3 text-center">
-                        <div class="flex items-center justify-center gap-1">
-                            <!-- Nút giảm số lượng -->
-                            <button (click)="updateDishQuantity(item.dishId, item.quantity - 1)"
-                                class="quantity-btn decrease-btn" [disabled]="loading()">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <!-- Hiển thị số lượng -->
-                            <span class="quantity-display">{{ item.quantity }}</span>
-                            <!-- Nút tăng số lượng -->
-                            <button (click)="updateDishQuantity(item.dishId, item.quantity + 1)"
-                                class="quantity-btn increase-btn" [disabled]="loading()">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                            <!-- Nút xóa món -->
-                            <button (click)="removeDishFromOrder(item.dishId)" class="remove-btn" [disabled]="loading()"
-                                title="Xóa món khỏi order">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-span-2 text-right">{{ formatCurrency(item.unitPrice) }}</div>
-                    <div class="col-span-2 text-right font-semibold">{{ formatCurrency(item.totalPrice) }}</div>
-                </div>
-                }
             </div>
             }
         </div>

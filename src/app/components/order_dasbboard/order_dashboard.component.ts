@@ -258,7 +258,6 @@ export class OrderDashboardComponent implements OnInit {
     }
 
     if (newQuantity <= 0) {
-      // Nếu quantity <= 0, xóa món khỏi order
       this.removeDishFromOrder(dishId);
       return;
     }
@@ -336,17 +335,9 @@ export class OrderDashboardComponent implements OnInit {
       return;
     }
 
-    // Confirm before removing
     const dishToRemove = currentOrder.orderDetails.find((detail) => detail.dishId === dishId);
     if (!dishToRemove) {
       this.error.set('Không tìm thấy món ăn trong đơn hàng');
-      return;
-    }
-
-    const confirmRemove = confirm(
-      `Bạn có chắc chắn muốn xóa "${dishToRemove.dishName}" khỏi đơn hàng?`
-    );
-    if (!confirmRemove) {
       return;
     }
 
@@ -380,7 +371,6 @@ export class OrderDashboardComponent implements OnInit {
       .subscribe((response) => {
         if (response && response.success) {
           console.log('Food removed successfully:', response);
-          alert(response.message);
 
           // Cập nhật UI bằng cách loại bỏ món ăn khỏi danh sách
           const updatedOrder = { ...currentOrder };
