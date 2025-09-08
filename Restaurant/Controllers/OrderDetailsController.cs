@@ -81,19 +81,19 @@ namespace Restaurant.Controllers
             }
         }
 
-        [HttpPost("order/{orderId}/multiple-dishes")]
-        public async Task<ActionResult<IEnumerable<OrderDetailDto>>> AddMultipleFoodsToOrder(string orderId, [FromBody] Dictionary<string, int> dishQuantities)
-        {
-            try
-            {
-                var results = await _orderDetailService.AddMultipleFoodsToOrder(orderId, dishQuantities);
-                return Ok(results);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
+        //[HttpPost("order/{orderId}/multiple-dishes")]
+        //public async Task<ActionResult<IEnumerable<OrderDetailDto>>> AddMultipleFoodsToOrder(string orderId, [FromBody] Dictionary<string, int> dishQuantities)
+        //{
+        //    try
+        //    {
+        //        var results = await _orderDetailService.AddMultipleFoodsToOrder(orderId, dishQuantities);
+        //        return Ok(results);
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //}
 
         /// <summary>
         /// Xóa hoàn toàn món ăn khỏi order (không quan tâm số lượng)

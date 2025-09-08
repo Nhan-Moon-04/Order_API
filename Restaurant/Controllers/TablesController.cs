@@ -2,6 +2,7 @@
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.DTOs.Request;
 using Restaurant.Service.Interfaces;
+using static Restaurant.Service.Services.TableService;
 
 namespace Restaurant.Controllers
 {
@@ -9,12 +10,15 @@ namespace Restaurant.Controllers
     [Route("api/[controller]")]
     public class TablesController : ControllerBase
     {
-        private readonly ITableService _tableService;
+private readonly ITableService _tableService;
+private readonly TableDapperService _service;
 
-        public TablesController(ITableService tableService)
-        {
-            _tableService = tableService;
-        }
+public TablesController(ITableService tableService, TableDapperService service)
+{
+    _tableService = tableService;
+    _service = service;
+}
+
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TableDto>>> GetAllTables()
@@ -48,51 +52,9 @@ namespace Restaurant.Controllers
             return Ok(tables);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<TableDto>> CreateTable(TableDto tableDto)
-        {
-            var createdTable = await _tableService.CreateTableAsync(tableDto);
-            return CreatedAtAction(nameof(GetTable), new { tableCode = createdTable.TableCode }, createdTable);
-        }
 
-        [HttpPut("{tableCode}")]
-        public async Task<IActionResult> UpdateTable(string tableCode, TableDto tableDto)
-        {
-            var updatedTable = await _tableService.UpdateTableAsync(tableCode, tableDto);
-            if (updatedTable == null)
-            {
-                return NotFound();
-            }
-            return Ok(updatedTable);
-        }
 
-        [HttpDelete("{tableCode}")]
-        public async Task<IActionResult> DeleteTable(string tableCode)
-        {
-            var result = await _tableService.DeleteTableAsync(tableCode);
-            if (!result)
-            {
-                return NotFound();
-            }
-            return NoContent();
-        }
 
-        [HttpPost("ViewTable")]
-        public async Task<ActionResult<IEnumerable<TableDto>>> FilterTables([FromBody] TableFilterRequestDto request)
-        {
-            if (string.IsNullOrWhiteSpace(request.AreaId))
-                return BadRequest("AreaId is required.");
-
-            var tables = await _tableService.GetTablesByFilterAsync(request.AreaId, request.IsActive);
-            return Ok(tables);
-        }
-
-        [HttpGet("status")]
-        public async Task<ActionResult<IEnumerable<TableDto>>> GetTableStatus()
-        {
-            var tables = await _tableService.GetTableStatusAsync();
-            return Ok(tables);
-        }
 
         /// <summary>
         /// Mở bàn - Chuyển trạng thái từ Available sang Occupied
@@ -157,6 +119,43 @@ namespace Restaurant.Controllers
             var tables = await _tableService.GetAllTablesAsync();
             var count = tables.Count();
             return Ok(count);
+        }
+
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// /////////////////////////////
+        /// Dapper Section
+        /// </summary>
+
+        [HttpPost("move/{id}/{direction}")]
+        public async Task<IActionResult> Move(string id, string direction)
+        {
+            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(direction))
+                return BadRequest("Thiếu tham số id hoặc direction.");
+
+            var tables = await _service.Move(id, direction);
+            return Ok(tables);
+        }
+
+
+
+        [HttpPost("ViewTable")]
+        public async Task<ActionResult<IEnumerable<TableDto>>> FilterTables([FromBody] TableFilterRequestDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.AreaId))
+                return BadRequest("AreaId is required.");
+
+            var tables = await _service.GetTablesByFilterAsync(request.AreaId, request.IsActive);
+            return Ok(tables);
         }
     }
 }

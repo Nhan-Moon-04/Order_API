@@ -221,7 +221,7 @@ namespace Restaurant.Service.Services
                     OpenAt = newSession.OpenAt,
                     OpenedBy = newSession.OpenedBy,
                     Status = SessionStatus.Occupied
-                    // bạn có thể bổ sung thêm OrderId nếu cần
+
                 };
             }
 

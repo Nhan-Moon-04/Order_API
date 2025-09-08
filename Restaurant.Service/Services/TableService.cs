@@ -24,6 +24,7 @@ namespace Restaurant.Service.Services
         {
             var tables = await _context.Tables
                 .Include(t => t.Area)
+                .OrderBy(t => t.SortOrder)
                 .ToListAsync();
 
             return tables.Select(table => new TableDto
@@ -34,6 +35,7 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
+                SortOrder = table.SortOrder,
                 Status = table.Status.ToString()
             });
         }
@@ -52,6 +54,7 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
+                SortOrder = table.SortOrder,
                 Status = table.Status.ToString()
             };
         }
@@ -61,6 +64,7 @@ namespace Restaurant.Service.Services
             var tables = await _context.Tables
                 .Include(t => t.Area)
                 .Where(t => t.AreaId == areaId)
+                .OrderBy(t => t.SortOrder)
                 .ToListAsync();
 
             return tables.Select(table => new TableDto
@@ -71,6 +75,7 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
+                SortOrder = table.SortOrder,
                 Status = table.Status.ToString()
             });
         }
@@ -84,7 +89,8 @@ namespace Restaurant.Service.Services
                 TableName = dto.TableName,
                 Capacity = dto.Capacity,
                 IsActive = dto.IsActive,
-                AreaId = dto.AreaId
+                AreaId = dto.AreaId,
+                SortOrder = dto.SortOrder
             };
 
             _context.Tables.Add(entity);
@@ -102,6 +108,7 @@ namespace Restaurant.Service.Services
             entity.Capacity = dto.Capacity;
             entity.IsActive = dto.IsActive;
             entity.AreaId = dto.AreaId;
+            entity.SortOrder = dto.SortOrder;
 
             await _context.SaveChangesAsync();
             return dto;
@@ -122,6 +129,7 @@ namespace Restaurant.Service.Services
             var tables = await _context.Tables
                 .Include(t => t.Area)
                 .Where(t => t.IsActive)
+                .OrderBy(t => t.SortOrder)
                 .ToListAsync();
 
             return tables.Select(table => new TableDto
@@ -131,7 +139,8 @@ namespace Restaurant.Service.Services
                 Capacity = table.Capacity,
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
-                AreaName = table.Area?.AreaName
+                AreaName = table.Area?.AreaName,
+                SortOrder = table.SortOrder
             });
         }
 
@@ -139,6 +148,7 @@ namespace Restaurant.Service.Services
         {
             var tables = await _context.Tables
                 .Include(t => t.Area)
+                .OrderBy(t => t.SortOrder)
                 .ToListAsync();
 
             return tables.Select(table => new TableDto
@@ -149,35 +159,10 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
+                SortOrder = table.SortOrder,
                 Status = table.Status.ToString()  
             });
         }
-
-        public async Task<IEnumerable<TableDto>> GetTablesByFilterAsync(string areaId, bool? isActive)
-        {
-            var query = _context.Tables
-                .Include(t => t.Area)
-                .Where(t => t.AreaId == areaId);
-
-            if (isActive.HasValue)
-            {
-                query = query.Where(t => t.IsActive == isActive.Value);
-            }
-
-            var tables = await query.ToListAsync();
-
-            return tables.Select(table => new TableDto
-            {
-                TableCode = table.TableCode,
-                TableName = table.TableName,
-                Capacity = table.Capacity,
-                IsActive = table.IsActive,
-                AreaId = table.AreaId,
-                AreaName = table.Area?.AreaName,
-                Status = table.Status.ToString()
-            });
-        }
-
 
         public async Task<IEnumerable<TableDto>> PostChangeStatusTable(
             string tableCode, 
@@ -205,6 +190,7 @@ namespace Restaurant.Service.Services
                     IsActive = table.IsActive,
                     AreaId = table.AreaId,
                     AreaName = table.Area?.AreaName,
+                    SortOrder = table.SortOrder,
                     Status = table.Status.ToString()
                 }
             };
@@ -285,6 +271,7 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
+                SortOrder = table.SortOrder,
                 Status = table.Status.ToString()
             };
         }
@@ -328,16 +315,10 @@ namespace Restaurant.Service.Services
                 IsActive = table.IsActive,
                 AreaId = table.AreaId,
                 AreaName = table.Area?.AreaName,
+                SortOrder = table.SortOrder,
                 Status = table.Status.ToString()
             };
         }
-
-
-
-
-
-
-
 
         public class TableDapperService
         {
@@ -357,6 +338,86 @@ namespace Restaurant.Service.Services
                     return result;
                 }
             }
+
+            public async Task<IEnumerable<TableDto>> Move(string id, string direction)
+            {
+                using (var db = new SqlConnection(_connectionString))
+                {
+   
+                    direction = direction.ToLower();
+
+                    var currentSort = await db.ExecuteScalarAsync<int>(
+                        "SELECT SortOrder FROM Tables WHERE TableCode = @Id",
+                        new { Id = id });
+
+                    var minSort = await db.ExecuteScalarAsync<int>("SELECT MIN(SortOrder) FROM Tables");
+                    var maxSort = await db.ExecuteScalarAsync<int>("SELECT MAX(SortOrder) FROM Tables");
+
+                    string otherTableCode = null;
+
+                    if (direction == "up" && currentSort > minSort)
+                    {
+                        otherTableCode = await db.ExecuteScalarAsync<string>(
+                            "SELECT TableCode FROM Tables WHERE SortOrder = @SortOrder",
+                            new { SortOrder = currentSort - 1 });
+                    }
+                    else if (direction == "down" && currentSort < maxSort)
+                    {
+                        otherTableCode = await db.ExecuteScalarAsync<string>(
+                            "SELECT TableCode FROM Tables WHERE SortOrder = @SortOrder",
+                            new { SortOrder = currentSort + 1 });
+                    }
+
+                    if (string.IsNullOrEmpty(otherTableCode))
+                    {
+                        return await db.QueryAsync<TableDto>("SELECT * FROM Tables ORDER BY SortOrder");
+                    }
+                    await db.OpenAsync();
+                    using (var tran = db.BeginTransaction())
+                    {
+                        if (direction == "up")
+                        {
+                            await db.ExecuteAsync(
+                                "UPDATE Tables SET SortOrder = @SortOrder WHERE TableCode = @Id",
+                                new { SortOrder = currentSort - 1, Id = id }, tran);
+
+                            await db.ExecuteAsync(
+                                "UPDATE Tables SET SortOrder = @SortOrder WHERE TableCode = @Id",
+                                new { SortOrder = currentSort, Id = otherTableCode }, tran);
+                        }
+                        else if (direction == "down")
+                        {
+                            await db.ExecuteAsync(
+                                "UPDATE Tables SET SortOrder = @SortOrder WHERE TableCode = @Id",
+                                new { SortOrder = currentSort + 1, Id = id }, tran);
+
+                            await db.ExecuteAsync(
+                                "UPDATE Tables SET SortOrder = @SortOrder WHERE TableCode = @Id",
+                                new { SortOrder = currentSort, Id = otherTableCode }, tran);
+                        }
+
+                        tran.Commit();
+                    }
+
+                    return await db.QueryAsync<TableDto>("SELECT * FROM Tables ORDER BY SortOrder");
+                }
+            }
+
+            public async Task<IEnumerable<TableDto>> GetTablesByFilterAsync(string areaId, bool? isActive)
+            {
+                               using (IDbConnection db = new SqlConnection(_connectionString))
+                {
+                    string sql = "SELECT * FROM Tables WHERE AreaId = @AreaId ";
+                    if (isActive.HasValue)
+                    {
+                        sql += " AND IsActive = @IsActive";
+                    }
+                    sql += " ORDER BY SortOrder";  
+                    var tables = await db.QueryAsync<TableDto>(sql, new { AreaId = areaId, IsActive = isActive });
+                    return tables;
+                }
+            }
+
         }
 
     }

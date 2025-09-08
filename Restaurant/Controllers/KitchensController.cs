@@ -35,42 +35,42 @@ namespace Restaurant.Controllers
             return Ok(kitchen);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Kitchens>> CreateAsync([FromBody] KitchensDto dto)
-        {
-            if (dto == null)
-            {
-                return BadRequest("Kitchen data is required.");
-            }
-            var created = await _kitchen.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = created.KitchenId }, created);
-        }
+        //[HttpPost]
+        //public async Task<ActionResult<Kitchens>> CreateAsync([FromBody] KitchensDto dto)
+        //{
+        //    if (dto == null)
+        //    {
+        //        return BadRequest("Kitchen data is required.");
+        //    }
+        //    var created = await _kitchen.CreateAsync(dto);
+        //    return CreatedAtAction(nameof(GetByIdAsync), new { id = created.KitchenId }, created);
+        //}
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Kitchens>> UpdateAsync(string id, [FromBody] KitchensDto dto)
-        {
-            if (dto == null)
-            {
-                return BadRequest("Kitchen data is required.");
-            }
-            var updated = await _kitchen.UpdateAsync(id, dto);
-            if (updated == null)
-            {
-                return NotFound();
-            }
-            return Ok(updated);
-        }
+        //[HttpPut("{id}")]
+        //public async Task<ActionResult<Kitchens>> UpdateAsync(string id, [FromBody] KitchensDto dto)
+        //{
+        //    if (dto == null)
+        //    {
+        //        return BadRequest("Kitchen data is required.");
+        //    }
+        //    var updated = await _kitchen.UpdateAsync(id, dto);
+        //    if (updated == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(updated);
+        //}
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(string id)
-        {
-            var success = await _kitchen.DeleteAsync(id);
-            if (!success)
-            {
-                return NotFound();
-            }
-            return NoContent();
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteAsync(string id)
+        //{
+        //    var success = await _kitchen.DeleteAsync(id);
+        //    if (!success)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return NoContent();
 
-        }
+        //}
     }
 }

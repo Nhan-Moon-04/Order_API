@@ -3,6 +3,7 @@ using Restaurant.Data;
 using Restaurant.Service.Interfaces;
 using Restaurant.Service.Services;
 using System.Text.Json.Serialization;
+using static Restaurant.Service.Services.TableService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderTableService, OrderTableService>();
 builder.Services.AddScoped<ITableSessionService, TableSessionService>();
+builder.Services.AddScoped<TableDapperService>();
+
 
 var app = builder.Build();
 

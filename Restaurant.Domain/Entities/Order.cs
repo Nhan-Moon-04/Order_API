@@ -1,4 +1,5 @@
 ﻿using Restaurant.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace Restaurant.Domain.Entities
 {
@@ -11,8 +12,11 @@ namespace Restaurant.Domain.Entities
         public required string PrimaryAreaId { get; set; } // FK → Areas - for primary area determination
         public OrderStatus OrderStatus { get; set; } = OrderStatus.Open;
 
-        // New FK to TableSession
         public string? TableSessionId { get; set; } // FK → TableSession (nullable vì có thể order không liên kết với session cụ thể)
+
+        public double TotalAmount { get; set; }
+
+
 
         // Navigation
         public virtual Areas? PrimaryArea { get; set; }

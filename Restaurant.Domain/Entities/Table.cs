@@ -10,6 +10,7 @@ namespace Restaurant.Domain.Entities
         public int Capacity { get; set; }
         public bool IsActive { get; set; } = true; // Added IsActive property
         public TableStatus Status { get; set; } = TableStatus.Available;
+        public int SortOrder { get; set; }
 
         // FK - references AreaId (A001, A002, etc.)
         public required string AreaId { get; set; }

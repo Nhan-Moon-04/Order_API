@@ -12,7 +12,7 @@ using Restaurant.Data;
 namespace Restaurant.Data.Migrations
 {
     [DbContext(typeof(RestaurantDbContext))]
-    [Migration("20250825020938_InitClean")]
+    [Migration("20250903011235_InitClean")]
     partial class InitClean
     {
         /// <inheritdoc />
@@ -1042,6 +1042,9 @@ namespace Restaurant.Data.Migrations
                     b.Property<string>("TableSessionId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<double>("TotalAmount")
+                        .HasColumnType("float");
+
                     b.HasKey("OrderId");
 
                     b.HasIndex("PrimaryAreaId");
@@ -1058,7 +1061,8 @@ namespace Restaurant.Data.Migrations
                             Id = "ORD001-STATIC-ID-GUID-0000000001",
                             IsPaid = false,
                             OrderStatus = "Open",
-                            PrimaryAreaId = "A001"
+                            PrimaryAreaId = "A001",
+                            TotalAmount = 0.0
                         },
                         new
                         {
@@ -1068,7 +1072,8 @@ namespace Restaurant.Data.Migrations
                             Id = "ORD002-STATIC-ID-GUID-0000000002",
                             IsPaid = true,
                             OrderStatus = "Paid",
-                            PrimaryAreaId = "A003"
+                            PrimaryAreaId = "A003",
+                            TotalAmount = 0.0
                         },
                         new
                         {
@@ -1077,7 +1082,8 @@ namespace Restaurant.Data.Migrations
                             Id = "ORD003-STATIC-ID-GUID-0000000003",
                             IsPaid = false,
                             OrderStatus = "Open",
-                            PrimaryAreaId = "A002"
+                            PrimaryAreaId = "A002",
+                            TotalAmount = 0.0
                         },
                         new
                         {
@@ -1086,7 +1092,8 @@ namespace Restaurant.Data.Migrations
                             Id = "ORD004-STATIC-ID-GUID-0000000004",
                             IsPaid = false,
                             OrderStatus = "Open",
-                            PrimaryAreaId = "A002"
+                            PrimaryAreaId = "A002",
+                            TotalAmount = 0.0
                         },
                         new
                         {
@@ -1095,7 +1102,8 @@ namespace Restaurant.Data.Migrations
                             Id = "ORD005-STATIC-ID-GUID-0000000005",
                             IsPaid = false,
                             OrderStatus = "Open",
-                            PrimaryAreaId = "A007"
+                            PrimaryAreaId = "A007",
+                            TotalAmount = 0.0
                         },
                         new
                         {
@@ -1105,7 +1113,8 @@ namespace Restaurant.Data.Migrations
                             Id = "ORD006-STATIC-ID-GUID-0000000006",
                             IsPaid = true,
                             OrderStatus = "Paid",
-                            PrimaryAreaId = "A003"
+                            PrimaryAreaId = "A003",
+                            TotalAmount = 0.0
                         });
                 });
 

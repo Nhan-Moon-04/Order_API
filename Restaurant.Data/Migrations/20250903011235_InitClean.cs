@@ -179,6 +179,7 @@ namespace Restaurant.Data.Migrations
                     PrimaryAreaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OrderStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TableSessionId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    TotalAmount = table.Column<double>(type: "float", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -351,15 +352,15 @@ namespace Restaurant.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Orders",
-                columns: new[] { "OrderId", "ClosedAt", "CreatedAt", "Id", "IsPaid", "OrderStatus", "PrimaryAreaId", "TableSessionId" },
+                columns: new[] { "OrderId", "ClosedAt", "CreatedAt", "Id", "IsPaid", "OrderStatus", "PrimaryAreaId", "TableSessionId", "TotalAmount" },
                 values: new object[,]
                 {
-                    { "ORD001", null, new DateTime(2025, 1, 15, 12, 30, 0, 0, DateTimeKind.Unspecified), "ORD001-STATIC-ID-GUID-0000000001", false, "Open", "A001", null },
-                    { "ORD002", new DateTime(2025, 1, 15, 15, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 15, 13, 15, 0, 0, DateTimeKind.Unspecified), "ORD002-STATIC-ID-GUID-0000000002", true, "Paid", "A003", null },
-                    { "ORD003", null, new DateTime(2025, 1, 15, 14, 0, 0, 0, DateTimeKind.Unspecified), "ORD003-STATIC-ID-GUID-0000000003", false, "Open", "A002", null },
-                    { "ORD004", null, new DateTime(2025, 1, 15, 18, 15, 0, 0, DateTimeKind.Unspecified), "ORD004-STATIC-ID-GUID-0000000004", false, "Open", "A002", null },
-                    { "ORD005", null, new DateTime(2025, 1, 15, 19, 30, 0, 0, DateTimeKind.Unspecified), "ORD005-STATIC-ID-GUID-0000000005", false, "Open", "A007", null },
-                    { "ORD006", new DateTime(2025, 1, 14, 22, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 14, 20, 0, 0, 0, DateTimeKind.Unspecified), "ORD006-STATIC-ID-GUID-0000000006", true, "Paid", "A003", null }
+                    { "ORD001", null, new DateTime(2025, 1, 15, 12, 30, 0, 0, DateTimeKind.Unspecified), "ORD001-STATIC-ID-GUID-0000000001", false, "Open", "A001", null, 0.0 },
+                    { "ORD002", new DateTime(2025, 1, 15, 15, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 15, 13, 15, 0, 0, DateTimeKind.Unspecified), "ORD002-STATIC-ID-GUID-0000000002", true, "Paid", "A003", null, 0.0 },
+                    { "ORD003", null, new DateTime(2025, 1, 15, 14, 0, 0, 0, DateTimeKind.Unspecified), "ORD003-STATIC-ID-GUID-0000000003", false, "Open", "A002", null, 0.0 },
+                    { "ORD004", null, new DateTime(2025, 1, 15, 18, 15, 0, 0, DateTimeKind.Unspecified), "ORD004-STATIC-ID-GUID-0000000004", false, "Open", "A002", null, 0.0 },
+                    { "ORD005", null, new DateTime(2025, 1, 15, 19, 30, 0, 0, DateTimeKind.Unspecified), "ORD005-STATIC-ID-GUID-0000000005", false, "Open", "A007", null, 0.0 },
+                    { "ORD006", new DateTime(2025, 1, 14, 22, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 14, 20, 0, 0, 0, DateTimeKind.Unspecified), "ORD006-STATIC-ID-GUID-0000000006", true, "Paid", "A003", null, 0.0 }
                 });
 
             migrationBuilder.InsertData(

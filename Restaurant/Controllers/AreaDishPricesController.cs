@@ -59,18 +59,6 @@ namespace Restaurant.API.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] AreaDishPriceDto dto)
-        {
-            var success = await _service.UpdateAsync(id, dto);
-            return success ? NoContent() : NotFound();
-        }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            var success = await _service.DeleteAsync(id);
-            return success ? NoContent() : NotFound();
-        }
     }
 }

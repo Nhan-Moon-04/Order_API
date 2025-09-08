@@ -11,7 +11,6 @@ namespace Restaurant.Service.Interfaces
         Task<TableDto?> UpdateTableAsync(string tableCode, TableDto dto);
         Task<bool> DeleteTableAsync(string tableCode);
         Task<IEnumerable<TableDto>> GetAvailableTablesAsync();
-        Task<IEnumerable<TableDto>> GetTablesByFilterAsync(string areaId, bool? isActive);
         Task<IEnumerable<TableDto>> GetTableStatusAsync();
 
         Task<IEnumerable<TableDto>> PostChangeStatusTable(

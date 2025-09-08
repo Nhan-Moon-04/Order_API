@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Restaurant.Domain.DTOs
+namespace Restaurant.Application.DTOs
 {
     public class OrderDto
     {
@@ -32,12 +32,12 @@ namespace Restaurant.Domain.DTOs
         public string? AreaName { get; set; }
         
         [JsonPropertyName("totalAmount")]
-        public double TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
         
         [JsonPropertyName("orderDetails")]
         public List<OrderDetailDto>? OrderDetails { get; set; }
         
         [JsonPropertyName("tableSession")]
-        public TableSessionDto? TableSession { get; set; } // TableSession information
+        public TableSessionDto? TableSession { get; set; } 
     }
 }
