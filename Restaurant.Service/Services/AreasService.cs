@@ -1,8 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Restaurant.Data;
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Entities;
+using Restaurant.Domain.Enums;
 using Restaurant.Service.Interfaces;
+using System.Data;
+using Dapper;
 namespace Restaurant.Service.Services
 {
     public class AreasService : IAreasService
@@ -60,10 +65,36 @@ namespace Restaurant.Service.Services
         }
 
 
-       public async Task<int> CountAresa()
+        public async Task<int> CountAresa()
         {
             var count = await _context.Areas.CountAsync();
             return count;
+        }
+
+
+
+
+        public class AreasDapperService
+        {
+            private readonly string _connectionString;
+
+            public AreasDapperService(IConfiguration configuration)
+            {
+                _connectionString = configuration.GetConnectionString("DefaultConnection");
+            }
+             
+            public async Task<AreasDto> UpdateIsActivate(string id, bool active)
+            {
+                using var connection = new Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+                var sql = "UPDATE Areas SET IsActive = @Active WHERE AreaId = @Id; " +
+                          "SELECT AreaId, AreaName, Description, IsActive, CreatedAt FROM Areas WHERE AreaId = @Id;";
+                var area = await connection.QuerySingleOrDefaultAsync<AreasDto>(sql, new { Id = id, Active = active });
+                if (area == null)
+                {
+                    throw new KeyNotFoundException($"Không tìm thấy khu vực với ID: {id}");
+                }
+                return area;
+            }
         }
     }
 }

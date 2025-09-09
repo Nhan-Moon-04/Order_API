@@ -3,6 +3,7 @@ using Restaurant.Data;
 using Restaurant.Service.Interfaces;
 using Restaurant.Service.Services;
 using System.Text.Json.Serialization;
+using static Restaurant.Service.Services.AreasService;
 using static Restaurant.Service.Services.TableService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,7 @@ builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderTableService, OrderTableService>();
 builder.Services.AddScoped<ITableSessionService, TableSessionService>();
 builder.Services.AddScoped<TableDapperService>();
+builder.Services.AddScoped<AreasDapperService>();
 
 
 var app = builder.Build();
@@ -73,6 +75,17 @@ app.UseCors(AllowAngularDev); // Đặt TRƯỚC UseAuthorization & MapControlle
 
 app.UseAuthorization();
 
+
+
+
 app.MapControllers();
+
+
+
+////set up để public qua ngrok
+//app.UseCors("AllowAll");
+//app.UseDefaultFiles();
+//app.UseStaticFiles();
+
 
 app.Run();

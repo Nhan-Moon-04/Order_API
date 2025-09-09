@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Domain.DTOs.Request
 {
-    public class MoveRequest
+    public class UpdateIsActiveRrequest
     {
-        public required string TableCode { get; set; }
-        public required string Direction { get; set; }
+        public required string Id { get; set; }
+        public required bool IsActive { get; set; }
     }
 }

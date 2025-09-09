@@ -34,19 +34,7 @@ namespace Restaurant.Controllers
             return Ok(orderDetail);
         }
 
-        [HttpGet("order/{orderId}")]
-        public async Task<ActionResult<IEnumerable<OrderDetailDto>>> GetOrderDetailsByOrder(string orderId)
-        {
-            var orderDetails = await _orderDetailService.GetOrderDetailsByOrderIdAsync(orderId);
-            return Ok(orderDetails);
-        }
 
-        [HttpGet("order/{orderId}/total")]
-        public async Task<ActionResult<double>> GetOrderTotal(string orderId)
-        {
-            var total = await _orderDetailService.GetOrderTotalAsync(orderId);
-            return Ok(total);
-        }
 
         [HttpPost("add-food")]
         public async Task<ActionResult<OrderDetailDto>> AddFood(OrderDetailDto orderDetailDto)
@@ -62,7 +50,7 @@ namespace Restaurant.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost ("AddFood")]
         public async Task<ActionResult<OrderDetailDto>> AddFoodToOrder([FromBody] AddFoodRequest request)
         {
             try

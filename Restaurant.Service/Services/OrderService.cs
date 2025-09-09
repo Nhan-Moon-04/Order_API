@@ -3,7 +3,7 @@ using Restaurant.Data;
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Entities;
 using Restaurant.Service.Interfaces;
-
+using Dapper;
 namespace Restaurant.Service.Services
 {
     public class OrderService : IOrderService
@@ -321,14 +321,14 @@ namespace Restaurant.Service.Services
             if (latestSession == null)
                 return null;
 
-            // Lấy order gắn với session đó
+            // Lấy order gắn với session 
             var order = await _context.Orders
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Dish)
                 .Include(o => o.OrderTables)
                     .ThenInclude(ot => ot.Table)
                         .ThenInclude(t => t.Area)
-                .FirstOrDefaultAsync(o => o.TableSessionId == latestSession.SessionId); // Fixed: Use SessionId instead of Id
+                .FirstOrDefaultAsync(o => o.TableSessionId == latestSession.SessionId);
 
             if (order == null)
                 return null;
@@ -346,7 +346,7 @@ namespace Restaurant.Service.Services
                 AreaName = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary)?.Table?.Area?.AreaName
                             ?? order.OrderTables.FirstOrDefault()?.Table?.Area?.AreaName,
                 TotalAmount = order.OrderDetails.Sum(od => od.TotalPrice),
-                TableSessionId = order.TableSessionId, // Fixed: Add missing TableSessionId
+                TableSessionId = order.TableSessionId,
                 OrderDetails = order.OrderDetails.Select(od => new OrderDetailDto
                 {
                     OrderDetailId = od.OrderDetailId,

@@ -343,35 +343,47 @@ namespace Restaurant.Service.Services
             {
                 using (var db = new SqlConnection(_connectionString))
                 {
-   
                     direction = direction.ToLower();
 
-                    var currentSort = await db.ExecuteScalarAsync<int>(
-                        "SELECT SortOrder FROM Tables WHERE TableCode = @Id",
+                    // Lấy SortOrder + AreaId của bàn hiện tại
+                    var current = await db.QuerySingleAsync<(int SortOrder, string AreaId)>(
+                        "SELECT SortOrder, AreaId FROM Tables WHERE TableCode = @Id",
                         new { Id = id });
 
-                    var minSort = await db.ExecuteScalarAsync<int>("SELECT MIN(SortOrder) FROM Tables");
-                    var maxSort = await db.ExecuteScalarAsync<int>("SELECT MAX(SortOrder) FROM Tables");
+                    var currentSort = current.SortOrder;
+                    var areaId = current.AreaId;
+
+                    // Lấy min/max trong cùng Area
+                    var minSort = await db.ExecuteScalarAsync<int>(
+                        "SELECT MIN(SortOrder) FROM Tables WHERE AreaId = @AreaId",
+                        new { AreaId = areaId });
+
+                    var maxSort = await db.ExecuteScalarAsync<int>(
+                        "SELECT MAX(SortOrder) FROM Tables WHERE AreaId = @AreaId",
+                        new { AreaId = areaId });
 
                     string otherTableCode = null;
 
                     if (direction == "up" && currentSort > minSort)
                     {
                         otherTableCode = await db.ExecuteScalarAsync<string>(
-                            "SELECT TableCode FROM Tables WHERE SortOrder = @SortOrder",
-                            new { SortOrder = currentSort - 1 });
+                            "SELECT TableCode FROM Tables WHERE AreaId = @AreaId AND SortOrder = @SortOrder",
+                            new { AreaId = areaId, SortOrder = currentSort - 1 });
                     }
                     else if (direction == "down" && currentSort < maxSort)
                     {
                         otherTableCode = await db.ExecuteScalarAsync<string>(
-                            "SELECT TableCode FROM Tables WHERE SortOrder = @SortOrder",
-                            new { SortOrder = currentSort + 1 });
+                            "SELECT TableCode FROM Tables WHERE AreaId = @AreaId AND SortOrder = @SortOrder",
+                            new { AreaId = areaId, SortOrder = currentSort + 1 });
                     }
 
                     if (string.IsNullOrEmpty(otherTableCode))
                     {
-                        return await db.QueryAsync<TableDto>("SELECT * FROM Tables ORDER BY SortOrder");
+                        return await db.QueryAsync<TableDto>(
+                            "SELECT * FROM Tables WHERE AreaId = @AreaId ORDER BY SortOrder",
+                            new { AreaId = areaId });
                     }
+
                     await db.OpenAsync();
                     using (var tran = db.BeginTransaction())
                     {
@@ -399,9 +411,12 @@ namespace Restaurant.Service.Services
                         tran.Commit();
                     }
 
-                    return await db.QueryAsync<TableDto>("SELECT * FROM Tables ORDER BY SortOrder");
+                    return await db.QueryAsync<TableDto>(
+                        "SELECT * FROM Tables WHERE AreaId = @AreaId ORDER BY SortOrder",
+                        new { AreaId = areaId });
                 }
             }
+
 
             public async Task<IEnumerable<TableDto>> GetTablesByFilterAsync(string areaId, bool? isActive)
             {

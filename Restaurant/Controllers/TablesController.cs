@@ -136,15 +136,18 @@ public TablesController(ITableService tableService, TableDapperService service)
         /// Dapper Section
         /// </summary>
 
-        [HttpPost("move/{id}/{direction}")]
-        public async Task<IActionResult> Move(string id, string direction)
+
+        [HttpPost("Move")]
+        public async Task<IActionResult> Move([FromBody] MoveRequest mr)
         {
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(direction))
+            if (string.IsNullOrWhiteSpace(mr.TableCode) || string.IsNullOrWhiteSpace(mr.Direction))
                 return BadRequest("Thiếu tham số id hoặc direction.");
 
-            var tables = await _service.Move(id, direction);
+            var tables = await _service.Move(mr.TableCode, mr.Direction);
             return Ok(tables);
         }
+
+
 
 
 

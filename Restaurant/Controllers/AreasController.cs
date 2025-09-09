@@ -4,7 +4,10 @@ using Restaurant.Data;
 using Restaurant.Domain.DTOs;
 using Restaurant.Domain.Entities;
 using Restaurant.Service.Interfaces;
+using Restaurant.Domain.DTOs.Request;
 
+
+using static Restaurant.Service.Services.AreasService;
 namespace Restaurant.API.Controllers
 {
     [ApiController]
@@ -12,10 +15,11 @@ namespace Restaurant.API.Controllers
     public class AreasController : ControllerBase
     {
         private readonly IAreasService _service;
-
-        public AreasController(IAreasService service)
+        private readonly AreasDapperService areasDapperService;
+        public AreasController(IAreasService service, AreasDapperService dapper)
         {
             _service = service;
+            areasDapperService = dapper;
         }
 
         // GET: api/areas
@@ -40,13 +44,32 @@ namespace Restaurant.API.Controllers
             if (dto == null) return BadRequest("Area data is required.");
             var created = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = created.AreaId }, created);
-        }   
+        }
 
         [HttpGet("count")]
         public async Task<ActionResult<int>> CountAreas()
         {
             var count = await _service.CountAresa();
             return Ok(count);
+        }
+
+
+        [HttpPost("update-active")]
+        public async Task<IActionResult> UpdateActiveStatus([FromBody] UpdateIsActiveRrequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Id))
+                return BadRequest("Id is required.");
+            try
+            {
+                var updatedArea = await areasDapperService.UpdateIsActivate(request.Id, request.IsActive);
+                if (updatedArea == null)
+                    return NotFound($"No area found with Id: {request.Id}");
+                return Ok(updatedArea);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }
