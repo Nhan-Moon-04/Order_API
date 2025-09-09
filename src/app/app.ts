@@ -11,7 +11,7 @@ import { environment } from '../environments/environment';
   standalone: true,
   imports: [RouterOutlet, HttpClientModule, CommonModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App implements OnInit {
   protected readonly title = signal('restaurant-app');
@@ -28,7 +28,5 @@ export class App implements OnInit {
   private loadAreas() {
     this.loading.set(true);
     this.error.set(null);
-
-
   }
 }

@@ -132,7 +132,6 @@ export class OrderDashboardComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    // API endpoint expects tableId to get the latest order for that table
     this.http
       .get<Order>(`https://localhost:7136/api/Orders/${tableId}/latest-order`)
       .pipe(
@@ -206,7 +205,7 @@ export class OrderDashboardComponent implements OnInit {
     this.error.set(null);
 
     this.http
-      .post<OrderDetail>('https://localhost:7136/api/OrderDetails', orderDetailRequest, {
+      .post<OrderDetail>('https://localhost:7136/api/OrderDetails/AddFood', orderDetailRequest, {
         headers: {
           'Content-Type': 'application/json',
           accept: 'text/plain',
@@ -427,8 +426,6 @@ export class OrderDashboardComponent implements OnInit {
   }
 
   private generateCurrentSessionId(): string {
-    // Tạo sessionId theo pattern TS + yyyyMMddHHmmss
-    // Giống với pattern trong backend: $"TS{DateTime.Now:yyyyMMddHHmmss}"
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
