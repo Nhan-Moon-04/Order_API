@@ -91,7 +91,7 @@ export class AreaPricesComponent implements OnInit {
 
     // Load area dish prices
     const dishPrices$ = this.http
-      .post<AreaDishPrice[]>('https://localhost:7136/api/AreaDishPrices/Prices', payload)
+      .post<AreaDishPrice[]>(`${environment.apiUrl}/AreaDishPrices/Prices`, payload)
       .pipe(
         catchError((err) => {
           console.error('Error loading dish prices:', err);
@@ -176,7 +176,7 @@ export class AreaPricesComponent implements OnInit {
     };
 
     this.http
-      .post(`${environment.apiUrl}/api/AreaDishPrices/update-price`, updatePayload)
+      .post(`${environment.apiUrl}/AreaDishPrices/update-price`, updatePayload)
       .pipe(
         catchError((err) => {
           console.error('Error updating price:', err);
