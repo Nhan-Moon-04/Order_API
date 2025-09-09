@@ -5,6 +5,7 @@ import { OrderDashboardComponent } from './components/order_dasbboard/order_dash
 import { AdminDashboardComponent } from './admin/dashboard/admin-dashboard.component';
 import { AdminAreasComponent } from './admin/areas/admin-areas.component';
 import { AreaPricesComponent } from './admin/area-prices/area-prices.component';
+import { TablesAreasComponent } from './admin/tables-areas/tables-areas.compontent';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -15,6 +16,6 @@ export const routes: Routes = [
   { path: 'admin', component: AdminDashboardComponent },
   { path: 'admin/areas', component: AdminAreasComponent },
   { path: 'admin/area-prices', component: AreaPricesComponent },
-
+  { path: 'admin/tables-areas', component: TablesAreasComponent },
   { path: '**', redirectTo: '' },
 ];

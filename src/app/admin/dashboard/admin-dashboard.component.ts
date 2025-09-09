@@ -123,5 +123,12 @@ export class AdminDashboardComponent implements OnInit {
       route: '/admin/area-prices',
       color: 'bg-yellow-500',
     },
+    {
+      title: 'Quản lý Bàn - Khu vực',
+      description: 'Phân bàn theo khu vực',
+      icon: 'fas fa-th-large',
+      route: '/admin/tables-areas',
+      color: 'bg-pink-500',
+    },
   ];
 }

@@ -14,6 +14,7 @@ import {
   RemoveFoodResponse,
 } from '../../model/order-quantity-request.model';
 import { environment } from '../../../environments/environment';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-area-prices',
@@ -138,8 +139,11 @@ export class AreaPricesComponent implements OnInit {
     });
   }
 
+  private location = inject(Location);
   goBack() {
-    this.router.navigate(['/admin']);
+    if (window.history.length > 1) {
+      this.location.back();
+    }
   }
 
   selectArea(area: Area) {

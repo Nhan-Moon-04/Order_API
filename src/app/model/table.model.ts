@@ -4,8 +4,9 @@ export interface Table {
   tableName: string;
   capacity: number;
   isActive: boolean;
-  status: number;     
+  status: number;
   openAt?: string;
   closeAt?: string;
   areaId: string;
+  sortOrder?: number;
 }
