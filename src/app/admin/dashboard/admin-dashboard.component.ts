@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 import { Title } from '@angular/platform-browser';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -46,7 +47,7 @@ export class AdminDashboardComponent implements OnInit {
 
   private loadAreasCount() {
     this.http
-      .get<number>('https://localhost:7136/api/Areas/count')
+      .get<number>(`${environment.apiUrl}/Areas/count`)
       .pipe(
         catchError((err) => {
           console.error('Error loading areas count:', err);
@@ -60,7 +61,7 @@ export class AdminDashboardComponent implements OnInit {
 
   private loadTablesCount() {
     this.http
-      .get<number>('https://localhost:7136/api/Tables/count')
+      .get<number>(`${environment.apiUrl}/Tables/count'+`)
       .pipe(
         catchError((err) => {
           console.error('Error loading tables count:', err);

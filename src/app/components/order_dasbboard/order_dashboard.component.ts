@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 interface OrderDetail {
   orderDetailId: string;
@@ -133,7 +134,7 @@ export class OrderDashboardComponent implements OnInit {
     this.error.set(null);
 
     this.http
-      .get<Order>(`https://localhost:7136/api/Orders/${tableId}/latest-order`)
+      .get<Order>(`${environment.apiUrl}/Orders/${tableId}/latest-order`)
       .pipe(
         catchError((err) => {
           console.error('HTTP Error:', err);
@@ -149,7 +150,7 @@ export class OrderDashboardComponent implements OnInit {
 
   private loadDishes() {
     this.http
-      .get<Dish[]>('https://localhost:7136/api/Dishes')
+      .get<Dish[]>(`${environment.apiUrl}/Dishes`)
       .pipe(
         catchError((err) => {
           console.error('HTTP Error:', err);
@@ -205,7 +206,7 @@ export class OrderDashboardComponent implements OnInit {
     this.error.set(null);
 
     this.http
-      .post<OrderDetail>('https://localhost:7136/api/OrderDetails/AddFood', orderDetailRequest, {
+      .post<OrderDetail>(`${environment.apiUrl}/OrderDetails/AddFood`, orderDetailRequest, {
         headers: {
           'Content-Type': 'application/json',
           accept: 'text/plain',
@@ -273,7 +274,7 @@ export class OrderDashboardComponent implements OnInit {
 
     this.http
       .post<ChangeQuantityResponse>(
-        'https://localhost:7136/api/OrderDetails/change-quantity',
+        `${environment.apiUrl}/OrderDetails/change-quantity`,
         changeQuantityRequest,
         {
           headers: {
@@ -351,7 +352,7 @@ export class OrderDashboardComponent implements OnInit {
 
     this.http
       .post<RemoveFoodResponse>(
-        'https://localhost:7136/api/OrderDetails/RemoveFood',
+        `${environment.apiUrl}/OrderDetails/RemoveFood`,
         removeFoodRequest,
         {
           headers: {
@@ -395,7 +396,7 @@ export class OrderDashboardComponent implements OnInit {
 
   closeTable(sessionId: string): Observable<TableSession> {
     const closedBy = 'Nhan';
-    const url = `https://localhost:7136/api/TableSessions/session/${sessionId}/close`;
+    const url = `${environment.apiUrl}/TableSessions/session/${sessionId}/close`;
 
     return this.http
       .put<TableSession>(url, JSON.stringify(closedBy), {
@@ -416,7 +417,7 @@ export class OrderDashboardComponent implements OnInit {
   private getActiveTableSession(tableCode: string): Observable<TableSession | null> {
     // API để lấy active session của table
     return this.http
-      .get<TableSession>(`https://localhost:7136/api/TableSessions/table/${tableCode}/active`)
+      .get<TableSession>(`${environment.apiUrl}/TableSessions/table/${tableCode}/active`)
       .pipe(
         catchError((err) => {
           console.error('Error getting active table session:', err);

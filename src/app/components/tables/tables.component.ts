@@ -64,14 +64,12 @@ export class TablesComponent implements OnInit {
       isActive: true,
     };
 
-    return this.http
-      .post<Table[]>('https://localhost:7136/api/Tables/ViewTable', ViewTablePayload)
-      .pipe(
-        catchError((err) => {
-          console.error('HTTP Error:', err);
-          return of([]);
-        })
-      );
+    return this.http.post<Table[]>(`${environment.apiUrl}/Tables/ViewTable`, ViewTablePayload).pipe(
+      catchError((err) => {
+        console.error('HTTP Error:', err);
+        return of([]);
+      })
+    );
   }
 
   private getAreaById(areaId: string): Observable<Area | null> {
@@ -229,7 +227,7 @@ export class TablesComponent implements OnInit {
     const table = this.selectedTable();
     if (!table) return;
 
-    const url = `https://localhost:7136/api/TableSessions/table/${table.tableCode}/open`;
+    const url = `${environment.apiUrl}/TableSessions/table/${table.tableCode}/open`;
 
     console.log('Opening table with URL:', url);
 

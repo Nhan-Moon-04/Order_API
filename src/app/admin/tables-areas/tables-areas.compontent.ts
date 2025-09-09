@@ -85,7 +85,7 @@ export class TablesAreasComponent implements OnInit {
     payload.direction = direction;
 
     this.http
-      .post<Table[]>(`https://localhost:7136/api/Tables/Move`, payload)
+      .post<Table[]>(`${environment.apiUrl}/Tables/Move`, payload)
       .pipe(
         catchError((err) => {
           this.error.set(`Failed to move table ${direction}.`);

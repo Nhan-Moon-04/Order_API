@@ -176,7 +176,7 @@ export class AreaPricesComponent implements OnInit {
     };
 
     this.http
-      .post('https://localhost:7136/api/AreaDishPrices/update-price', updatePayload)
+      .post(`${environment.apiUrl}/api/AreaDishPrices/update-price`, updatePayload)
       .pipe(
         catchError((err) => {
           console.error('Error updating price:', err);
@@ -233,10 +233,7 @@ export class AreaPricesComponent implements OnInit {
     };
 
     this.http
-      .post<ChangeQuantityResponse>(
-        'https://localhost:7136/api/OrderDetails/change-quantity',
-        request
-      )
+      .post<ChangeQuantityResponse>(`${environment.apiUrl}/OrderDetails/change-quantity`, request)
       .pipe(
         catchError((err) => {
           console.error('Error changing quantity:', err);
@@ -287,7 +284,7 @@ export class AreaPricesComponent implements OnInit {
     };
 
     this.http
-      .post<RemoveFoodResponse>('https://localhost:7136/api/OrderDetails/RemoveFood', request)
+      .post<RemoveFoodResponse>(`${environment.apiUrl}/OrderDetails/RemoveFood`, request)
       .pipe(
         catchError((err) => {
           console.error('Error removing food:', err);

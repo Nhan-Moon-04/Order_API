@@ -198,7 +198,7 @@ export class AdminAreasComponent implements OnInit {
     };
 
     this.http
-      .post<Area>(`https://localhost:7136/api/Areas/update-active`, payload)
+      .post<Area>(`${environment.apiUrl}/Areas/update-active`, payload)
       .pipe(
         catchError((err) => {
           this.error.set(`Không thể cập nhật trạng thái khu vực.`);
