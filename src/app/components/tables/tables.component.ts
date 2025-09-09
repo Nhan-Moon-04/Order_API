@@ -10,241 +10,261 @@ import { TableFilter } from '../../model/table-filter.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
-    selector: 'app-tables',
-    standalone: true,
-    imports: [CommonModule, HttpClientModule],
-    templateUrl: './tables.component.html',
-    styleUrl: './tables.component.css'
+  selector: 'app-tables',
+  standalone: true,
+  imports: [CommonModule, HttpClientModule],
+  templateUrl: './tables.component.html',
+  styleUrl: './tables.component.css',
 })
 export class TablesComponent implements OnInit {
-    private route = inject(ActivatedRoute);
-    private router = inject(Router);
-    private location = inject(Location);
-    private http = inject(HttpClient);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private location = inject(Location);
+  private http = inject(HttpClient);
 
-    areaId = signal<string>('');
-    area = signal<Area | null>(null);
-    tables$ = signal<Table[]>([]);
-    loading = signal(false);
-    error = signal<string | null>(null);
+  areaId = signal<string>('');
+  area = signal<Area | null>(null);
+  tables$ = signal<Table[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
-    selectedTable = signal<any | null>(null);
-    showConfirmModal = signal(false);
+  selectedTable = signal<any | null>(null);
+  showConfirmModal = signal(false);
 
-    ngOnInit() {
-        this.route.params.subscribe(params => {
-            const id = params['areaId'];
-            if (id) {
-                this.areaId.set(id);
-                this.loadTables(id);
-            }
-        });
-    }
+  ngOnInit() {
+    this.route.params.subscribe((params) => {
+      const id = params['areaId'];
+      if (id) {
+        this.areaId.set(id);
+        this.loadTables(id);
+      }
+    });
+  }
 
-    private loadTables(areaId: string) {
-        this.loading.set(true);
-        this.error.set(null);
+  private loadTables(areaId: string) {
+    this.loading.set(true);
+    this.error.set(null);
 
-        this.getTablesByArea(areaId).subscribe({
-            next: (tables) => {
-                this.tables$.set(tables);
-                this.loading.set(false);
-            },
-            error: (err) => {
-                this.error.set('Failed to load tables');
-                this.loading.set(false);
-                console.error('Error loading tables:', err);
-            }
-        });
-    }
+    this.getTablesByArea(areaId).subscribe({
+      next: (tables) => {
+        this.tables$.set(tables);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Failed to load tables');
+        this.loading.set(false);
+        console.error('Error loading tables:', err);
+      },
+    });
+  }
 
-    private getTablesByArea(areaId: string): Observable<Table[]> {
-        const ViewTablePayload: TableFilter = {
-            areaId: areaId,
-            isActive: true
-        };
-
-
-        return this.http.post<Table[]>('https://localhost:7136/api/Tables/ViewTable', ViewTablePayload).pipe(
-            catchError(err => {
-                console.error('HTTP Error:', err);
-                return of([]);
-            })
-        );
-    }
-
-    private getAreaById(areaId: string): Observable<Area | null> {
-        return this.http.get<Area>(`${environment.apiUrl}/Areas/${areaId}`).pipe(
-            catchError(err => {
-                console.error('HTTP Error:', err);
-                return of(null);
-            })
-        );
-    }
-
-
-    goBack() {
-        this.location.back();
-    }
-
-    goToOrderDashboard(table: any) {
-        // Kiểm tra xem có thể xem details không
-        if (!this.canViewDetails(table.status)) {
-            alert('Không thể xem chi tiết vì bàn chưa có đơn hàng!');
-            return;
-        }
-        
-        // Navigate using tableCode instead of orderId
-        // The API endpoint will fetch the latest order for this table
-        this.router.navigate(['/order-dashboard', table.tableCode]);
-    }
-
-    TableStatus = {
-        Available: 0,
-        Occupied: 1,
-        Reserved: 2,
-        Closed: 3,
-        Cleaning: 4
+  private getTablesByArea(areaId: string): Observable<Table[]> {
+    const ViewTablePayload: TableFilter = {
+      areaId: areaId,
+      isActive: true,
     };
 
-    getStatusNumber(status: string | number): number {
-        if (typeof status === 'number') return status;
-        switch (status) {
-            case "Available": return 0;
-            case "Occupied": return 1;
-            case "Reserved": return 2;
-            case "Closed": return 3;
-            case "Cleaning": return 4;
-            default: return -1;
-        }
+    return this.http
+      .post<Table[]>('https://localhost:7136/api/Tables/ViewTable', ViewTablePayload)
+      .pipe(
+        catchError((err) => {
+          console.error('HTTP Error:', err);
+          return of([]);
+        })
+      );
+  }
+
+  private getAreaById(areaId: string): Observable<Area | null> {
+    return this.http.get<Area>(`${environment.apiUrl}/Areas/${areaId}`).pipe(
+      catchError((err) => {
+        console.error('HTTP Error:', err);
+        return of(null);
+      })
+    );
+  }
+
+  goBack() {
+    this.location.back();
+  }
+
+  goToOrderDashboard(table: any) {
+    // Kiểm tra xem có thể xem details không
+    if (!this.canViewDetails(table.status)) {
+      alert('Không thể xem chi tiết vì bàn chưa có đơn hàng!');
+      return;
     }
 
-    getStatusString(status: string | number): string {
-        if (typeof status === 'string') return status;
-        switch (status) {
-            case 0: return "Available";
-            case 1: return "Occupied";
-            case 2: return "Reserved";
-            case 3: return "Closed";
-            case 4: return "Cleaning";
-            default: return "Unknown";
-        }
+    // Navigate using tableCode instead of orderId
+    // The API endpoint will fetch the latest order for this table
+    this.router.navigate(['/order-dashboard', table.tableCode]);
+  }
+
+  TableStatus = {
+    Available: 0,
+    Occupied: 1,
+    Reserved: 2,
+    Closed: 3,
+    Cleaning: 4,
+  };
+
+  getStatusNumber(status: string | number): number {
+    if (typeof status === 'number') return status;
+    switch (status) {
+      case 'Available':
+        return 0;
+      case 'Occupied':
+        return 1;
+      case 'Reserved':
+        return 2;
+      case 'Closed':
+        return 3;
+      case 'Cleaning':
+        return 4;
+      default:
+        return -1;
     }
+  }
 
-    getStatusText(status: string | number): string {
-        return this.getStatusString(status);
+  getStatusString(status: string | number): string {
+    if (typeof status === 'string') return status;
+    switch (status) {
+      case 0:
+        return 'Available';
+      case 1:
+        return 'Occupied';
+      case 2:
+        return 'Reserved';
+      case 3:
+        return 'Closed';
+      case 4:
+        return 'Cleaning';
+      default:
+        return 'Unknown';
     }
+  }
 
-    getStatusBadgeClass(status: string | number): string {
-        const statusNum = this.getStatusNumber(status);
-        const base = 'text-xs px-2 py-1 rounded-full';
-        switch (statusNum) {
-            case this.TableStatus.Available: return `${base} bg-green-100 text-green-800`;
-            case this.TableStatus.Occupied: return `${base} bg-red-100 text-red-800`;
-            case this.TableStatus.Reserved: return `${base} bg-blue-100 text-blue-800`;
-            case this.TableStatus.Closed: return `${base} bg-gray-100 text-gray-800`;
-            case this.TableStatus.Cleaning: return `${base} bg-yellow-100 text-yellow-800`;
-            default: return `${base} bg-gray-100 text-gray-800`;
-        }
+  getStatusText(status: string | number): string {
+    return this.getStatusString(status);
+  }
+
+  getStatusBadgeClass(status: string | number): string {
+    const statusNum = this.getStatusNumber(status);
+    const base = 'text-xs px-2 py-1 rounded-full';
+    switch (statusNum) {
+      case this.TableStatus.Available:
+        return `${base} bg-green-100 text-green-800`;
+      case this.TableStatus.Occupied:
+        return `${base} bg-red-100 text-red-800`;
+      case this.TableStatus.Reserved:
+        return `${base} bg-blue-100 text-blue-800`;
+      case this.TableStatus.Closed:
+        return `${base} bg-gray-100 text-gray-800`;
+      case this.TableStatus.Cleaning:
+        return `${base} bg-yellow-100 text-yellow-800`;
+      default:
+        return `${base} bg-gray-100 text-gray-800`;
     }
+  }
 
-    getTableCardClass(status: string | number): string {
-        const statusNum = this.getStatusNumber(status);
-        let base = 'bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 p-4';
-        switch (statusNum) {
-            case this.TableStatus.Available:
-                return `${base} border-l-4 border-green-500`;
-            case this.TableStatus.Occupied:
-                return `${base} border-l-4 border-red-500`;
-            case this.TableStatus.Reserved:
-                return `${base} border-l-4 border-blue-500`;
-            case this.TableStatus.Closed:
-                return `${base} border-l-4 border-gray-500 opacity-75`;
-            case this.TableStatus.Cleaning:
-                return `${base} border-l-4 border-yellow-500`;
-            default:
-                return `${base} border-l-4 border-orange-500`;
-        }
+  getTableCardClass(status: string | number): string {
+    const statusNum = this.getStatusNumber(status);
+    let base =
+      'bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 p-4';
+    switch (statusNum) {
+      case this.TableStatus.Available:
+        return `${base} border-l-4 border-green-500`;
+      case this.TableStatus.Occupied:
+        return `${base} border-l-4 border-red-500`;
+      case this.TableStatus.Reserved:
+        return `${base} border-l-4 border-blue-500`;
+      case this.TableStatus.Closed:
+        return `${base} border-l-4 border-gray-500 opacity-75`;
+      case this.TableStatus.Cleaning:
+        return `${base} border-l-4 border-yellow-500`;
+      default:
+        return `${base} border-l-4 border-orange-500`;
     }
+  }
 
-    canBookTable(status: string | number): boolean {
-        const statusNum = this.getStatusNumber(status);
-        return statusNum === this.TableStatus.Available;
+  canBookTable(status: string | number): boolean {
+    const statusNum = this.getStatusNumber(status);
+    return statusNum === this.TableStatus.Available;
+  }
+
+  canViewDetails(status: string | number): boolean {
+    const statusNum = this.getStatusNumber(status);
+    // Chỉ có thể xem details khi bàn đang có khách (Occupied) hoặc Reserved
+    // Không thể xem details khi Available vì chưa có đơn hàng
+    return statusNum === this.TableStatus.Occupied || statusNum === this.TableStatus.Reserved;
+  }
+
+  getBookButtonClass(status: string | number): string {
+    const base =
+      'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative z-10';
+    if (this.canBookTable(status)) {
+      return `${base} bg-orange-600 transition-colors`;
+    } else {
+      return `${base} bg-gray-400 text-gray-200 cursor-not-allowed`;
     }
+  }
 
-    canViewDetails(status: string | number): boolean {
-        const statusNum = this.getStatusNumber(status);
-        // Chỉ có thể xem details khi bàn đang có khách (Occupied) hoặc Reserved
-        // Không thể xem details khi Available vì chưa có đơn hàng
-        return statusNum === this.TableStatus.Occupied || statusNum === this.TableStatus.Reserved;
+  getDetailsButtonClass(status: string | number): string {
+    const base =
+      'flex-1 border-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300';
+    if (this.canViewDetails(status)) {
+      return `${base} border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white`;
+    } else {
+      return `${base} border-gray-300 text-gray-400 cursor-not-allowed`;
     }
+  }
 
-    getBookButtonClass(status: string | number): string {
-        const base = 'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative z-10';
-        if (this.canBookTable(status)) {
-            return `${base} bg-orange-600 transition-colors`;
-        } else {
-            return `${base} bg-gray-400 text-gray-200 cursor-not-allowed`;
-        }
+  confirmBooking(table: any): void {
+    if (this.canBookTable(table.status)) {
+      this.selectedTable.set(table);
+      this.showConfirmModal.set(true);
     }
+  }
 
-    getDetailsButtonClass(status: string | number): string {
-        const base = 'flex-1 border-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300';
-        if (this.canViewDetails(status)) {
-            return `${base} border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white`;
-        } else {
-            return `${base} border-gray-300 text-gray-400 cursor-not-allowed`;
-        }
-    }
+  confirmBookingAction() {
+    const table = this.selectedTable();
+    if (!table) return;
 
-    confirmBooking(table: any): void {
-        if (this.canBookTable(table.status)) {
-            this.selectedTable.set(table);
-            this.showConfirmModal.set(true);
-        }
-    }
+    const url = `https://localhost:7136/api/TableSessions/table/${table.tableCode}/open`;
 
-    confirmBookingAction() {
-        const table = this.selectedTable();
-        if (!table) return;
+    console.log('Opening table with URL:', url);
 
-        const url = `https://localhost:7136/api/TableSessions/table/${table.tableCode}/open`;
+    // Payload cần stringify để đúng format JSON string
+    const payload = JSON.stringify('NHAN');
 
-        console.log('Opening table with URL:', url);
+    // Thêm headers để đảm bảo Content-Type đúng
+    const headers = {
+      'Content-Type': 'application/json',
+    };
 
-        // Payload cần stringify để đúng format JSON string
-        const payload = JSON.stringify("NHAN");
+    console.log('Payload being sent:', payload);
 
-        // Thêm headers để đảm bảo Content-Type đúng
-        const headers = {
-            'Content-Type': 'application/json'
-        };
+    this.http.post<any>(url, payload, { headers }).subscribe({
+      next: (res) => {
+        console.log(`Đã mở bàn ${table.tableName} thành công!`, res);
+        alert(`Đã mở bàn ${table.tableName} thành công!`);
+        this.closeModal();
+        // Reload lại danh sách bàn để cập nhật trạng thái
+        this.loadTables(this.areaId());
+      },
+      error: (err) => {
+        console.error('Lỗi mở bàn:', err);
+        alert(`Lỗi mở bàn ${table.tableName}: ${err.error?.message || err.message}`);
+        this.closeModal();
+      },
+    });
+  }
 
-        console.log('Payload being sent:', payload);
+  closeModal() {
+    this.showConfirmModal.set(false);
+    this.selectedTable.set(null);
+  }
 
-        this.http.post<any>(url, payload, { headers }).subscribe({
-            next: (res) => {
-                console.log(`Đã mở bàn ${table.tableName} thành công!`, res);
-                alert(`Đã mở bàn ${table.tableName} thành công!`);
-                this.closeModal();
-                // Reload lại danh sách bàn để cập nhật trạng thái
-                this.loadTables(this.areaId());
-            },
-            error: (err) => {
-                console.error("Lỗi mở bàn:", err);
-                alert(`Lỗi mở bàn ${table.tableName}: ${err.error?.message || err.message}`);
-                this.closeModal();
-            }
-        });
-    }
-
-
-    closeModal() {
-        this.showConfirmModal.set(false);
-        this.selectedTable.set(null);
-    }
-
-    getTableStatusClass(isActive: boolean): string {
-        return isActive ? 'text-green-600 font-semibold' : 'text-red-500 font-semibold';
-    }
+  getTableStatusClass(isActive: boolean): string {
+    return isActive ? 'text-green-600 font-semibold' : 'text-red-500 font-semibold';
+  }
 }
