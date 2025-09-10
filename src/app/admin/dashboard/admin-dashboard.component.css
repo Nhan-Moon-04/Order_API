@@ -1,7 +1,6 @@
 /* Admin Dashboard Styles - Professional Version */
 
 .admin-container {
-
   background: #f8fafc;
   position: relative;
 }
@@ -33,7 +32,6 @@
   border-radius: 8px;
   border: none;
   font-weight: 600;
-  transition: background-color 0.2s ease;
 }
 
 .btn-home:hover {
@@ -61,12 +59,11 @@
   padding: 1.5rem;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+
   position: relative;
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -82,10 +79,18 @@
   margin-bottom: 1rem;
 }
 
-.stat-icon.blue { background: #3b82f6; }
-.stat-icon.green { background: #10b981; }
-.stat-icon.orange { background: #f59e0b; }
-.stat-icon.purple { background: #8b5cf6; }
+.stat-icon.blue {
+  background: #3b82f6;
+}
+.stat-icon.green {
+  background: #10b981;
+}
+.stat-icon.orange {
+  background: #f59e0b;
+}
+.stat-icon.purple {
+  background: #8b5cf6;
+}
 
 .stat-number {
   font-size: 2rem;
@@ -114,12 +119,10 @@
   padding: 2rem;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .menu-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -156,7 +159,6 @@
   padding: 10px 20px;
   border-radius: 8px;
   font-weight: 500;
-  transition: all 0.2s ease;
   width: 100%;
 }
 
@@ -193,11 +195,9 @@
   border-radius: 8px;
   border: 1px solid;
   font-weight: 500;
-  transition: all 0.2s ease;
 }
 
 .quick-action-btn:hover {
-  transform: translateY(-1px);
 }
 
 .quick-action-btn.blue {
@@ -235,19 +235,19 @@
   .admin-header h1 {
     font-size: 1.875rem;
   }
-  
+
   .menu-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
-  
+
   .menu-card {
     padding: 1.5rem;
   }
-  
+
   .stat-card {
     padding: 1.25rem;
   }
@@ -261,10 +261,8 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
