@@ -132,80 +132,7 @@ namespace Restaurant.Service.Services
             });
         }
 
-        public async Task<IEnumerable<OrderDetailDto>> AddMultipleFoodsToOrder(string orderId, Dictionary<string, int> dishQuantities)
-        {
-            var results = new List<OrderDetailDto>();
-            foreach (var kvp in dishQuantities)
-            {
-                var result = await AddFood(new OrderDetailDto
-                {
-                    OrderId = orderId,
-                    DishId = kvp.Key,
-                    Quantity = kvp.Value
-                });
-                results.Add(result);
-            }
-            return results;
-        }
-        #endregion
 
-        #region UPDATE / REMOVE
-        public async Task<OrderDetailDto?> UpdateOrderDetailAsync(string id, OrderDetailDto dto)
-        {
-            var entity = await _context.OrderDetails.FirstOrDefaultAsync(od => od.OrderDetailId == id);
-            if (entity == null) return null;
-
-            entity.DishId = dto.DishId;
-            entity.Quantity = dto.Quantity;
-            entity.UnitPrice = dto.UnitPrice;
-
-            await _context.SaveChangesAsync();
-            return dto;
-        }
-
-        public async Task<OrderDetailDto?> UpdateFoodQuantity(string orderId, string dishId, int delta)
-        {
-            var entity = await _context.OrderDetails
-                .Include(od => od.Dish)
-                .FirstOrDefaultAsync(od => od.OrderId == orderId && od.DishId == dishId);
-
-            if (entity == null)
-                throw new ArgumentException($"Món {dishId} không tồn tại trong order {orderId}");
-
-            entity.Quantity += delta;
-            if (entity.Quantity <= 0)
-            {
-                _context.OrderDetails.Remove(entity);
-                await _context.SaveChangesAsync();
-                return null;
-            }
-
-            await _context.SaveChangesAsync();
-            return ToDto(entity);
-        }
-
-        public async Task<bool> DeleteOrderDetailAsync(string id)
-        {
-            var entity = await _context.OrderDetails.FirstOrDefaultAsync(od => od.OrderDetailId == id);
-            if (entity == null) return false;
-
-            _context.OrderDetails.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteFoodFromOrder(string orderId, string dishId)
-        {
-            var entity = await _context.OrderDetails
-                .FirstOrDefaultAsync(od => od.OrderId == orderId && od.DishId == dishId);
-
-            if (entity == null)
-                throw new ArgumentException($"Món {dishId} không tồn tại trong order {orderId}");
-
-            _context.OrderDetails.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
 
         /// <summary>
         /// Xóa hoàn toàn món ăn khỏi order (không quan tâm số lượng)
@@ -296,19 +223,7 @@ namespace Restaurant.Service.Services
             return ToDto(existingOrderDetail);
         }
 
-        public async Task<IEnumerable<OrderDetailDto?>> RemoveMultipleFoodsFromOrder(string orderId, Dictionary<string, int> dishQuantities)
-        {
-            var results = new List<OrderDetailDto?>();
-
-            foreach (var kvp in dishQuantities)
-            {
-                var success = await RemoveFoodFromOrder(orderId, kvp.Key);
-                // Returning null for removed items to indicate they were completely removed
-                results.Add(null);
-            }
-
-            return results;
-        }
+       
         #endregion
 
         #region TOTAL

@@ -16,14 +16,6 @@ namespace Restaurant.Service.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<TableSessionDto>> GetAllAsync()
-        {
-            var sessions = await _context.TableSessions
-                .Include(ts => ts.Table)
-                .ToListAsync();
-
-            return sessions.Select(MapToDto);
-        }
 
         public async Task<TableSessionDto?> GetByIdAsync(string id)
         {
@@ -34,115 +26,10 @@ namespace Restaurant.Service.Services
             return session != null ? MapToDto(session) : null;
         }
 
-        public async Task<TableSessionDto?> GetBySessionIdAsync(string sessionId)
-        {
-            var session = await _context.TableSessions
-                .Include(ts => ts.Table)
-                .FirstOrDefaultAsync(ts => ts.SessionId == sessionId);
-
-            return session != null ? MapToDto(session) : null;
-        }
-
-        public async Task<IEnumerable<TableSessionDto>> GetByTableIdAsync(string tableId)
-        {
-            var sessions = await _context.TableSessions
-                .Include(ts => ts.Table)
-                .Where(ts => ts.TableId == tableId)
-                .OrderByDescending(ts => ts.OpenAt)
-                .ToListAsync();
-
-            return sessions.Select(MapToDto);
-        }
-
-        public async Task<IEnumerable<TableSessionDto>> GetByStatusAsync(SessionStatus status)
-        {
-            var sessions = await _context.TableSessions
-                .Include(ts => ts.Table)
-                .Where(ts => ts.Status == status)
-                .ToListAsync();
-
-            return sessions.Select(MapToDto);
-        }
 
 
-        public async Task<TableSessionDto> CreateAsync(TableSessionDto tableSessionDto)
-        {
-            // 1. Lấy thông tin table (để lấy AreaId)
-            var table = await _context.Tables
-                .Include(t => t.Area)
-                .FirstOrDefaultAsync(t => t.TableId == tableSessionDto.TableId);
 
-            if (table == null)
-                throw new Exception("Table not found");
-
-            // 2. Tạo TableSession
-            var session = new TableSession
-            {
-                Id = Guid.NewGuid().ToString(),
-                SessionId = tableSessionDto.SessionId ?? Guid.NewGuid().ToString(),
-                TableId = tableSessionDto.TableId,
-                OpenAt = DateTime.Now,
-                OpenedBy = tableSessionDto.OpenedBy,
-                Status = SessionStatus.Occupied
-            };
-            _context.TableSessions.Add(session);
-
-            // 3. Tạo Order gắn với session
-            var order = new Order
-            {
-                OrderId = Guid.NewGuid().ToString(),
-                CreatedAt = DateTime.Now,
-                IsPaid = false,
-                OrderStatus = OrderStatus.Open, // Fixed: Changed from Paid to Open for new orders
-                TableSessionId = session.SessionId, // Fixed: Use SessionId instead of Id
-                PrimaryAreaId = table.AreaId
-            };
-            _context.Orders.Add(order);
-
-            // 4. Gắn Order với Table (OrderTable)
-            var orderTable = new OrderTable
-            {
-                OrderId = order.OrderId,
-                TableId = table.TableId,
-                IsPrimary = true,
-                FromTime = DateTime.Now
-            };
-            _context.OrderTables.Add(orderTable);
-
-            await _context.SaveChangesAsync();
-
-            // 5. Trả lại DTO (đã có session + order gốc)
-            return await GetByIdAsync(session.Id) ?? throw new InvalidOperationException("Failed to create session");
-        }
-
-
-        public async Task<TableSessionDto?> UpdateAsync(string id, TableSessionDto tableSessionDto)
-        {
-            var session = await _context.TableSessions.FindAsync(id);
-            if (session == null) return null;
-
-            session.SessionId = tableSessionDto.SessionId;
-            session.TableId = tableSessionDto.TableId;
-            session.OpenAt = tableSessionDto.OpenAt;
-            session.CloseAt = tableSessionDto.CloseAt;
-            session.OpenedBy = tableSessionDto.OpenedBy;
-            session.ClosedBy = tableSessionDto.ClosedBy;
-            session.Status = tableSessionDto.Status;
-
-            await _context.SaveChangesAsync();
-
-            return await GetByIdAsync(id);
-        }
-
-        public async Task<bool> DeleteAsync(string id)
-        {
-            var session = await _context.TableSessions.FindAsync(id);
-            if (session == null) return false;
-
-            _context.TableSessions.Remove(session);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+    
 
             public async Task<TableSessionDto?> OpenSessionAsync(string tableId, string openedBy)
             {
@@ -282,16 +169,7 @@ namespace Restaurant.Service.Services
         }
 
 
-        public async Task<IEnumerable<TableSessionDto>> GetSessionsByDateRangeAsync(DateTime startDate, DateTime endDate)
-        {
-            var sessions = await _context.TableSessions
-                .Include(ts => ts.Table)
-                .Where(ts => ts.OpenAt >= startDate && ts.OpenAt <= endDate)
-                .OrderByDescending(ts => ts.OpenAt)
-                .ToListAsync();
 
-            return sessions.Select(MapToDto);
-        }
 
         private static TableSessionDto MapToDto(TableSession session)
         {
@@ -313,7 +191,7 @@ namespace Restaurant.Service.Services
         {
             return new TableDto
             {
-                // Id and TableId are not part of TableDto; expose client-facing fields only
+               
                 TableCode = table.TableCode,
                 TableName = table.TableName,
                 Capacity = table.Capacity,
@@ -325,31 +203,7 @@ namespace Restaurant.Service.Services
         }
 
 
-        public async Task<TableSessionDto?> GetActiveSessionByTableIdAsync(string tableId)
-        {
-            var session = await _context.TableSessions
-                .Include(ts => ts.Table)
-                .ThenInclude(t => t.Area) // Include the Area property
-                .FirstOrDefaultAsync(ts => ts.TableId == tableId && ts.Status == SessionStatus.Occupied);
-
-            if (session == null) return null;
-
-            return new TableSessionDto
-            {
-                Id = session.Id,
-                SessionId = session.SessionId,
-                TableId = session.TableId,
-                OpenAt = session.OpenAt,
-                OpenedBy = session.OpenedBy,
-                Status = session.Status,
-                Table = new TableDto
-                {
-                    TableCode = session.Table.TableCode,
-                    TableName = session.Table.TableName,
-                    AreaName = session.Table.Area.AreaName
-                }
-            };
-        }
+       
 
 
 

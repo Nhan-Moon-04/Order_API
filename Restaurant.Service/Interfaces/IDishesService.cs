@@ -10,8 +10,6 @@ namespace Restaurant.Service.Interfaces
     public interface IDishesService
     {
         Task<IEnumerable<DishesDto>> GetAllDishesAsync();
-        Task<DishesDto> GetDishByIdAsync(string id);
 
-        Task<DishesDto> CreateDishAsync(DishesDto dishDto);
     }
 }

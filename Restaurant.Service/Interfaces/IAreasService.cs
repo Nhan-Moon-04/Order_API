@@ -6,7 +6,6 @@ namespace Restaurant.Service.Interfaces
     {
         Task<IEnumerable<AreasDto>> GetAllAsync();
         Task<AreasDto?> GetByIdAsync(string id);
-        Task<AreasDto> CreateAsync(AreasDto dto);
 
         Task<int> CountAresa();
 

@@ -82,10 +82,7 @@ app.MapControllers();
 
 
 
-////set up để public qua ngrok
-//app.UseCors("AllowAll");
-//app.UseDefaultFiles();
-//app.UseStaticFiles();
+
 
 
 app.Run();

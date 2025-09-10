@@ -20,42 +20,7 @@ public TablesController(ITableService tableService, TableDapperService service)
 }
 
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TableDto>>> GetAllTables()
-        {
-            var tables = await _tableService.GetAllTablesAsync();
-            return Ok(tables);
-        }
-
-        [HttpGet("{tableCode}")]
-        public async Task<ActionResult<TableDto>> GetTable(string tableCode)
-        {
-            var table = await _tableService.GetTableByIdAsync(tableCode);
-            if (table == null)
-            {
-                return NotFound();
-            }
-            return Ok(table);
-        }
-
-        [HttpGet("area/{areaId}")]
-        public async Task<ActionResult<IEnumerable<TableDto>>> GetTablesByArea(string areaId)
-        {
-            var tables = await _tableService.GetTablesByAreaIdAsync(areaId);
-            return Ok(tables);
-        }
-
-        [HttpGet("available")]
-        public async Task<ActionResult<IEnumerable<TableDto>>> GetAvailableTables()
-        {
-            var tables = await _tableService.GetAvailableTablesAsync();
-            return Ok(tables);
-        }
-
-
-
-
-
+    
         /// <summary>
         /// Mở bàn - Chuyển trạng thái từ Available sang Occupied
         /// </summary>

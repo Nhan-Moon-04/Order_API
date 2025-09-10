@@ -38,13 +38,7 @@ namespace Restaurant.API.Controllers
             return dto == null ? NotFound() : Ok(dto);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<AreasDto>> Create([FromBody] AreasDto dto)
-        {
-            if (dto == null) return BadRequest("Area data is required.");
-            var created = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(Get), new { id = created.AreaId }, created);
-        }
+
 
         [HttpGet("count")]
         public async Task<ActionResult<int>> CountAreas()

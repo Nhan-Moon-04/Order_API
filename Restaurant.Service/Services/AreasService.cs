@@ -45,24 +45,7 @@ namespace Restaurant.Service.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<AreasDto> CreateAsync(AreasDto dto)
-        {
-            var areaId = Guid.NewGuid().ToString();
-            var area = new Areas
-            {
-                Id = areaId,
-                AreaId = areaId,
-                AreaName = dto.AreaName,
-                Description = dto.Description,
-                IsActive = dto.IsActive,
-                CreatedAt = dto.CreatedAt
-            };
 
-            _context.Areas.Add(area);
-            await _context.SaveChangesAsync();
-            dto.AreaId = area.AreaId;
-            return dto;
-        }
 
 
         public async Task<int> CountAresa()

@@ -16,77 +16,16 @@ namespace Restaurant.Controllers
             _tableSessionService = tableSessionService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TableSessionDto>>> GetAll()
-        {
-            var sessions = await _tableSessionService.GetAllAsync();
-            return Ok(sessions);
-        }
-
-        [HttpGet("by-id/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<TableSessionDto>> GetById(string id)
         {
             var session = await _tableSessionService.GetByIdAsync(id);
             if (session == null)
-                return NotFound();
-            return Ok(session);
-        }
-
-        [HttpGet("session/{sessionId}")]
-        public async Task<ActionResult<TableSessionDto>> GetBySessionId(string sessionId)
-        {
-            var session = await _tableSessionService.GetBySessionIdAsync(sessionId);
-            if (session == null)
             {
                 return NotFound();
             }
+
             return Ok(session);
-        }
-
-        [HttpGet("table/{tableId}")]
-        public async Task<ActionResult<IEnumerable<TableSessionDto>>> GetByTableId(string tableId)
-        {
-            var sessions = await _tableSessionService.GetByTableIdAsync(tableId);
-            return Ok(sessions);
-        }
-
-        [HttpGet("status/{status}")]
-        public async Task<ActionResult<IEnumerable<TableSessionDto>>> GetByStatus(SessionStatus status)
-        {
-            var sessions = await _tableSessionService.GetByStatusAsync(status);
-            return Ok(sessions);
-        }
-
-        //[HttpGet("table/{tableId}/active")]
-        //public async Task<ActionResult<TableSessionDto>> GetActiveSession(string tableId)
-        //{
-        //    var session = await _tableSessionService.GetActiveSessionByTableIdAsync(tableId);
-        //    if (session == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(session);
-        //}
-
-        [HttpGet("daterange")]
-        public async Task<ActionResult<IEnumerable<TableSessionDto>>> GetByDateRange(
-            [FromQuery] DateTime startDate, 
-            [FromQuery] DateTime endDate)
-        {
-            var sessions = await _tableSessionService.GetSessionsByDateRangeAsync(startDate, endDate);
-            return Ok(sessions);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<TableSessionDto>> Create([FromBody] TableSessionDto tableSessionDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var createdSession = await _tableSessionService.CreateAsync(tableSessionDto);
-            return CreatedAtAction(nameof(GetById), new { id = createdSession.Id }, createdSession);
         }
 
         [HttpPost("table/{tableId}/open")]
@@ -113,43 +52,7 @@ namespace Restaurant.Controllers
             return Ok(session);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<TableSessionDto>> Update(string id, [FromBody] TableSessionDto tableSessionDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var updatedSession = await _tableSessionService.UpdateAsync(id, tableSessionDto);
-            if (updatedSession == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(updatedSession);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(string id)
-        {
-            var deleted = await _tableSessionService.DeleteAsync(id);
-            if (!deleted)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-        [HttpGet("{tableId}")]
-        public async Task<IActionResult> GetActiveSessionByTableId(string tableId)
-        {
-            var session = await _tableSessionService.GetActiveSessionByTableIdAsync(tableId);
-            if (session == null)
-                return NotFound(new { Message = "Không tìm thấy session đang mở cho bàn này" });
-
-            return Ok(session);
-        }
+   
     }
 }
