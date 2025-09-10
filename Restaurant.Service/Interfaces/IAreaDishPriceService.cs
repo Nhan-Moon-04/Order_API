@@ -6,9 +6,9 @@ namespace Restaurant.Service.Interfaces
     {
         Task<IEnumerable<AreaDishPriceDto>> GetAllAsync();
         Task<IEnumerable<AreaDishPriceDto>> GetByIdAsync(string areaId);
-        Task<AreaDishPriceDto> CreateAsync(AreaDishPriceDto dto);
+
         Task<bool> UpdateAsync(string id, AreaDishPriceDto dto);
-        Task<bool> DeleteAsync(string id);
+
 
         Task<AreaDishPriceDto> UpdatePriceAsync(string id, decimal customPrice);
     }

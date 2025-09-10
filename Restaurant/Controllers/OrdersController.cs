@@ -18,23 +18,6 @@ namespace Restaurant.Controllers
 
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<OrderDto>> GetOrder(string id)
-        {
-            var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-            return Ok(order);
-        }
-
-        [HttpGet("table/{tableCode}")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByTable(string tableCode)
-        {
-            var orders = await _orderService.GetOrdersByTableIdAsync(tableCode);
-            return Ok(orders);
-        }
 
 
 

@@ -61,25 +61,7 @@ namespace Restaurant.Service.Services
             }
         }
 
-        public async Task<AreaDishPriceDto> CreateAsync(AreaDishPriceDto dto)
-        {
-            var entityId = Guid.NewGuid().ToString();
-            var entity = new AreaDishPrices
-            {
-                Id = entityId,
-                AreaId = dto.AreaId,
-                DishId = dto.DishId,
-                CustomPrice = dto.CustomPrice,
-                EffectiveDate = dto.EffectiveDate,
-                IsActive = true
-            };
-
-            _context.AreaDishPrices.Add(entity);
-            await _context.SaveChangesAsync();
-
-            dto.Id = entity.Id;
-            return dto;
-        }
+      
 
         public async Task<bool> UpdateAsync(string id, AreaDishPriceDto dto)
         {
@@ -157,14 +139,5 @@ namespace Restaurant.Service.Services
 
 
 
-        public async Task<bool> DeleteAsync(string id)
-        {
-            var entity = await _context.AreaDishPrices.FirstOrDefaultAsync(e => e.Id == id);
-            if (entity == null) return false;
-
-            _context.AreaDishPrices.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
     }
 }

@@ -34,12 +34,7 @@ namespace Restaurant.API.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult<AreaDishPriceDto>> Create([FromBody] AreaDishPriceDto dto)
-        {
-            var created = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(Get), new { areaId = created.AreaId, dishId = created.DishId }, created);
-        }
+
 
 
 

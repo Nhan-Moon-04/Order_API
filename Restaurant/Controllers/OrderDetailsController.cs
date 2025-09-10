@@ -47,13 +47,16 @@ namespace Restaurant.Controllers
             }
         }
 
-
-        [HttpPost("remove-food")]
-        public async Task<ActionResult> RemoveFood(OrderDetailDto orderDetailDto)
+        [HttpPost("RemoveFood")]
+        public async Task<ActionResult> RemoveFoodFromOrder([FromBody] RemoveFoodRequest request)
         {
             try
             {
-                var result = await _orderDetailService.RemoveFood(orderDetailDto);
+                var result = await _orderDetailService.RemoveFoodFromOrder(
+                    request.OrderId,
+                    request.DishId
+                );
+
                 return Ok(new { message = "Món ăn đã được xóa hoàn toàn khỏi order", success = result });
             }
             catch (ArgumentException ex)

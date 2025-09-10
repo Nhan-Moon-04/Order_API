@@ -15,5 +15,6 @@ namespace Restaurant.Service.Interfaces
         
         // Thay đổi số lượng món ăn
         Task<OrderDetailDto?> ChangeQuantityFood(string orderId, string dishId, int newQuantity);
+        Task<bool> RemoveFoodFromOrder(string orderId, string dishId);
     }
 }

@@ -90,7 +90,12 @@ public TablesController(ITableService tableService, TableDapperService service)
 
 
 
-
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TableDto>>> GetAllTables()
+        {
+            var tables = await _tableService.GetAllTablesAsync();
+            return Ok(tables);
+        }
 
 
 
