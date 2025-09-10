@@ -1,91 +1,61 @@
-<div class="home-container">
+<div class="simple-home">
     <!-- Header -->
-    <header class="home-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="fade-in">
-                    <h1 class="home-title">
-                        Super Restaurant
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-
-        </div>
-    </section>
+    <div class="simple-header">
+        <h1>Super Restaurant</h1>
+    </div>
 
     <!-- Areas Section -->
-    <section class="areas-section">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-            <!-- Loading State -->
-            @if (loading()) {
-            <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <p class="loading-text">Đang tải khu vực...</p>
-            </div>
-            }
-
-            <!-- Error State -->
-            @if (error()) {
-            <div class="error-card">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                {{ error() }}
-            </div>
-            }
-
-            <!-- Areas Grid -->
-            @if (area$().length > 0) {
-            <div class="areas-grid fade-in">
-                @for (area of area$(); track area.areaId) {
-                <div class="area-card" (click)="navigateToTables(area.areaId)">
-                    <div class="area-card-header">
-                        <div class="area-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div class="area-info">
-                            <h3 class="area-name">{{ area.areaName }}</h3>
-                            <span class="area-status" [ngClass]="area.isActive ? 'active' : 'inactive'">
-                                {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
-                            </span>
-                        </div>
-                    </div>
-
-                    @if (area.description) {
-                    <p class="area-description">{{ area.description }}</p>
-                    }
-
-                    <div class="area-footer">
-                        <div class="area-meta">
-                            <span class="meta-item">
-                                <i class="fas fa-calendar mr-1"></i>
-                                {{ area.createdAt | date:'dd/MM/yyyy' }}
-                            </span>
-                        </div>
-                        <button class="area-button">
-                            <i class="fas fa-arrow-right mr-2"></i>
-                            Xem bàn
-                        </button>
-                    </div>
-                </div>
-                }
-            </div>
-            }
-
-            <!-- Empty State -->
-            @if (area$().length === 0 && !loading()) {
-            <div class="empty-state">
-                <i class="fas fa-map-marked-alt empty-icon"></i>
-                <h3 class="empty-title">Chưa có khu vực nào</h3>
-                <p class="empty-description">Vui lòng liên hệ quản trị viên để thêm khu vực mới</p>
-            </div>
-            }
-
+    <div class="simple-content">
+        <!-- Loading State -->
+        @if (loading()) {
+        <div class="simple-loading">
+            <div class="simple-spinner"></div>
+            <p>Đang tải khu vực...</p>
         </div>
-    </section>
+        }
+
+        <!-- Error State -->
+        @if (error()) {
+        <div class="simple-error">
+            {{ error() }}
+        </div>
+        }
+
+        <!-- Areas Grid -->
+        @if (area$().length > 0) {
+        <div class="simple-areas">
+            @for (area of area$(); track area.areaId) {
+            <div class="simple-area-card" (click)="navigateToTables(area.areaId)">
+                <div class="area-header">
+                    <h3>{{ area.areaName }}</h3>
+                    <span class="area-status" [class]="area.isActive ? 'active' : 'inactive'">
+                        {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                    </span>
+                </div>
+
+                @if (area.description) {
+                <p class="area-description">{{ area.description }}</p>
+                }
+
+                <div class="area-footer">
+                    <span class="area-date">
+                        {{ area.createdAt | date:'dd/MM/yyyy' }}
+                    </span>
+                    <button class="area-btn">
+                        Xem bàn →
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Empty State -->
+        @if (area$().length === 0 && !loading()) {
+        <div class="simple-empty">
+            <h3>Chưa có khu vực nào</h3>
+            <p>Vui lòng liên hệ quản trị viên để thêm khu vực mới</p>
+        </div>
+        }
+    </div>
 </div>

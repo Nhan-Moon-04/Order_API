@@ -1,139 +1,104 @@
-<div class="min-h-screen bg-gray-50 pt-20">
-    <div class="container  ">
-        <!-- Header with back button -->
-        <div class="flex items-center mb-8">
-            <button (click)="goBack()"
-                class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-300 mr-4">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Trở về
-            </button>
-            @if (area()) {
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">{{ area()?.areaName }}</h1>
-                <p class="text-gray-600">{{ area()?.description }}</p>
-            </div>
-            }
-        </div>
-
-        <!-- Loading State -->
-        @if (loading()) {
-        <div class="text-center py-12">
-            <div class="spinner-border text-orange-500 w-12 h-12 mx-auto" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <p class="mt-3 text-gray-600">Loading tables...</p>
-        </div>
-        }
-
-        <!-- Error State -->
-        @if (error()) {
-        <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
-            <i class="fas fa-exclamation-triangle mr-2"></i>
-            {{ error() }}
-        </div>
-        }
-
-        <!-- Tables Grid -->
-        @if (tables$().length > 0) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @for (table of tables$(); track table.tableCode) {
-            <div [class]="getTableCardClass(table.status)" class="relative">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="text-lg font-semibold text-gray-800">{{ table.tableName }}</h3>
-
-                    <span [class]="getStatusBadgeClass(table.status)">{{getStatusText(table.status)}}</span>
-                </div>
-
-                <div class="space-y-2 text-sm text-gray-600">
-                    <div class="flex items-center">
-                        <i class="fas fa-users text-orange-500 w-4 mr-2"></i>
-                        <span>Capacity: {{ table.capacity }} people</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-map-marker-alt text-orange-500 w-4 mr-2"></i>
-                        <span>{{ table.tableName }}</span>
-                    </div>
-
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle w-4 mr-2"
-                            [class]="table.isActive ? 'text-green-500' : 'text-red-500'"></i>
-                        <span [class]="getTableStatusClass(table.isActive)">
-                            {{ table.isActive ? 'Active' : 'Inactive' }}
-                        </span>
-                    </div>
-                </div>
-
-                <div class="mt-4 flex gap-2">
-                    <button [class]="getBookButtonClass(table.status)" [disabled]="!canBookTable(table.status)"
-                        (click)="confirmBooking(table)">
-                        <i class="fas fa-calendar-plus mr-1 bg-green-500"></i>
-                        Book
-                    </button>
-                    <button [class]="getDetailsButtonClass(table.status)" [disabled]="!canViewDetails(table.status)"
-                        (click)="goToOrderDashboard(table)">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Details
-                    </button>
-                </div>
-
-                <!-- Overlay phủ toàn bộ card cho các trạng thái không available -->
-                @if (!canBookTable(table.status)) {
-                <div class="absolute inset-0 bg-gray-200 bg-opacity-40 rounded-xl"></div>
-                }
-            </div>
-            }
-        </div>
-        }
-
-        <!-- Empty State -->
-        @if (tables$().length === 0 && !loading()) {
-        <div class="text-center py-12">
-            <i class="fas fa-table text-gray-400 text-6xl mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">No Tables Found</h3>
-            <p class="text-gray-500">This area doesn't have any tables configured yet.</p>
+<div class="simple-tables">
+    <!-- Header with back button -->
+    <div class="simple-header">
+        <button (click)="goBack()" class="simple-back-btn">
+            ← Trở về
+        </button>
+        @if (area()) {
+        <div class="header-info">
+            <h1>{{ area()?.areaName }}</h1>
+            <p>{{ area()?.description }}</p>
         </div>
         }
     </div>
 
-    @if (showConfirmModal()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <!-- Overlay -->
-        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity" (click)="closeModal()">
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="simple-loading">
+        <div class="simple-spinner"></div>
+        <p>Đang tải bàn...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="simple-error">
+        {{ error() }}
+    </div>
+    }
+
+    <!-- Tables Grid -->
+    @if (tables$().length > 0) {
+    <div class="simple-tables-grid">
+        @for (table of tables$(); track table.tableCode) {
+        <div class="simple-table-card" [class]="getTableCardClass(table.status)">
+            <div class="table-header">
+                <h3>{{ table.tableName }}</h3>
+                <span class="table-status" [class]="getStatusBadgeClass(table.status)">
+                    {{getStatusText(table.status)}}
+                </span>
+            </div>
+
+            <div class="table-info">
+                <div class="info-item">
+                    <span>Sức chứa: {{ table.capacity }} người</span>
+                </div>
+                <div class="info-item">
+                    <span>Vị trí: {{ table.tableName }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="table-active-status" [class]="getTableStatusClass(table.isActive)">
+                        {{ table.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="table-actions">
+                <!-- Nếu bàn đang trống/available thì hiện nút Đặt bàn -->
+                @if (canBookTable(table.status)) {
+                <button class="simple-btn book-btn" (click)="confirmBooking(table)">
+                    Đặt bàn
+                </button>
+                }
+
+                <!-- Nếu bàn đã có khách thì hiện nút Vào order -->
+                @if (canViewDetails(table.status)) {
+                <button class="simple-btn order-btn" (click)="goToOrderDashboard(table)">
+                    Vào order
+                </button>
+                }
+            </div>
         </div>
+        }
+    </div>
+    }
 
-        <!-- Modal content -->
-        <div
-            class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all scale-95 animate-fadeIn z-10">
-            <div class="text-center text1">
-                <!-- Icon -->
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
-                    <i class="fas fa-calendar-plus text-orange-600 text-xl"></i>
-                </div>
+    <!-- Empty State -->
+    @if (tables$().length === 0 && !loading()) {
+    <div class="simple-empty">
+        <h3>Không tìm thấy bàn</h3>
+        <p>Khu vực này chưa có bàn nào được cấu hình.</p>
+    </div>
+    }
 
-                <!-- Title -->
-                <h2 class="text-xl font-semibold text-gray-800 mb-2 ">Xác nhận mở bàn</h2>
-
-                <!-- Content -->
-                <p class="text-gray-600 mb-6">
-                    Bạn có chắc muốn mở bàn
-                    "<span class="font-semibold text-gray-800">{{ selectedTable()?.tableName }}</span>"
-                    không?
-                </p>
-
-                <!-- Actions -->
-                <div class="flex justify-center gap-3">
-                    <button (click)="closeModal()"
-                        class="px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-medium shadow-sm">
-                        Hủy
-                    </button>
-                    <button (click)="confirmBookingAction()"
-                        class="px-6 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors font-medium shadow-sm">
-                        Xác nhận
-                    </button>
-                </div>
+    <!-- Confirm Modal -->
+    @if (showConfirmModal()) {
+    <div class="simple-modal-overlay" (click)="closeModal()">
+        <div class="simple-modal" (click)="$event.stopPropagation()">
+            <h3>Xác nhận mở bàn</h3>
+            <p>
+                Bạn có chắc muốn mở bàn
+                "<strong>{{ selectedTable()?.tableName }}</strong>" không?
+            </p>
+            <div class="modal-actions">
+                <button (click)="closeModal()" class="simple-btn cancel-btn">
+                    Hủy
+                </button>
+                <button (click)="confirmBookingAction()" class="simple-btn confirm-btn">
+                    Xác nhận
+                </button>
             </div>
         </div>
     </div>
     }
-
 </div>

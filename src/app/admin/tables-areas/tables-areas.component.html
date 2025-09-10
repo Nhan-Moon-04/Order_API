@@ -1,149 +1,109 @@
-<<div class="min-h-screen bg-gray-50 pt-20">
-    <div class="container-fluid px-4 py-8">
-        <!-- Header with back button -->
-        <div class="flex items-center mb-8">
-            <button (click)="goBack() " style="margin-right: 15px;"
-                class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-300 mr-4">
+<div class="simple-container">
+    <div class="simple-header">
+        <button (click)="goBack()" class="simple-back-btn">
+            ← Quay lại
+        </button>
+        <h1>Quản lý Bàn Theo Khu Vực</h1>
+        <p>Chọn khu vực để quản lý và sắp xếp bàn</p>
+    </div>
 
-                <i class="fas fa-arrow-left mr-2"></i>
-            </button>
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">Quản lý Bàn Theo Khu Vực</h1>
-                <p class="text-gray-600">Chọn khu vực để quản lý và sắp xếp bàn</p>
+    <!-- Main Content Layout -->
+    <div class="simple-layout">
+        <!-- Left Panel - Areas List -->
+        <div class="simple-areas-panel">
+            <h2>Danh sách khu vực</h2>
+
+            <!-- Loading State for Areas -->
+            @if (loading()) {
+            <div class="simple-loading">
+                <div class="simple-spinner"></div>
+                <p>Đang tải...</p>
             </div>
+            }
+
+            <!-- Error State for Areas -->
+            @if (error()) {
+            <div class="simple-error">
+                {{ error() }}
+            </div>
+            }
+
+            <!-- Areas List -->
+            @if (areas().length > 0) {
+            <div class="simple-areas-list">
+                @for (area of areas(); track area.areaId) {
+                <div class="simple-area-item" [class.selected]="selectedArea()?.areaId === area.areaId"
+                    (click)="selectArea(area)">
+                    <div class="area-content">
+                        <h3>{{ area.areaName }}</h3>
+                        <span class="area-status" [class]="area.isActive ? 'active' : 'inactive'">
+                            {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                        </span>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+
+            <!-- Empty State for Areas -->
+            @if (areas().length === 0 && !loading()) {
+            <div class="simple-empty">
+                <p>Chưa có khu vực nào</p>
+            </div>
+            }
         </div>
 
-        <!-- Main Content Layout -->
-        <div class="main-layout">
-            <!-- Left Panel - Areas List (25%) -->
-            <div class="left-panel">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-map-marked-alt text-orange-500 mr-2"></i>
-                    Danh sách khu vực
-                </h2>
+        <!-- Right Panel - Tables -->
+        <div class="simple-tables-panel">
+            @if (!selectedArea()) {
+            <!-- No Area Selected -->
+            <div class="simple-no-selection">
+                <h3>Chọn khu vực để xem bàn</h3>
+                <p>Vui lòng chọn một khu vực từ danh sách bên trái</p>
+            </div>
+            } @else {
+            <!-- Selected Area Header -->
+            <div class="simple-area-header">
+                <h2>Bàn trong {{ selectedArea()?.areaName }}</h2>
+                <p>Quản lý và sắp xếp thứ tự bàn cho khu vực này</p>
+            </div>
 
-                <!-- Loading State for Areas -->
-                @if (loading()) {
-                <div class="text-center py-8">
-                    <div class="spinner-border text-orange-500 w-8 h-8 mx-auto" role="status"></div>
-                    <p class="mt-2 text-gray-600 text-sm">Đang tải...</p>
-                </div>
-                }
-
-                <!-- Error State for Areas -->
-                @if (error()) {
-                <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 mb-4 text-sm">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    {{ error() }}
-                </div>
-                }
-
-                <!-- Areas List -->
-                @if (areas().length > 0) {
-                <div class="space-y-3">
-                    @for (area of areas(); track area.areaId) {
-                    <div class="area-item" [class.selected]="selectedArea()?.areaId === area.areaId"
-                        (click)="selectArea(area)">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="area-icon">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </div>
-                                <div>
-                                    <h3 class="area-title">{{ area.areaName }}</h3>
-                                    <span class="area-status"
-                                        [class]="area.isActive ? 'status-active' : 'status-inactive'">
-                                        {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
-                                    </span>
-                                </div>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400"></i>
-                        </div>
+            <!-- Tables Grid -->
+            @if (getTablesForArea(selectedArea()!.areaId).length > 0) {
+            <div class="simple-tables-grid">
+                @for (table of getTablesForArea(selectedArea()!.areaId); track table.tableId) {
+                <div class="simple-table-card" [class.highlighted]="highlightedTable() === table.tableCode">
+                    <div class="table-header">
+                        <h4>{{ table.tableName }}</h4>
+                        <span class="table-status" [class]="table.status === 1 ? 'available' : 'occupied'">
+                            {{ table.status === 1 ? 'Trống' : 'Có khách' }}
+                        </span>
                     </div>
-                    }
-                </div>
-                }
-
-                <!-- Empty State for Areas -->
-                @if (areas().length === 0 && !loading()) {
-                <div class="text-center py-8">
-                    <i class="fas fa-map-marked-alt text-gray-400 text-3xl mb-2"></i>
-                    <p class="text-gray-500 text-sm">Chưa có khu vực nào</p>
+                    <div class="table-info">
+                        <p>Sức chứa: {{ table.capacity }} người</p>
+                        <p>Thứ tự: #{{ table.sortOrder || 0 }}</p>
+                    </div>
+                    <div class="table-actions">
+                        <button class="simple-btn" (click)="moveTableUp(table)" [disabled]="loading()">
+                            ↑ Lên
+                        </button>
+                        <button class="simple-btn" (click)="moveTableDown(table)" [disabled]="loading()">
+                            ↓ Xuống
+                        </button>
+                    </div>
                 </div>
                 }
             </div>
+            }
 
-            <!-- Right Panel - Tables (75%) -->
-            <div class="right-panel">
-                @if (!selectedArea()) {
-                <!-- No Area Selected -->
-                <div class="flex flex-col items-center justify-center h-96 text-gray-500">
-                    <i class="fas fa-table text-6xl mb-4 text-gray-300"></i>
-                    <h3 class="text-xl font-semibold mb-2">Chọn khu vực để xem bàn</h3>
-                    <p class="text-gray-400">Vui lòng chọn một khu vực từ danh sách bên trái</p>
-                </div>
-                } @else {
-                <!-- Selected Area Header -->
-                <div class="border-b border-gray-200 pb-4 mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-table text-orange-500 mr-3"></i>
-                        Bàn trong {{ selectedArea()?.areaName }}
-                    </h2>
-                    <p class="text-gray-600 mt-1">Quản lý và sắp xếp thứ tự bàn cho khu vực này</p>
-                </div>
-
-                <!-- Tables Grid -->
-                @if (getTablesForArea(selectedArea()!.areaId).length > 0) {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    @for (table of getTablesForArea(selectedArea()!.areaId); track table.tableId) {
-                    <div class="table-card" [class.table-highlight]="highlightedTable() === table.tableCode">
-                        <div class="table-header">
-                            <div class="table-icon">
-                                <i class="fas fa-table"></i>
-                            </div>
-                            <span class="table-status"
-                                [class]="table.status === 1 ? 'status-available' : 'status-occupied'">
-                                {{ table.status }}
-                            </span>
-                        </div>
-                        <div class="table-info">
-                            <h4 class="table-name">{{ table.tableName }}</h4>
-                            <div class="table-details">
-                                <span class="capacity-label">Sức chứa:</span>
-                                <span class="capacity-value">{{ table.capacity }} người</span>
-                            </div>
-                            <div class="table-order">
-                                <span class="order-label">Thứ tự:</span>
-                                <span class="order-value">#{{ table.sortOrder || 0 }}</span>
-                            </div>
-                        </div>
-                        <div class="table-actions">
-                            <button class="btn-move-up" (click)="moveTableUp(table)" [disabled]="loading()"
-                                title="Di chuyển lên">
-                                <i class="fas fa-arrow-up mr-1"></i>
-                                Lên
-                            </button>
-                            <button class="btn-move-down" (click)="moveTableDown(table)" [disabled]="loading()"
-                                title="Di chuyển xuống">
-                                <i class="fas fa-arrow-down mr-1"></i>
-                                Xuống
-                            </button>
-                        </div>
-                    </div>
-                    }
-                </div>
-                }
-
-                <!-- Empty State for Tables -->
-                @if (getTablesForArea(selectedArea()!.areaId).length === 0) {
-                <div class="text-center py-12">
-                    <i class="fas fa-table text-gray-400 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có bàn nào</h3>
-                    <p class="text-gray-500">Khu vực này chưa có bàn được cấu hình.</p>
-                </div>
-                }
-                }
+            <!-- Empty State for Tables -->
+            @if (getTablesForArea(selectedArea()!.areaId).length === 0) {
+            <div class="simple-empty">
+                <h3>Chưa có bàn nào</h3>
+                <p>Khu vực này chưa có bàn được cấu hình.</p>
             </div>
+            }
+            }
         </div>
     </div>
-    </div>
+</div>

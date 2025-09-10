@@ -1,119 +1,89 @@
-<div class="admin-container">
+<div class="simple-dashboard">
     <!-- Header -->
-    <header class="admin-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="fade-in">
-                    <h1>🏪 Admin Dashboard</h1>
-                    <p>Quản lý hệ thống nhà hàng</p>
-                </div>
-                <div class="flex items-center space-x-4 fade-in">
-                    <button routerLink="/" class="btn-home">
-                        <i class="fas fa-home mr-2"></i>
-                        Về trang chính
-                    </button>
-                </div>
-            </div>
+    <div class="simple-header">
+        <div class="header-content">
+            <h1>Admin Dashboard</h1>
+            <p>Quản lý hệ thống nhà hàng</p>
         </div>
-    </header>
+        <button routerLink="/" class="simple-home-btn">
+            Về trang chính
+        </button>
+    </div>
 
-    <!-- Main Content -->
-    <main class="admin-main">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Stats Cards -->
-            <div class="stats-grid fade-in">
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <div class="stat-number">
-                        @if (loadingStats()) {
-                        <i class="fas fa-spinner fa-spin"></i>
-                        } @else {
-                        {{ totalAreas() }}
-                        }
-                    </div>
-                    <div class="stat-label">Tổng khu vực</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="fas fa-table"></i>
-                    </div>
-                    <div class="stat-number">
-                        @if (loadingStats()) {
-                        <i class="fas fa-spinner fa-spin"></i>
-                        } @else {
-                        {{ totalTables() }}
-                        }
-                    </div>
-                    <div class="stat-label">Tổng số bàn</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <div class="stat-number">
-                        @if (loadingStats()) {
-                        <i class="fas fa-spinner fa-spin"></i>
-                        } @else {
-                        {{ totalDishes() }}
-                        }
-                    </div>
-                    <div class="stat-label">Tổng món ăn</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fas fa-receipt"></i>
-                    </div>
-                    <div class="stat-number">
-                        @if (loadingStats()) {
-                        <i class="fas fa-spinner fa-spin"></i>
-                        } @else {
-                        {{ todayOrders() }}
-                        }
-                    </div>
-                    <div class="stat-label">Đơn hôm nay</div>
-                </div>
-            </div>
-
-            <!-- Menu Grid -->
-            <div class="menu-grid fade-in">
-                @for (item of menuItems; track item.route) {
-                <div class="menu-card" [routerLink]="item.route">
-                    <div class="menu-icon" [ngClass]="item.color.replace('bg-', '').replace('-500', '')">
-                        <i [class]="item.icon"></i>
-                    </div>
-                    <h3 class="menu-title">{{ item.title }}</h3>
-                    <p class="menu-description">{{ item.description }}</p>
-                    <button class="menu-button">
-                        <i class="fas fa-arrow-right mr-2"></i>
-                        Truy cập ngay
-                    </button>
-                </div>
+    <!-- Stats Cards -->
+    <div class="simple-stats">
+        <div class="stat-card">
+            <div class="stat-number">
+                @if (loadingStats()) {
+                Đang tải...
+                } @else {
+                {{ totalAreas() }}
                 }
             </div>
-
-            <!-- Quick Actions -->
-            <div class="quick-actions fade-in">
-                <h2>⚡ Thao tác nhanh</h2>
-                <div class="quick-actions-grid">
-                    <button class="quick-action-btn blue" routerLink="/admin/areas">
-                        <i class="fas fa-plus mr-2"></i>
-                        Thêm khu vực mới
-                    </button>
-                    <button class="quick-action-btn green" routerLink="/admin/tables">
-                        <i class="fas fa-plus mr-2"></i>
-                        Thêm bàn mới
-                    </button>
-                    <button class="quick-action-btn orange" routerLink="/admin/dishes">
-                        <i class="fas fa-plus mr-2"></i>
-                        Thêm món ăn
-                    </button>
-                </div>
-            </div>
+            <div class="stat-label">Tổng khu vực</div>
         </div>
-    </main>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @if (loadingStats()) {
+                Đang tải...
+                } @else {
+                {{ totalTables() }}
+                }
+            </div>
+            <div class="stat-label">Tổng số bàn</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @if (loadingStats()) {
+                Đang tải...
+                } @else {
+                {{ totalDishes() }}
+                }
+            </div>
+            <div class="stat-label">Tổng món ăn</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @if (loadingStats()) {
+                Đang tải...
+                } @else {
+                {{ todayOrders() }}
+                }
+            </div>
+            <div class="stat-label">Đơn hôm nay</div>
+        </div>
+    </div>
+
+    <!-- Menu Grid -->
+    <div class="simple-menu">
+        <h2>Chức năng quản lý</h2>
+        <div class="menu-grid">
+            @for (item of menuItems; track item.route) {
+            <div class="menu-card" [routerLink]="item.route">
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description }}</p>
+                <button class="menu-btn">Truy cập</button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="simple-actions">
+        <h2>Thao tác nhanh</h2>
+        <div class="actions-grid">
+            <button class="action-btn" routerLink="/admin/areas">
+                + Thêm khu vực mới
+            </button>
+            <button class="action-btn" routerLink="/admin/tables">
+                + Thêm bàn mới
+            </button>
+            <button class="action-btn" routerLink="/admin/dishes">
+                + Thêm món ăn
+            </button>
+        </div>
+    </div>
 </div>

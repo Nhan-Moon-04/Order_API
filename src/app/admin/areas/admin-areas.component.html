@@ -1,147 +1,116 @@
-<div class="min-h-screen bg-gray-50 pt-20">
-    <div class="container-fluid px-4 py-8">
-        <!-- Header with back button -->
-        <div class="flex items-center mb-8">
-            <button (click)="goBack() " style="margin-right: 15px;"
-                class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-300 mr-4">
-
-                <i class="fas fa-arrow-left mr-2"></i>
-            </button>
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">Quản lý Khu vực</h1>
-                <p class="text-gray-600">Thêm, sửa, xóa các khu vực trong nhà hàng</p>
-            </div>
-            <div class="ml-auto">
-                <button (click)="openAddModal()"
-                    class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-300">
-                    <i class="fas fa-plus mr-2"></i>
-                    Thêm khu vực
-                </button>
-            </div>
+<div class="simple-container">
+    <div class="simple-header">
+        <button (click)="goBack()" class="simple-back-btn">
+            ← Quay lại
+        </button>
+        <div class="header-content">
+            <h1>Quản lý Khu vực</h1>
+            <p>Thêm, sửa, xóa các khu vực trong nhà hàng</p>
         </div>
+        <button (click)="openAddModal()" class="simple-add-btn">
+            + Thêm khu vực
+        </button>
+    </div>
 
-        <!-- Main Content Layout -->
-        <div class="main-content">
-            <!-- Loading State -->
-            @if (loading()) {
-            <div class="text-center py-12">
-                <div class="spinner-border text-orange-500 w-8 h-8 mx-auto" role="status"></div>
-                <p class="mt-2 text-gray-600 text-sm">Đang tải...</p>
-            </div>
-            }
+    <!-- Main Content -->
+    <div class="simple-content">
+        <!-- Loading State -->
+        @if (loading()) {
+        <div class="simple-loading">
+            <div class="simple-spinner"></div>
+            <p>Đang tải...</p>
+        </div>
+        }
 
-            <!-- Error State -->
-            @if (error()) {
-            <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 mb-4 text-sm">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                {{ error() }}
-            </div>
-            }
+        <!-- Error State -->
+        @if (error()) {
+        <div class="simple-error">
+            {{ error() }}
+        </div>
+        }
 
-            <!-- Areas Grid -->
-            @if (areas().length > 0 && !loading()) {
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                @for (area of areas(); track area.areaId) {
-                <div class="area-card">
-                    <div class="area-header">
-                        <div class="area-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div class="area-toggle">
-                            <label class="toggle-switch">
-                                <input type="checkbox" [checked]="area.isActive"
-                                    (change)="updateActive(area.areaId, !area.isActive)" [disabled]="loading()">
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <span class="area-status" [class]="area.isActive ? 'status-active' : 'status-inactive'">
-                                {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="area-info">
-                        <h4 class="area-name">{{ area.areaName }}</h4>
-                        <div class="area-description">
-                            <span class="description-text">{{ area.description || 'Không có mô tả' }}</span>
-                        </div>
-                        <div class="area-date">
-                            <i class="fas fa-calendar text-orange-400 mr-1"></i>
-                            <span class="text-xs text-gray-500">{{ area.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
-                        </div>
-                    </div>
-                    <div class="area-actions">
-                        <button class="btn-edit" (click)="openEditModal(area)">
-                            <i class="fas fa-edit mr-1"></i>
-                            Sửa
-                        </button>
-                        <button class="btn-delete" (click)="deleteArea(area)">
-                            <i class="fas fa-trash mr-1"></i>
-                            Xóa
-                        </button>
+        <!-- Areas Grid -->
+        @if (areas().length > 0 && !loading()) {
+        <div class="simple-areas-grid">
+            @for (area of areas(); track area.areaId) {
+            <div class="simple-area-card">
+                <div class="area-header">
+                    <h4>{{ area.areaName }}</h4>
+                    <div class="area-toggle">
+                        <label class="simple-toggle">
+                            <input type="checkbox" [checked]="area.isActive"
+                                (change)="updateActive(area.areaId, !area.isActive)" [disabled]="loading()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="area-status" [class]="area.isActive ? 'active' : 'inactive'">
+                            {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                        </span>
                     </div>
                 </div>
-                }
-            </div>
-            }
-
-            <!-- Empty State -->
-            @if (areas().length === 0 && !loading()) {
-            <div class="text-center py-12">
-                <i class="fas fa-map-marked-alt text-gray-400 text-6xl mb-4"></i>
-                <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có khu vực nào</h3>
-                <p class="text-gray-500 mb-4">Bắt đầu bằng cách thêm khu vực đầu tiên</p>
-                <button (click)="openAddModal()"
-                    class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
-                    <i class="fas fa-plus mr-2"></i>
-                    Thêm khu vực
-                </button>
+                <div class="area-info">
+                    <div class="area-description">
+                        <p>{{ area.description || 'Không có mô tả' }}</p>
+                    </div>
+                    <div class="area-date">
+                        <span>{{ area.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                </div>
+                <div class="area-actions">
+                    <button class="simple-btn edit-btn" (click)="openEditModal(area)">
+                        Sửa
+                    </button>
+                    <button class="simple-btn delete-btn" (click)="deleteArea(area)">
+                        Xóa
+                    </button>
+                </div>
             </div>
             }
         </div>
+        }
+
+        <!-- Empty State -->
+        @if (areas().length === 0 && !loading()) {
+        <div class="simple-empty">
+            <h3>Chưa có khu vực nào</h3>
+            <p>Bắt đầu bằng cách thêm khu vực đầu tiên</p>
+            <button (click)="openAddModal()" class="simple-add-btn">
+                + Thêm khu vực
+            </button>
+        </div>
+        }
     </div>
 
     <!-- Add Modal -->
     @if (showAddModal()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black bg-opacity-30" (click)="closeAddModal()"></div>
-        <div class="relative bg-white rounded border shadow-lg max-w-md w-full p-6 z-10">
-            <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Thêm khu vực mới</h3>
+    <div class="simple-modal-overlay" (click)="closeAddModal()">
+        <div class="simple-modal" (click)="$event.stopPropagation()">
+            <h3>Thêm khu vực mới</h3>
 
             <form (ngSubmit)="addArea()">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm text-gray-700 mb-2">Tên khu vực *</label>
-                        <input type="text" [(ngModel)]="newArea.areaName" name="areaName"
-                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                            placeholder="Nhập tên khu vực" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm text-gray-700 mb-2">Mô tả</label>
-                        <textarea [(ngModel)]="newArea.description" name="description" rows="3"
-                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                            placeholder="Nhập mô tả khu vực"></textarea>
-                    </div>
-
-                    <div class="flex items-center">
-                        <input type="checkbox" [(ngModel)]="newArea.isActive" name="isActive"
-                            class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                        <label class="ml-2 block text-sm text-gray-900">Kích hoạt khu vực</label>
-                    </div>
+                <div class="form-group">
+                    <label>Tên khu vực *</label>
+                    <input type="text" [(ngModel)]="newArea.areaName" name="areaName" placeholder="Nhập tên khu vực"
+                        required>
                 </div>
 
-                <div class="flex gap-3 mt-6">
-                    <button type="button" (click)="closeAddModal()"
-                        class="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <textarea [(ngModel)]="newArea.description" name="description" rows="3"
+                        placeholder="Nhập mô tả khu vực"></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" [(ngModel)]="newArea.isActive" name="isActive" id="add-active">
+                    <label for="add-active">Kích hoạt khu vực</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" (click)="closeAddModal()" class="simple-btn cancel-btn"
                         [disabled]="loading()">
                         Hủy
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
-                        [disabled]="loading()">
-                        @if (loading()) {
-                        Đang thêm...
-                        } @else {
-                        Thêm
-                        }
+                    <button type="submit" class="simple-btn submit-btn" [disabled]="loading()">
+                        {{ loading() ? 'Đang thêm...' : 'Thêm' }}
                     </button>
                 </div>
             </form>
@@ -151,47 +120,35 @@
 
     <!-- Edit Modal -->
     @if (showEditModal()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black bg-opacity-30" (click)="closeEditModal()"></div>
-        <div class="relative bg-white rounded border shadow-lg max-w-md w-full p-6 z-10">
-            <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Sửa khu vực</h3>
+    <div class="simple-modal-overlay" (click)="closeEditModal()">
+        <div class="simple-modal" (click)="$event.stopPropagation()">
+            <h3>Sửa khu vực</h3>
 
             <form (ngSubmit)="updateArea()">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm text-gray-700 mb-2">Tên khu vực *</label>
-                        <input type="text" [(ngModel)]="editArea.areaName" name="areaName"
-                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                            placeholder="Nhập tên khu vực" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm text-gray-700 mb-2">Mô tả</label>
-                        <textarea [(ngModel)]="editArea.description" name="description" rows="3"
-                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                            placeholder="Nhập mô tả khu vực"></textarea>
-                    </div>
-
-                    <div class="flex items-center">
-                        <input type="checkbox" [(ngModel)]="editArea.isActive" name="isActive"
-                            class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                        <label class="ml-2 block text-sm text-gray-900">Kích hoạt khu vực</label>
-                    </div>
+                <div class="form-group">
+                    <label>Tên khu vực *</label>
+                    <input type="text" [(ngModel)]="editArea.areaName" name="areaName" placeholder="Nhập tên khu vực"
+                        required>
                 </div>
 
-                <div class="flex gap-3 mt-6">
-                    <button type="button" (click)="closeEditModal()"
-                        class="flex-1 px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <textarea [(ngModel)]="editArea.description" name="description" rows="3"
+                        placeholder="Nhập mô tả khu vực"></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" [(ngModel)]="editArea.isActive" name="isActive" id="edit-active">
+                    <label for="edit-active">Kích hoạt khu vực</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" (click)="closeEditModal()" class="simple-btn cancel-btn"
                         [disabled]="loading()">
                         Hủy
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
-                        [disabled]="loading()">
-                        @if (loading()) {
-                        Đang cập nhật...
-                        } @else {
-                        Cập nhật
-                        }
+                    <button type="submit" class="simple-btn submit-btn" [disabled]="loading()">
+                        {{ loading() ? 'Đang cập nhật...' : 'Cập nhật' }}
                     </button>
                 </div>
             </form>

@@ -61,7 +61,7 @@ export class AdminDashboardComponent implements OnInit {
 
   private loadTablesCount() {
     this.http
-      .get<number>(`${environment.apiUrl}/Tables/count'+`)
+      .get<number>(`${environment.apiUrl}/Tables/count`)
       .pipe(
         catchError((err) => {
           console.error('Error loading tables count:', err);
@@ -81,42 +81,42 @@ export class AdminDashboardComponent implements OnInit {
       route: '/admin/areas',
       color: 'bg-blue-500',
     },
-    {
-      title: 'Quản lý Bàn',
-      description: 'Thêm, sửa, xóa bàn ăn',
-      icon: 'fas fa-table',
-      route: '/admin/tables',
-      color: 'bg-green-500',
-    },
-    {
-      title: 'Quản lý Món ăn',
-      description: 'Thêm, sửa, xóa món ăn',
-      icon: 'fas fa-utensils',
-      route: '/admin/dishes',
-      color: 'bg-orange-500',
-    },
-    {
-      title: 'Quản lý Đơn hàng',
-      description: 'Xem lịch sử đơn hàng',
-      icon: 'fas fa-receipt',
-      route: '/admin/orders',
-      color: 'bg-purple-500',
-    },
+    // {
+    //   title: 'Quản lý Bàn',
+    //   description: 'Thêm, sửa, xóa bàn ăn',
+    //   icon: 'fas fa-table',
+    //   route: '/admin/tables',
+    //   color: 'bg-green-500',
+    // },
+    // {
+    //   title: 'Quản lý Món ăn',
+    //   description: 'Thêm, sửa, xóa món ăn',
+    //   icon: 'fas fa-utensils',
+    //   route: '/admin/dishes',
+    //   color: 'bg-orange-500',
+    // },
+    // {
+    //   title: 'Quản lý Đơn hàng',
+    //   description: 'Xem lịch sử đơn hàng',
+    //   icon: 'fas fa-receipt',
+    //   route: '/admin/orders',
+    //   color: 'bg-purple-500',
+    // },
 
-    {
-      title: 'Quản lý Nhân viên',
-      description: 'Thêm, sửa, xóa nhân viên',
-      icon: 'fas fa-users-cog',
-      route: '/admin/staff',
-      color: 'bg-red-500',
-    },
-    {
-      title: 'Báo cáo Thống kê',
-      description: 'Xem báo cáo doanh thu',
-      icon: 'fas fa-chart-line',
-      route: '/admin/reports',
-      color: 'bg-teal-500',
-    },
+    // {
+    //   title: 'Quản lý Nhân viên',
+    //   description: 'Thêm, sửa, xóa nhân viên',
+    //   icon: 'fas fa-users-cog',
+    //   route: '/admin/staff',
+    //   color: 'bg-red-500',
+    // },
+    // {
+    //   title: 'Báo cáo Thống kê',
+    //   description: 'Xem báo cáo doanh thu',
+    //   icon: 'fas fa-chart-line',
+    //   route: '/admin/reports',
+    //   color: 'bg-teal-500',
+    // },
     {
       title: 'Quản lý giá tiền khu vực',
       description: 'Thêm, sửa, xóa giá tiền khu vực',

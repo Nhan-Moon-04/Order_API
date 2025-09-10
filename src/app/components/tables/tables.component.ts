@@ -147,40 +147,25 @@ export class TablesComponent implements OnInit {
 
   getStatusBadgeClass(status: string | number): string {
     const statusNum = this.getStatusNumber(status);
-    const base = 'text-xs px-2 py-1 rounded-full';
     switch (statusNum) {
       case this.TableStatus.Available:
-        return `${base} bg-green-100 text-green-800`;
+        return 'available';
       case this.TableStatus.Occupied:
-        return `${base} bg-red-100 text-red-800`;
-      case this.TableStatus.Reserved:
-        return `${base} bg-blue-100 text-blue-800`;
-      case this.TableStatus.Closed:
-        return `${base} bg-gray-100 text-gray-800`;
-      case this.TableStatus.Cleaning:
-        return `${base} bg-yellow-100 text-yellow-800`;
+        return 'occupied';
       default:
-        return `${base} bg-gray-100 text-gray-800`;
+        return 'available';
     }
   }
 
   getTableCardClass(status: string | number): string {
     const statusNum = this.getStatusNumber(status);
-    let base =
-      'bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 p-4';
     switch (statusNum) {
       case this.TableStatus.Available:
-        return `${base} border-l-4 border-green-500`;
+        return 'available';
       case this.TableStatus.Occupied:
-        return `${base} border-l-4 border-red-500`;
-      case this.TableStatus.Reserved:
-        return `${base} border-l-4 border-blue-500`;
-      case this.TableStatus.Closed:
-        return `${base} border-l-4 border-gray-500 opacity-75`;
-      case this.TableStatus.Cleaning:
-        return `${base} border-l-4 border-yellow-500`;
+        return 'occupied';
       default:
-        return `${base} border-l-4 border-orange-500`;
+        return 'available';
     }
   }
 
@@ -263,6 +248,6 @@ export class TablesComponent implements OnInit {
   }
 
   getTableStatusClass(isActive: boolean): string {
-    return isActive ? 'text-green-600 font-semibold' : 'text-red-500 font-semibold';
+    return isActive ? 'active' : 'inactive';
   }
 }
