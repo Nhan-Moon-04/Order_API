@@ -41,3 +41,37 @@ export interface PagedResponse<T> {
   pageSize: number;
   totalPages: number;
 }
+
+// Add dishes to area request interface
+export interface AddDishesToAreaRequest {
+  areaId: string;
+  dishIds: string[];
+  customPrice: number;
+}
+
+// Get available dishes request interface
+export interface GetAvailableDishesRequest {
+  areaId: string;
+  pageIndex?: number;
+  pageSize?: number;
+  searchText?: string;
+}
+
+// Available dishes response interface
+export interface AvailableDishesResponse {
+  items: AvailableDish[];
+  totalRecords: number;
+  pageIndex: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// Available dish interface for modal
+export interface AvailableDish {
+  dishId: string;
+  dishName: string;
+  basePrice: number;
+  description?: string;
+  kitchenName?: string;
+  groupName?: string;
+}

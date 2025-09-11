@@ -7,6 +7,15 @@
             <h1>Quản lý Giá Theo Khu Vực</h1>
             <p>Xem và quản lý giá món ăn theo từng khu vực</p>
         </div>
+        @if (selectedAreaFilter()) {
+        <button (click)="openAddModal(selectedAreaFilter())" class="simple-add-btn">
+            + Thêm món vào {{ getSelectedAreaName() }}
+        </button>
+        } @else {
+        <div style="color: #666; font-size: 14px; font-style: italic;">
+            Chọn khu vực để thêm món
+        </div>
+        }
     </div>
 
     <!-- Search and Filter Section -->
@@ -14,9 +23,11 @@
         <div class="search-box">
             <input type="text" [(ngModel)]="searchText" (input)="onSearch()" placeholder="Tìm kiếm..."
                 class="search-input">
-            <button (click)="clearSearch()" class="clear-btn" *ngIf="searchText()">
+            @if (searchText()) {
+            <button (click)="clearSearch()" class="clear-btn">
                 ✕
             </button>
+            }
         </div>
         <div class="filter-box">
             <select [(ngModel)]="selectedAreaFilter" (change)="onFilterChange()" class="filter-select">
@@ -69,6 +80,9 @@
                 <div class="col-name sortable" (click)="onSortColumn('dishName')">
                     Tên món ăn <span class="sort-icon">{{ getSortIcon('dishName') }}</span>
                 </div>
+                <div class="col-name sortable" (click)="onSortColumn('dish')">
+                    Giá Gốc <span class="sort-icon">{{ getSortIcon('dish') }}</span>
+                </div>
                 <div class="col-price sortable" (click)="onSortColumn('price')">
                     Giá khu vực <span class="sort-icon">{{ getSortIcon('price') }}</span>
                 </div>
@@ -84,6 +98,13 @@
                 <div class="col-code">ADP{{ dishPrice.id.slice(-3) }}</div>
                 <div class="col-area">{{ dishPrice.areaName || 'N/A' }}</div>
                 <div class="col-name">{{ dishPrice.dishName || 'N/A' }}</div>
+                <div class="col-price">
+                    @if (dishPrice.basePrice) {
+                    {{ dishPrice.basePrice | currency:'VND':'symbol':'1.0-0' }}
+                    } @else {
+                    <span style="color: #999;">N/A</span>
+                    }
+                </div>
                 <div class="col-price">{{ dishPrice.customPrice | currency:'VND':'symbol':'1.0-0' }}</div>
                 <div class="col-date">{{ dishPrice.effectiveDate | date:'dd/MM/yyyy' }}</div>
                 <div class="col-status">
@@ -174,6 +195,9 @@
             <div class="modal-info">
                 <p class="dish-name">{{ editingDish()?.dishName }}</p>
                 <p class="area-name">{{ selectedArea()?.areaName }}</p>
+                @if (editingDish()?.basePrice) {
+                <p class="base-price">Giá gốc: {{ editingDish()?.basePrice | currency:'VND':'symbol':'1.0-0' }}</p>
+                }
             </div>
             }
 
@@ -255,6 +279,137 @@
                     {{ removingFood() ? 'Đang xóa...' : 'Xóa món' }}
                 </button>
             </div>
+        </div>
+    </div>
+    }
+
+    <!-- Add Dishes Modal -->
+    @if (showAddModal()) {
+    <div class="simple-modal-overlay" (click)="closeAddModal()">
+        <div class="simple-modal add-modal" (click)="$event.stopPropagation()">
+            <h3>Thêm món vào khu vực</h3>
+
+            @if (selectedArea()) {
+            <div class="modal-info">
+                <p class="area-name">Khu vực: {{ selectedArea()?.areaName }}</p>
+            </div>
+            }
+
+            <form (ngSubmit)="addDishesToArea()">
+                <!-- Available Dishes Section -->
+                <div class="form-group">
+                    <label>Chọn món ăn:</label>
+
+                    <!-- Search for available dishes -->
+                    <div class="search-box" style="margin-bottom: 10px;">
+                        <input type="text" [(ngModel)]="availableDishesSearchText" (input)="onAvailableDishesSearch()"
+                            placeholder="Tìm món ăn..." class="search-input" name="availableDishesSearch">
+                        @if (availableDishesSearchText()) {
+                        <button type="button" (click)="clearAvailableDishesSearch()" class="clear-btn">
+                            ✕
+                        </button>
+                        }
+                    </div>
+
+                    @if (loadingAvailableDishes()) {
+                    <div class="loading-dishes">
+                        <div class="simple-spinner"></div>
+                        <p>Đang tải danh sách món ăn...</p>
+                    </div>
+                    }
+
+                    @if (availableDishes().length === 0 && !loadingAvailableDishes()) {
+                    <div class="no-dishes">
+                        <p>Không có món ăn nào có sẵn để thêm vào khu vực này.</p>
+                    </div>
+                    }
+
+                    @if (availableDishes().length > 0 && !loadingAvailableDishes()) {
+                    <div class="dishes-selection">
+                        @for (dish of availableDishes(); track dish.dishId) {
+                        <div class="dish-item">
+                            <input type="checkbox" [id]="'dish-' + dish.dishId"
+                                [checked]="selectedDishes().includes(dish.dishId)"
+                                (change)="toggleDishSelection(dish.dishId)">
+                            <label [for]="'dish-' + dish.dishId" class="dish-label">
+                                <div class="dish-info">
+                                    <span class="dish-name">{{ dish.dishName }}</span>
+                                    <span class="dish-price">{{ dish.basePrice | currency:'VND':'symbol':'1.0-0'
+                                        }}</span>
+                                </div>
+                                @if (dish.description) {
+                                <div class="dish-description">{{ dish.description }}</div>
+                                }
+                                @if (dish.kitchenName || dish.groupName) {
+                                <div class="dish-meta">
+                                    @if (dish.kitchenName) {
+                                    <span class="kitchen-name">Bếp: {{ dish.kitchenName }}</span>
+                                    }
+                                    @if (dish.groupName) {
+                                    <span class="group-name">Nhóm: {{ dish.groupName }}</span>
+                                    }
+                                </div>
+                                }
+                            </label>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Pagination for available dishes -->
+                    @if (availableDishesTotalPages() > 1) {
+                    <div class="dishes-pagination">
+                        <div class="pagination">
+                            <button type="button" class="page-btn"
+                                (click)="loadAvailableDishes(selectedArea()!.areaId, availableDishesPageIndex() - 1)"
+                                [disabled]="availableDishesPageIndex() <= 1">
+                                ‹ Trước
+                            </button>
+
+                            @for (page of getAvailableDishesPageNumbers(); track page) {
+                            <button type="button" class="page-btn" [class.active]="availableDishesPageIndex() === page"
+                                (click)="loadAvailableDishes(selectedArea()!.areaId, page)"
+                                [disabled]="availableDishesPageIndex() === page">
+                                {{ page }}
+                            </button>
+                            }
+
+                            <button type="button" class="page-btn"
+                                (click)="loadAvailableDishes(selectedArea()!.areaId, availableDishesPageIndex() + 1)"
+                                [disabled]="availableDishesPageIndex() >= availableDishesTotalPages()">
+                                Sau ›
+                            </button>
+                        </div>
+                        <div class="pagination-info">
+                            Trang {{ availableDishesPageIndex() }} / {{ availableDishesTotalPages() }}
+                        </div>
+                    </div>
+                    }
+                    }
+                </div> <!-- Custom Price Section -->
+                <div class="form-group">
+                    <label>Giá cho khu vực này (VND) *</label>
+                    <input type="number" [(ngModel)]="customPrice" name="customPrice" placeholder="0" min="0" required>
+                    <small class="price-note">Giá này sẽ áp dụng cho tất cả món ăn được chọn</small>
+                </div>
+
+                <!-- Selected Count -->
+                @if (selectedDishes().length > 0) {
+                <div class="selected-count">
+                    <p>Đã chọn {{ selectedDishes().length }} món ăn</p>
+                </div>
+                }
+
+                <div class="modal-actions">
+                    <button type="button" (click)="closeAddModal()" class="simple-btn cancel-btn"
+                        [disabled]="addingDishes()">
+                        Hủy
+                    </button>
+                    <button type="submit" class="simple-btn submit-btn"
+                        [disabled]="addingDishes() || selectedDishes().length === 0 || !customPrice() || customPrice() <= 0">
+                        {{ addingDishes() ? 'Đang thêm...' : 'Thêm món' }}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
     }

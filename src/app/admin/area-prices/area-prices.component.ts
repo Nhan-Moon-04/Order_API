@@ -10,6 +10,10 @@ import {
   AreaDishPriceDisplay,
   AreaDishPriceSearchRequest,
   PagedResponse,
+  AddDishesToAreaRequest,
+  GetAvailableDishesRequest,
+  AvailableDishesResponse,
+  AvailableDish,
 } from '../../model/area-dish-price.model';
 import { Dish } from '../../model/dish.model';
 import {
@@ -78,6 +82,20 @@ export class AreaPricesComponent implements OnInit {
   showRemoveModal = signal(false);
   removingDish = signal<AreaDishPriceDisplay | null>(null);
   removingFood = signal(false);
+
+  // Add Dishes Modal
+  showAddModal = signal(false);
+  availableDishes = signal<AvailableDish[]>([]);
+  selectedDishes = signal<string[]>([]);
+  customPrice = signal<number>(0);
+  loadingAvailableDishes = signal(false);
+  addingDishes = signal(false);
+
+  // Add Dishes Modal Pagination
+  availableDishesPageIndex = signal(1);
+  availableDishesTotalPages = signal(0);
+  availableDishesPageSize = 10;
+  availableDishesSearchText = signal<string>('');
 
   ngOnInit() {
     // Load saved page size from localStorage
@@ -279,6 +297,12 @@ export class AreaPricesComponent implements OnInit {
     }
   }
 
+  getSelectedAreaName(): string {
+    if (!this.selectedAreaFilter()) return '';
+    const area = this.areas().find((a) => a.areaId === this.selectedAreaFilter());
+    return area ? area.areaName : '';
+  }
+
   selectArea(area: Area) {
     console.log('Selected area:', area.areaName);
     this.selectedArea.set(area);
@@ -438,6 +462,154 @@ export class AreaPricesComponent implements OnInit {
           alert('Lỗi xóa món ăn!');
           this.removingFood.set(false);
         },
+      });
+  }
+
+  // Add Dishes Modal Methods
+  openAddModal(areaId?: string) {
+    if (areaId) {
+      // Find and set the area
+      const area = this.areas().find((a) => a.areaId === areaId);
+      if (area) {
+        this.selectedArea.set(area);
+        this.selectedAreaFilter.set(areaId);
+      }
+    }
+
+    if (!this.selectedArea()) {
+      alert('Vui lòng chọn khu vực trước');
+      return;
+    }
+
+    this.resetAddModalData();
+    this.loadAvailableDishes(this.selectedArea()!.areaId, 1);
+    this.showAddModal.set(true);
+  }
+
+  closeAddModal() {
+    this.showAddModal.set(false);
+    this.resetAddModalData();
+  }
+
+  resetAddModalData() {
+    this.availableDishes.set([]);
+    this.selectedDishes.set([]);
+    this.customPrice.set(0);
+    this.availableDishesPageIndex.set(1);
+    this.availableDishesTotalPages.set(0);
+    this.availableDishesSearchText.set('');
+  }
+
+  loadAvailableDishes(areaId: string, page: number) {
+    this.loadingAvailableDishes.set(true);
+
+    const request: GetAvailableDishesRequest = {
+      areaId: areaId,
+      pageIndex: page,
+      pageSize: this.availableDishesPageSize,
+      searchText: this.availableDishesSearchText(),
+    };
+
+    this.http
+      .post<AvailableDishesResponse>(`${environment.apiUrl}/Dishes/GetAvailableDishes`, request)
+      .pipe(
+        catchError((err) => {
+          console.error('Error loading available dishes:', err);
+          alert('Lỗi tải danh sách món ăn: ' + (err.error?.message || err.message));
+          return of({
+            items: [],
+            totalRecords: 0,
+            totalPages: 0,
+            pageIndex: 1,
+            pageSize: this.availableDishesPageSize,
+          } as AvailableDishesResponse);
+        })
+      )
+      .subscribe((response) => {
+        this.availableDishes.set(response.items);
+        this.availableDishesPageIndex.set(response.pageIndex);
+        this.availableDishesTotalPages.set(response.totalPages);
+        this.loadingAvailableDishes.set(false);
+      });
+  }
+
+  onAvailableDishesSearch() {
+    if (!this.selectedArea()) return;
+    this.loadAvailableDishes(this.selectedArea()!.areaId, 1);
+  }
+
+  clearAvailableDishesSearch() {
+    this.availableDishesSearchText.set('');
+    if (!this.selectedArea()) return;
+    this.loadAvailableDishes(this.selectedArea()!.areaId, 1);
+  }
+
+  getAvailableDishesPageNumbers(): number[] {
+    const pages: number[] = [];
+    const total = this.availableDishesTotalPages();
+    const current = this.availableDishesPageIndex();
+
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  toggleDishSelection(dishId: string) {
+    const currentSelected = this.selectedDishes();
+    if (currentSelected.includes(dishId)) {
+      this.selectedDishes.set(currentSelected.filter((id) => id !== dishId));
+    } else {
+      this.selectedDishes.set([...currentSelected, dishId]);
+    }
+  }
+
+  addDishesToArea() {
+    if (this.selectedDishes().length === 0) {
+      alert('Vui lòng chọn ít nhất một món ăn');
+      return;
+    }
+
+    if (this.customPrice() <= 0) {
+      alert('Vui lòng nhập giá hợp lệ');
+      return;
+    }
+
+    if (!this.selectedArea()) {
+      alert('Vui lòng chọn khu vực');
+      return;
+    }
+
+    this.addingDishes.set(true);
+
+    const request: AddDishesToAreaRequest = {
+      areaId: this.selectedArea()!.areaId,
+      dishIds: this.selectedDishes(),
+      customPrice: this.customPrice(),
+    };
+
+    this.http
+      .post(`${environment.apiUrl}/AreaDishPrices/Add`, request)
+      .pipe(
+        catchError((err) => {
+          console.error('Error adding dishes to area:', err);
+          alert('Lỗi thêm món vào khu vực: ' + (err.error?.message || err.message));
+          return of(null);
+        })
+      )
+      .subscribe((response) => {
+        if (response) {
+          console.log('Dishes added successfully:', response);
+          alert('Đã thêm món vào khu vực thành công!');
+          this.closeAddModal();
+          // Reload the data
+          this.getAllAreaDishPrices(this.pageIndex());
+        }
+        this.addingDishes.set(false);
       });
   }
 }
