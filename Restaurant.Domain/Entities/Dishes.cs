@@ -6,6 +6,7 @@
         public required string DishName { get; set; }
         public double BasePrice { get; set; }
         public bool IsActive { get; set; } = true;
+        public string ? Description { get; set; }
         public required string KitchenId { get; set; } // FK
         public required string GroupId { get; set; } // FK to DishGroup
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

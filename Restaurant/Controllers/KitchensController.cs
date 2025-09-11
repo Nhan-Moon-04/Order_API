@@ -17,6 +17,12 @@ namespace Restaurant.Controllers
             _kitchen = context;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<KitchensDto>>> GetAll()
+        {
+            var kitchens = await _kitchen.GetAllKitchensAsync();
+            return Ok(kitchens);
+        }
 
     }
 }

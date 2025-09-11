@@ -71,6 +71,7 @@ namespace Restaurant.Data.Migrations
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
                     AreaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -365,26 +366,26 @@ namespace Restaurant.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Tables",
-                columns: new[] { "TableId", "AreaId", "Capacity", "Id", "IsActive", "Status", "TableCode", "TableName" },
+                columns: new[] { "TableId", "AreaId", "Capacity", "Id", "IsActive", "SortOrder", "Status", "TableCode", "TableName" },
                 values: new object[,]
                 {
-                    { "T001", "A001", 4, "T001-STATIC-ID-GUID-000000000001", true, "Available", "T001", "Bàn A1" },
-                    { "T002", "A001", 6, "T002-STATIC-ID-GUID-000000000002", true, "Available", "T002", "Bàn A2" },
-                    { "T003", "A001", 2, "T003-STATIC-ID-GUID-000000000003", true, "Available", "T003", "Bàn A3" },
-                    { "T004", "A002", 4, "T004-STATIC-ID-GUID-000000000004", true, "Available", "T004", "Bàn B1" },
-                    { "T005", "A002", 8, "T005-STATIC-ID-GUID-000000000005", true, "Available", "T005", "Bàn B2" },
-                    { "T006", "A003", 6, "T006-STATIC-ID-GUID-000000000006", true, "Available", "T006", "Bàn VIP 1" },
-                    { "T007", "A003", 10, "T007-STATIC-ID-GUID-000000000007", true, "Available", "T007", "Bàn VIP 2" },
-                    { "T008", "A004", 4, "T008-STATIC-ID-GUID-000000000008", true, "Available", "T008", "Bàn T2-1" },
-                    { "T009", "A004", 6, "T009-STATIC-ID-GUID-000000000009", true, "Available", "T009", "Bàn T2-2" },
-                    { "T010", "A001", 8, "T010-STATIC-ID-GUID-000000000010", true, "Available", "T010", "Bàn A4" },
-                    { "T011", "A002", 6, "T011-STATIC-ID-GUID-000000000011", true, "Available", "T011", "Bàn B3" },
-                    { "T012", "A003", 12, "T012-STATIC-ID-GUID-000000000012", true, "Available", "T012", "Bàn VIP 3" },
-                    { "T013", "A004", 4, "T013-STATIC-ID-GUID-000000000013", true, "Available", "T013", "Bàn T2-3" },
-                    { "T014", "A006", 2, "T014-STATIC-ID-GUID-000000000014", true, "Available", "T014", "Bàn C1" },
-                    { "T015", "A006", 4, "T015-STATIC-ID-GUID-000000000015", true, "Available", "T015", "Bàn C2" },
-                    { "T016", "A007", 15, "T016-STATIC-ID-GUID-000000000016", true, "Available", "T016", "Phòng Riêng 1" },
-                    { "T017", "A007", 20, "T017-STATIC-ID-GUID-000000000017", true, "Available", "T017", "Phòng Riêng 2" }
+                    { "T001", "A001", 4, "T001-STATIC-ID-GUID-000000000001", true, 0, "Available", "T001", "Bàn A1" },
+                    { "T002", "A001", 6, "T002-STATIC-ID-GUID-000000000002", true, 0, "Available", "T002", "Bàn A2" },
+                    { "T003", "A001", 2, "T003-STATIC-ID-GUID-000000000003", true, 0, "Available", "T003", "Bàn A3" },
+                    { "T004", "A002", 4, "T004-STATIC-ID-GUID-000000000004", true, 0, "Available", "T004", "Bàn B1" },
+                    { "T005", "A002", 8, "T005-STATIC-ID-GUID-000000000005", true, 0, "Available", "T005", "Bàn B2" },
+                    { "T006", "A003", 6, "T006-STATIC-ID-GUID-000000000006", true, 0, "Available", "T006", "Bàn VIP 1" },
+                    { "T007", "A003", 10, "T007-STATIC-ID-GUID-000000000007", true, 0, "Available", "T007", "Bàn VIP 2" },
+                    { "T008", "A004", 4, "T008-STATIC-ID-GUID-000000000008", true, 0, "Available", "T008", "Bàn T2-1" },
+                    { "T009", "A004", 6, "T009-STATIC-ID-GUID-000000000009", true, 0, "Available", "T009", "Bàn T2-2" },
+                    { "T010", "A001", 8, "T010-STATIC-ID-GUID-000000000010", true, 0, "Available", "T010", "Bàn A4" },
+                    { "T011", "A002", 6, "T011-STATIC-ID-GUID-000000000011", true, 0, "Available", "T011", "Bàn B3" },
+                    { "T012", "A003", 12, "T012-STATIC-ID-GUID-000000000012", true, 0, "Available", "T012", "Bàn VIP 3" },
+                    { "T013", "A004", 4, "T013-STATIC-ID-GUID-000000000013", true, 0, "Available", "T013", "Bàn T2-3" },
+                    { "T014", "A006", 2, "T014-STATIC-ID-GUID-000000000014", true, 0, "Available", "T014", "Bàn C1" },
+                    { "T015", "A006", 4, "T015-STATIC-ID-GUID-000000000015", true, 0, "Available", "T015", "Bàn C2" },
+                    { "T016", "A007", 15, "T016-STATIC-ID-GUID-000000000016", true, 0, "Available", "T016", "Phòng Riêng 1" },
+                    { "T017", "A007", 20, "T017-STATIC-ID-GUID-000000000017", true, 0, "Available", "T017", "Phòng Riêng 2" }
                 });
 
             migrationBuilder.InsertData(

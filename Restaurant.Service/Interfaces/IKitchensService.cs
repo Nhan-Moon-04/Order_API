@@ -10,6 +10,6 @@ namespace Restaurant.Service.Interfaces
 {
     public interface IKitchensService
     {
-
+        Task<IEnumerable<KitchensDto>> GetAllKitchensAsync();
     }
 }

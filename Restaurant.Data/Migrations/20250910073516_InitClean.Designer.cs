@@ -12,7 +12,7 @@ using Restaurant.Data;
 namespace Restaurant.Data.Migrations
 {
     [DbContext(typeof(RestaurantDbContext))]
-    [Migration("20250903011235_InitClean")]
+    [Migration("20250910073516_InitClean")]
     partial class InitClean
     {
         /// <inheritdoc />
@@ -1498,6 +1498,9 @@ namespace Restaurant.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1526,6 +1529,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T001-STATIC-ID-GUID-000000000001",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T001",
                             TableName = "Bàn A1"
@@ -1537,6 +1541,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T002-STATIC-ID-GUID-000000000002",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T002",
                             TableName = "Bàn A2"
@@ -1548,6 +1553,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 2,
                             Id = "T003-STATIC-ID-GUID-000000000003",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T003",
                             TableName = "Bàn A3"
@@ -1559,6 +1565,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 8,
                             Id = "T010-STATIC-ID-GUID-000000000010",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T010",
                             TableName = "Bàn A4"
@@ -1570,6 +1577,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T004-STATIC-ID-GUID-000000000004",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T004",
                             TableName = "Bàn B1"
@@ -1581,6 +1589,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 8,
                             Id = "T005-STATIC-ID-GUID-000000000005",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T005",
                             TableName = "Bàn B2"
@@ -1592,6 +1601,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T011-STATIC-ID-GUID-000000000011",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T011",
                             TableName = "Bàn B3"
@@ -1603,6 +1613,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T006-STATIC-ID-GUID-000000000006",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T006",
                             TableName = "Bàn VIP 1"
@@ -1614,6 +1625,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 10,
                             Id = "T007-STATIC-ID-GUID-000000000007",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T007",
                             TableName = "Bàn VIP 2"
@@ -1625,6 +1637,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 12,
                             Id = "T012-STATIC-ID-GUID-000000000012",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T012",
                             TableName = "Bàn VIP 3"
@@ -1636,6 +1649,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T008-STATIC-ID-GUID-000000000008",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T008",
                             TableName = "Bàn T2-1"
@@ -1647,6 +1661,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 6,
                             Id = "T009-STATIC-ID-GUID-000000000009",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T009",
                             TableName = "Bàn T2-2"
@@ -1658,6 +1673,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T013-STATIC-ID-GUID-000000000013",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T013",
                             TableName = "Bàn T2-3"
@@ -1669,6 +1685,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 2,
                             Id = "T014-STATIC-ID-GUID-000000000014",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T014",
                             TableName = "Bàn C1"
@@ -1680,6 +1697,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 4,
                             Id = "T015-STATIC-ID-GUID-000000000015",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T015",
                             TableName = "Bàn C2"
@@ -1691,6 +1709,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 15,
                             Id = "T016-STATIC-ID-GUID-000000000016",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T016",
                             TableName = "Phòng Riêng 1"
@@ -1702,6 +1721,7 @@ namespace Restaurant.Data.Migrations
                             Capacity = 20,
                             Id = "T017-STATIC-ID-GUID-000000000017",
                             IsActive = true,
+                            SortOrder = 0,
                             Status = "Available",
                             TableCode = "T017",
                             TableName = "Phòng Riêng 2"

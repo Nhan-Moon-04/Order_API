@@ -4,22 +4,25 @@ using Restaurant.Service.Interfaces;
 using Restaurant.Service.Services;
 using System.Text.Json.Serialization;
 using static Restaurant.Service.Services.AreasService;
+using static Restaurant.Service.Services.DishesService;
 using static Restaurant.Service.Services.TableService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== CORS: khai báo policy =====
 const string AllowAngularDev = "AllowAngularDev";
+//addcord là Đăng ký dịch vụ CORS trong DI container.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: AllowAngularDev, policy =>
     {
+        //withorigins : Chỉ định domain được phép gọi API
         policy.WithOrigins(
                 "http://localhost:4200"         // Angular dev server (mặc định HTTP)
                                                 // ,"https://localhost:4200"     // Nếu bạn chạy Angular dev bằng HTTPS, mở thêm
             )
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyHeader() //Cho phép mọi header tùy chỉnh từ client.
+            .AllowAnyMethod(); //Cho phép mọi phương thức HTTP.
         // .AllowCredentials();             // BẬT nếu bạn thật sự cần cookie/Authorization qua CORS
     });
 });
@@ -52,6 +55,7 @@ builder.Services.AddScoped<IOrderTableService, OrderTableService>();
 builder.Services.AddScoped<ITableSessionService, TableSessionService>();
 builder.Services.AddScoped<TableDapperService>();
 builder.Services.AddScoped<AreasDapperService>();
+builder.Services.AddScoped<DishesServiceDapper>();
 
 
 var app = builder.Build();
@@ -70,7 +74,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseCors(AllowAngularDev); // Đặt TRƯỚC UseAuthorization & MapControllers
+app.UseCors(AllowAngularDev); 
 
 
 app.UseAuthorization();

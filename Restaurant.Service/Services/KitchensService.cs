@@ -16,7 +16,16 @@ namespace Restaurant.Service.Services
             _context = context;
         }
 
-
+        public async Task<IEnumerable<KitchensDto>> GetAllKitchensAsync() => await _context.Kitchens
+                .Select(k => new KitchensDto
+                {
+                    KitchenId = k.KitchenId,
+                    KitchenName = k.KitchenName,
+                    Description = k.Description,
+                    IsActive = k.IsActive,
+                    CreatedAt = k.CreatedAt
+                })
+                .ToListAsync();
 
     }
 }
