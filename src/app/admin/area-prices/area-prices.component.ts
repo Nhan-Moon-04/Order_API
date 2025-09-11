@@ -5,7 +5,12 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Observable, catchError, of, forkJoin, map } from 'rxjs';
 import { Area } from '../../model/area.model';
-import { AreaDishPrice, AreaDishPriceDisplay } from '../../model/area-dish-price.model';
+import {
+  AreaDishPrice,
+  AreaDishPriceDisplay,
+  AreaDishPriceSearchRequest,
+  PagedResponse,
+} from '../../model/area-dish-price.model';
 import { Dish } from '../../model/dish.model';
 import {
   ChangeQuantityRequest,
@@ -26,6 +31,7 @@ import { Location } from '@angular/common';
 export class AreaPricesComponent implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private location = inject(Location);
 
   areas = signal<Area[]>([]);
   selectedArea = signal<Area | null>(null);
@@ -34,6 +40,26 @@ export class AreaPricesComponent implements OnInit {
   loadingDishes = signal(false);
   error = signal<string | null>(null);
   dishError = signal<string | null>(null);
+
+  // Pagination properties
+  totalPages = signal(0);
+  pageIndex = signal(1);
+  pageSize = 10;
+  dropdownValues: number[] = [5, 10, 15, 20, 25];
+  selectedPageSize = signal<number>(10);
+
+  // Search and filter properties
+  searchText = signal<string>('');
+  selectedAreaFilter = signal<string>('');
+  selectedStatus = signal<string>('');
+  dishNameFilter = signal<string>('');
+  kitchenNameFilter = signal<string>('');
+  groupNameFilter = signal<string>('');
+
+  // Sort properties
+  sortColumn = signal<string>('');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+  filteredDishPrices = signal<AreaDishPriceDisplay[]>([]);
 
   // Edit Price Modal
   showEditModal = signal(false);
@@ -54,7 +80,171 @@ export class AreaPricesComponent implements OnInit {
   removingFood = signal(false);
 
   ngOnInit() {
+    // Load saved page size from localStorage
+    const savedPageSize = localStorage.getItem('areaPricesPageSize');
+    if (savedPageSize) {
+      this.selectedPageSize.set(+savedPageSize);
+      this.pageSize = +savedPageSize;
+    }
+
     this.loadAreas();
+    this.getAllAreaDishPrices(1);
+  }
+
+  // Get all area dish prices with pagination
+  getAllAreaDishPrices(page: number) {
+    this.loadingDishes.set(true);
+    this.dishError.set(null);
+
+    const requestBody: AreaDishPriceSearchRequest = {
+      searchString: this.searchText(),
+      pageIndex: page,
+      pageSize: this.selectedPageSize(),
+      isActive: 1,
+      areaId: this.selectedAreaFilter(),
+      dishName: this.dishNameFilter(),
+      kitchenName: this.kitchenNameFilter(),
+      groupName: this.groupNameFilter(),
+    };
+
+    this.http
+      .post<PagedResponse<AreaDishPrice>>(
+        `${environment.apiUrl}/AreaDishPrices/Search`,
+        requestBody
+      )
+      .pipe(
+        catchError((err) => {
+          this.dishError.set('Failed to load area dish prices.');
+          this.loadingDishes.set(false);
+          return of({
+            items: [],
+            totalRecords: 0,
+            totalPages: 0,
+            pageIndex: 1,
+            pageSize: this.selectedPageSize(),
+          });
+        })
+      )
+      .subscribe((response) => {
+        this.dishPrices.set(response.items);
+        this.totalPages.set(response.totalPages);
+        this.pageIndex.set(response.pageIndex);
+        this.loadingDishes.set(false);
+        this.applyFilters();
+      });
+  }
+
+  // Search functionality
+  onSearch() {
+    this.getAllAreaDishPrices(1);
+  }
+
+  clearSearch() {
+    this.searchText.set('');
+    this.getAllAreaDishPrices(1);
+  }
+
+  // Filter functionality
+  onFilterChange() {
+    this.getAllAreaDishPrices(1);
+  }
+
+  applyFilters() {
+    let filtered = this.dishPrices();
+
+    // Apply sorting if needed
+    if (this.sortColumn()) {
+      filtered = this.sortAreaDishPrices(filtered);
+    }
+
+    this.filteredDishPrices.set(filtered);
+  }
+
+  // Sort functionality
+  onSortColumn(column: string) {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.applyFilters();
+  }
+
+  sortAreaDishPrices(items: AreaDishPriceDisplay[]): AreaDishPriceDisplay[] {
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+
+    return [...items].sort((a, b) => {
+      let valueA: any;
+      let valueB: any;
+
+      switch (column) {
+        case 'price':
+          valueA = a.customPrice;
+          valueB = b.customPrice;
+          break;
+        case 'dishName':
+          valueA = (a.dishName || '').toLowerCase();
+          valueB = (b.dishName || '').toLowerCase();
+          break;
+        case 'areaName':
+          valueA = (a.areaName || '').toLowerCase();
+          valueB = (b.areaName || '').toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+
+      if (valueA < valueB) {
+        return direction === 'asc' ? -1 : 1;
+      }
+      if (valueA > valueB) {
+        return direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) {
+      return '↕️';
+    }
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
+  }
+
+  clearAllFilters() {
+    this.searchText.set('');
+    this.selectedAreaFilter.set('');
+    this.selectedStatus.set('');
+    this.dishNameFilter.set('');
+    this.kitchenNameFilter.set('');
+    this.groupNameFilter.set('');
+    this.getAllAreaDishPrices(1);
+  }
+
+  // Pagination
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const total = this.totalPages();
+    const current = this.pageIndex();
+
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  // Page size change handler
+  onPageSizeChange(newSize: number) {
+    this.selectedPageSize.set(newSize);
+    this.pageSize = newSize;
+    localStorage.setItem('areaPricesPageSize', newSize.toString());
+    this.getAllAreaDishPrices(1);
   }
 
   private loadAreas() {
@@ -83,63 +273,6 @@ export class AreaPricesComponent implements OnInit {
     );
   }
 
-  private loadDishPrices(areaId: string) {
-    this.loadingDishes.set(true);
-    this.dishError.set(null);
-
-    const payload = { area: areaId };
-
-    // Load area dish prices
-    const dishPrices$ = this.http
-      .post<AreaDishPrice[]>(`${environment.apiUrl}/AreaDishPrices/Prices`, payload)
-      .pipe(
-        catchError((err) => {
-          console.error('Error loading dish prices:', err);
-          return of([]);
-        })
-      );
-
-    // Load all dishes to get dish names
-    const dishes$ = this.http.get<Dish[]>(`${environment.apiUrl}/Dishes`).pipe(
-      catchError((err) => {
-        console.error('Error loading dishes:', err);
-        return of([]);
-      })
-    );
-
-    // Combine both data streams
-    forkJoin({
-      dishPrices: dishPrices$,
-      dishes: dishes$,
-    }).subscribe({
-      next: ({ dishPrices, dishes }) => {
-        // Create a map of dishId to dish info for quick lookup
-        const dishMap = new Map(dishes.map((dish) => [dish.dishId, dish]));
-
-        // Merge dish prices with dish information
-        const enrichedDishPrices: AreaDishPriceDisplay[] = dishPrices.map((price) => {
-          const dishInfo = dishMap.get(price.dishId);
-          return {
-            ...price,
-            dishName: dishInfo?.dishName || `Món ăn #${price.dishId}`,
-            basePrice: dishInfo?.basePrice,
-            kitchenId: dishInfo?.kitchenId,
-            groupId: dishInfo?.groupId,
-          };
-        });
-
-        this.dishPrices.set(enrichedDishPrices);
-        this.loadingDishes.set(false);
-      },
-      error: (err) => {
-        this.dishError.set('Failed to load dish prices');
-        this.loadingDishes.set(false);
-        console.error('Error loading dish prices:', err);
-      },
-    });
-  }
-
-  private location = inject(Location);
   goBack() {
     if (window.history.length > 1) {
       this.location.back();
@@ -149,7 +282,8 @@ export class AreaPricesComponent implements OnInit {
   selectArea(area: Area) {
     console.log('Selected area:', area.areaName);
     this.selectedArea.set(area);
-    this.loadDishPrices(area.areaId);
+    this.selectedAreaFilter.set(area.areaId);
+    this.getAllAreaDishPrices(1);
   }
 
   openEditModal(dish: AreaDishPriceDisplay) {
@@ -190,9 +324,7 @@ export class AreaPricesComponent implements OnInit {
             console.log('Price updated successfully:', response);
             this.closeEditModal();
             // Reload the dish prices to get updated data
-            if (this.selectedArea()) {
-              this.loadDishPrices(this.selectedArea()!.areaId);
-            }
+            this.getAllAreaDishPrices(this.pageIndex());
           }
           this.updatingPrice.set(false);
         },

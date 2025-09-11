@@ -88,13 +88,13 @@ export class AdminDashboardComponent implements OnInit {
     //   route: '/admin/tables',
     //   color: 'bg-green-500',
     // },
-    // {
-    //   title: 'Quản lý Món ăn',
-    //   description: 'Thêm, sửa, xóa món ăn',
-    //   icon: 'fas fa-utensils',
-    //   route: '/admin/dishes',
-    //   color: 'bg-orange-500',
-    // },
+    {
+      title: 'Quản lý Món ăn',
+      description: 'Thêm, sửa, xóa món ăn',
+      icon: 'fas fa-utensils',
+      route: '/admin/dishes',
+      color: 'bg-orange-500',
+    },
     // {
     //   title: 'Quản lý Đơn hàng',
     //   description: 'Xem lịch sử đơn hàng',

@@ -1,0 +1,236 @@
+<div class="simple-container">
+    <div class="simple-header">
+        <button (click)="goBack()" class="simple-back-btn">
+            ← Quay lại
+        </button>
+        <div class="header-content">
+            <h1>Quản lý Món ăn</h1>
+            <p>Xem và quản lý danh sách món ăn trong hệ thống</p>
+        </div>
+        <button (click)="openAddModal()" class="simple-add-btn">
+            + Thêm món ăn
+        </button>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" [(ngModel)]="searchText" (input)="onSearch()" placeholder="Tìm kiếm món ăn..."
+                class="search-input">
+            <button (click)="clearSearch()" class="clear-btn" *ngIf="searchText">
+                ✕
+            </button>
+        </div>
+        <div class="filter-box">
+            <select [(ngModel)]="selectedGroup" (change)="onFilterChange()" class="filter-select">
+                <option value="">Tất cả nhóm món</option>
+                <option *ngFor="let group of dishGroups()" [value]="group.groupId">
+                    {{ group.groupName }}
+                </option>
+            </select>
+            <select [(ngModel)]="selectedStatus" (change)="onFilterChange()" class="filter-select">
+                <option value="">Tất cả trạng thái</option>
+                <option value="true">Hoạt động</option>
+                <option value="false">Không hoạt động</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="simple-content">
+        <!-- Loading State -->
+        @if (loading()) {
+        <div class="simple-loading">
+            <div class="simple-spinner"></div>
+            <p>Đang tải danh sách món ăn...</p>
+        </div>
+        }
+
+        <!-- Error State -->
+        @if (error()) {
+        <div class="simple-error">
+            {{ error() }}
+        </div>
+        }
+
+        <!-- Dishes Table -->
+        @if (dishes().length > 0 && !loading()) {
+        <div class="dishes-table">
+            <!-- Table Header -->
+            <div class="table-header">
+                <div class="col-id">#</div>
+                <div class="col-code">Mã món</div>
+                <div class="col-name sortable" (click)="onSortColumn('name')">
+                    Tên món <span class="sort-icon">{{ getSortIcon('name') }}</span>
+                </div>
+
+
+                <div class="col-group sortable" (click)="onSortColumn('group')">
+                    Loại món <span class="sort-icon">{{ getSortIcon('group') }}</span>
+                </div>
+
+
+
+                <div class="col-group sortable" (click)="onSortColumn('group')">
+                    Ghi Chú <span class="sort-icon">{{ getSortIcon('group') }}</span>
+                </div>
+                <div class="col-price sortable" (click)="onSortColumn('price')">
+                    Giá bán <span class="sort-icon">{{ getSortIcon('price') }}</span>
+                </div>
+                <div class="col-status">Trạng thái</div>
+                <div class="col-actions">Thao tác</div>
+            </div>
+
+            <!-- Table Body -->
+            @for (dish of filteredDishes(); track dish.dishId; let i = $index) {
+            <div class="table-row">
+                <div class="col-id">{{ (pageIndex() - 1) * selectedPageSize() + i + 1 }}</div>
+                <div class="col-code">DISH{{ dish.dishId }}</div>
+                <div class="col-name">{{ dish.dishName }}</div>
+                <div class="col-group">{{ dish.groupName || 'Chưa phân loại' }}</div>
+                <div class="col-group">{{ dish.description || 'Chưa phân loại' }}</div>
+                <div class="col-price">{{ dish.basePrice | currency:'VND':'symbol':'1.0-0' }}</div>
+                <div class="col-status">
+                    <span class="status-badge" [class]="dish.isActive ? 'active' : 'inactive'">
+                        {{ dish.isActive ? 'Hoạt động' : 'Tạm dừng' }}
+                    </span>
+                </div>
+
+            </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+        <div class="pagination-container">
+            <!-- Page Size Selector -->
+            <div class="page-size-selector">
+                <label for="pageSizeDropdown">Hiển thị:</label>
+                <select id="pageSizeDropdown" [ngModel]="selectedPageSize()" (ngModelChange)="onPageSizeChange($event)"
+                    class="page-size-dropdown">
+                    <option *ngFor="let size of dropdownValues" [value]="size">
+                        {{ size }}
+                    </option>
+                </select>
+                <span>món/trang</span>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <button class="page-btn" (click)="getAllDishes(pageIndex() - 1)" [disabled]="pageIndex() <= 1">
+                    ‹ Trước
+                </button>
+
+                @for (page of getPageNumbers(); track page) {
+                <button class="page-btn" [class.active]="pageIndex() === page" (click)="getAllDishes(page)"
+                    [disabled]="pageIndex() === page">
+                    {{ page }}
+                </button>
+                }
+
+                <button class="page-btn" (click)="getAllDishes(pageIndex() + 1)"
+                    [disabled]="pageIndex() >= totalPages()">
+                    Sau ›
+                </button>
+            </div>
+        </div>
+        }
+        }
+
+        <!-- Empty State -->
+        @if (filteredDishes().length === 0 && !loading() && !error()) {
+        <div class="simple-empty">
+            @if (searchText() || selectedGroup() || selectedStatus()) {
+            <h3>Không tìm thấy món ăn nào</h3>
+            <p>Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+            <button (click)="clearAllFilters()" class="simple-add-btn">
+                Xóa bộ lọc
+            </button>
+            } @else {
+            <h3>Chưa có món ăn nào</h3>
+            <p>Bắt đầu bằng cách thêm món ăn đầu tiên</p>
+            <button (click)="openAddModal()" class="simple-add-btn">
+                + Thêm món ăn
+            </button>
+            }
+        </div>
+        }
+    </div>
+
+    <!-- Add Modal -->
+    @if (showAddModal()) {
+    <div class="simple-modal-overlay" (click)="closeAddModal()">
+        <div class="simple-modal" (click)="$event.stopPropagation()">
+            <h3>Thêm món ăn mới</h3>
+
+            <form (ngSubmit)="addDish()">
+                <div class="form-group">
+                    <label>Tên món ăn *</label>
+                    <input type="text" [(ngModel)]="newDish().dishName" name="dishName" placeholder="Nhập tên món ăn"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label>Giá (VND) *</label>
+                    <input type="number" [(ngModel)]="newDish().basePrice" name="basePrice" placeholder="0" min="0"
+                        required>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label>Nhóm món ăn</label>
+                    <select [(ngModel)]="newDish().groupId" name="groupId">
+                        <option value="">Chọn nhóm món ăn</option>
+                        <option *ngFor="let group of dishGroups()" [value]="group.groupId">
+                            {{ group.groupName }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Danh Sách Bếp</label>
+                    <select [(ngModel)]="newDish().kitchenId" name="kitchenId">
+                        <option value="">Chọn bếp</option>
+                        <option *ngFor="let kitchen of kitchens()" [value]="kitchen.kitchenId">
+                            {{ kitchen.kitchenName }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <textarea [(ngModel)]="newDish().description" name="description" rows="3"
+                        placeholder="Nhập mô tả món ăn"></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" [(ngModel)]="newDish().isActive" name="isActive" id="add-active">
+                    <label for="add-active">Kích hoạt món ăn</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" (click)="closeAddModal()" class="simple-btn cancel-btn"
+                        [disabled]="loading()">
+                        Hủy
+                    </button>
+                    <button type="submit" class="simple-btn submit-btn" [disabled]="loading()">
+                        {{ loading() ? 'Đang thêm...' : 'Thêm' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+
+    <!-- Edit Modal -->
+    @if (showEditModal()) {
+    <div class="simple-modal-overlay" (click)="closeEditModal()">
+        <div class="simple-modal" (click)="$event.stopPropagation()">
+            <h3>Sửa món ăn</h3>
+
+
+        </div>
+    </div>
+    }
+</div>

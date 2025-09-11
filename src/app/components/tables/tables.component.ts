@@ -92,8 +92,6 @@ export class TablesComponent implements OnInit {
       return;
     }
 
-    // Navigate using tableCode instead of orderId
-    // The API endpoint will fetch the latest order for this table
     this.router.navigate(['/order-dashboard', table.tableCode]);
   }
 
@@ -229,7 +227,7 @@ export class TablesComponent implements OnInit {
     this.http.post<any>(url, payload, { headers }).subscribe({
       next: (res) => {
         console.log(`Đã mở bàn ${table.tableName} thành công!`, res);
-        alert(`Đã mở bàn ${table.tableName} thành công!`);
+        this.router.navigate(['/order-dashboard', table.tableCode]);
         this.closeModal();
         // Reload lại danh sách bàn để cập nhật trạng thái
         this.loadTables(this.areaId());

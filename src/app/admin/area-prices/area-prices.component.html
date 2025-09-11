@@ -5,148 +5,163 @@
         </button>
         <div class="header-content">
             <h1>Quản lý Giá Theo Khu Vực</h1>
-            <p>Chọn khu vực để quản lý giá món ăn</p>
+            <p>Xem và quản lý giá món ăn theo từng khu vực</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" [(ngModel)]="searchText" (input)="onSearch()" placeholder="Tìm kiếm..."
+                class="search-input">
+            <button (click)="clearSearch()" class="clear-btn" *ngIf="searchText()">
+                ✕
+            </button>
+        </div>
+        <div class="filter-box">
+            <select [(ngModel)]="selectedAreaFilter" (change)="onFilterChange()" class="filter-select">
+                <option value="">Tất cả khu vực</option>
+                <option *ngFor="let area of areas()" [value]="area.areaId">
+                    {{ area.areaName }}
+                </option>
+            </select>
+            <input type="text" [(ngModel)]="dishNameFilter" (input)="onFilterChange()" placeholder="Tên món ăn..."
+                class="filter-input">
+            <input type="text" [(ngModel)]="kitchenNameFilter" (input)="onFilterChange()" placeholder="Tên bếp..."
+                class="filter-input">
+            <input type="text" [(ngModel)]="groupNameFilter" (input)="onFilterChange()" placeholder="Nhóm món..."
+                class="filter-input">
+            <select [(ngModel)]="selectedStatus" (change)="onFilterChange()" class="filter-select">
+                <option value="">Tất cả trạng thái</option>
+                <option value="true">Hoạt động</option>
+                <option value="false">Không hoạt động</option>
+            </select>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="simple-content">
-        <div class="price-layout">
-            <!-- Left Panel - Areas List -->
-            <div class="areas-panel">
-                <h2>Danh sách khu vực</h2>
+        <!-- Loading State -->
+        @if (loadingDishes()) {
+        <div class="simple-loading">
+            <div class="simple-spinner"></div>
+            <p>Đang tải danh sách giá món ăn...</p>
+        </div>
+        }
 
-                <!-- Loading State for Areas -->
-                @if (loading()) {
-                <div class="simple-loading">
-                    <div class="simple-spinner"></div>
-                    <p>Đang tải...</p>
-                </div>
-                }
+        <!-- Error State -->
+        @if (dishError()) {
+        <div class="simple-error">
+            {{ dishError() }}
+        </div>
+        }
 
-                <!-- Error State for Areas -->
-                @if (error()) {
-                <div class="simple-error">
-                    {{ error() }}
+        <!-- Area Dish Prices Table -->
+        @if (dishPrices().length > 0 && !loadingDishes()) {
+        <div class="dishes-table">
+            <!-- Table Header -->
+            <div class="table-header">
+                <div class="col-id">#</div>
+                <div class="col-code">Mã</div>
+                <div class="col-area sortable" (click)="onSortColumn('areaName')">
+                    Khu vực <span class="sort-icon">{{ getSortIcon('areaName') }}</span>
                 </div>
-                }
-
-                <!-- Areas List -->
-                @if (areas().length > 0) {
-                <div class="areas-list">
-                    @for (area of areas(); track area.areaId) {
-                    <div class="area-item" [class.selected]="selectedArea()?.areaId === area.areaId"
-                        (click)="selectArea(area)">
-                        <div class="area-info">
-                            <h3>{{ area.areaName }}</h3>
-                            <span class="area-status" [class]="area.isActive ? 'active' : 'inactive'">
-                                {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
-                            </span>
-                        </div>
-                        <span class="area-arrow">›</span>
-                    </div>
-                    }
+                <div class="col-name sortable" (click)="onSortColumn('dishName')">
+                    Tên món ăn <span class="sort-icon">{{ getSortIcon('dishName') }}</span>
                 </div>
-                }
-
-                <!-- Empty State for Areas -->
-                @if (areas().length === 0 && !loading()) {
-                <div class="simple-empty">
-                    <h4>Chưa có khu vực nào</h4>
+                <div class="col-price sortable" (click)="onSortColumn('price')">
+                    Giá khu vực <span class="sort-icon">{{ getSortIcon('price') }}</span>
                 </div>
-                }
+                <div class="col-date">Ngày hiệu lực</div>
+                <div class="col-status">Trạng thái</div>
+                <div class="col-actions">Thao tác</div>
             </div>
 
-            <!-- Right Panel - Dish Prices -->
-            <div class="dishes-panel">
-                @if (!selectedArea()) {
-                <!-- No Area Selected -->
-                <div class="simple-empty">
-                    <h3>Chọn khu vực để xem món ăn</h3>
-                    <p>Vui lòng chọn một khu vực từ danh sách bên trái</p>
+            <!-- Table Body -->
+            @for (dishPrice of filteredDishPrices(); track dishPrice.id; let i = $index) {
+            <div class="table-row">
+                <div class="col-id">{{ (pageIndex() - 1) * selectedPageSize() + i + 1 }}</div>
+                <div class="col-code">ADP{{ dishPrice.id.slice(-3) }}</div>
+                <div class="col-area">{{ dishPrice.areaName || 'N/A' }}</div>
+                <div class="col-name">{{ dishPrice.dishName || 'N/A' }}</div>
+                <div class="col-price">{{ dishPrice.customPrice | currency:'VND':'symbol':'1.0-0' }}</div>
+                <div class="col-date">{{ dishPrice.effectiveDate | date:'dd/MM/yyyy' }}</div>
+                <div class="col-status">
+                    <span class="status-badge" [class]="dishPrice.isActive ? 'active' : 'inactive'">
+                        {{ dishPrice.isActive ? 'Hoạt động' : 'Tạm dừng' }}
+                    </span>
                 </div>
-                } @else {
-                <!-- Selected Area Header -->
-                <div class="panel-header">
-                    <h2>Món ăn trong {{ selectedArea()?.areaName }}</h2>
-                    <p>Quản lý giá món ăn cho khu vực này</p>
+                <div class="col-actions">
+                    <button class="action-btn edit-btn" (click)="openEditModal(dishPrice)" title="Sửa giá">
+                        ✏️
+                    </button>
+                    <button class="action-btn quantity-btn"
+                        (click)="openQuantityModal(dishPrice, 'e6847093-5ccb-417e-b49f-67630cc26386')"
+                        title="Đổi số lượng">
+                        📊
+                    </button>
+                    <button class="action-btn delete-btn"
+                        (click)="openRemoveModal(dishPrice, 'e6847093-5ccb-417e-b49f-67630cc26386')" title="Xóa">
+                        🗑️
+                    </button>
                 </div>
+            </div>
+            }
+        </div>
 
-                <!-- Loading State for Dishes -->
-                @if (loadingDishes()) {
-                <div class="simple-loading">
-                    <div class="simple-spinner"></div>
-                    <p>Đang tải danh sách món ăn...</p>
-                </div>
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+        <div class="pagination-container">
+            <!-- Page Size Selector -->
+            <div class="page-size-selector">
+                <label for="pageSizeDropdown">Hiển thị:</label>
+                <select id="pageSizeDropdown" [ngModel]="selectedPageSize()" (ngModelChange)="onPageSizeChange($event)"
+                    class="page-size-dropdown">
+                    <option *ngFor="let size of dropdownValues" [value]="size">
+                        {{ size }}
+                    </option>
+                </select>
+                <span>mục/trang</span>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <button class="page-btn" (click)="getAllAreaDishPrices(pageIndex() - 1)" [disabled]="pageIndex() <= 1">
+                    ‹ Trước
+                </button>
+
+                @for (page of getPageNumbers(); track page) {
+                <button class="page-btn" [class.active]="pageIndex() === page" (click)="getAllAreaDishPrices(page)"
+                    [disabled]="pageIndex() === page">
+                    {{ page }}
+                </button>
                 }
 
-                <!-- Error State for Dishes -->
-                @if (dishError()) {
-                <div class="simple-error">
-                    {{ dishError() }}
-                </div>
-                }
-
-                <!-- Dish Prices List -->
-                @if (dishPrices().length > 0 && !loadingDishes()) {
-                <div class="dishes-grid">
-                    @for (dishPrice of dishPrices(); track dishPrice.id) {
-                    <div class="dish-card">
-                        <div class="dish-header">
-                            <h4>{{ dishPrice.dishName || 'Món ăn #' + dishPrice.dishId }}</h4>
-                            <span class="dish-status" [class]="dishPrice.isActive ? 'active' : 'inactive'">
-                                {{ dishPrice.isActive ? 'Hoạt động' : 'Không hoạt động' }}
-                            </span>
-                        </div>
-
-                        <div class="dish-info">
-                            <div class="price-info">
-                                <div class="current-price">
-                                    <span class="label">Giá khu vực:</span>
-                                    <span class="value">{{ dishPrice.customPrice | currency:'VND':'symbol':'1.0-0'
-                                        }}</span>
-                                </div>
-                                @if (dishPrice.basePrice) {
-                                <div class="base-price">
-                                    <span class="label">Giá gốc:</span>
-                                    <span class="value">{{ dishPrice.basePrice | currency:'VND':'symbol':'1.0-0'
-                                        }}</span>
-                                </div>
-                                }
-                            </div>
-                            <div class="dish-date">
-                                <span>{{ dishPrice.effectiveDate | date:'dd/MM/yyyy' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="dish-actions">
-                            <button class="simple-btn edit-btn" (click)="openEditModal(dishPrice)">
-                                Sửa giá
-                            </button>
-                            <button class="simple-btn quantity-btn"
-                                (click)="openQuantityModal(dishPrice, 'e6847093-5ccb-417e-b49f-67630cc26386')">
-                                Đổi SL
-                            </button>
-                            <button class="simple-btn delete-btn"
-                                (click)="openRemoveModal(dishPrice, 'e6847093-5ccb-417e-b49f-67630cc26386')">
-                                Xóa
-                            </button>
-                        </div>
-                    </div>
-                    }
-                </div>
-                }
-
-                <!-- Empty State for Dishes -->
-                @if (dishPrices().length === 0 && !loadingDishes() && !dishError()) {
-                <div class="simple-empty">
-                    <h3>Chưa có món ăn nào</h3>
-                    <p>Khu vực này chưa có món ăn được cấu hình giá.</p>
-                </div>
-                }
-                }
+                <button class="page-btn" (click)="getAllAreaDishPrices(pageIndex() + 1)"
+                    [disabled]="pageIndex() >= totalPages()">
+                    Sau ›
+                </button>
             </div>
         </div>
+        }
+        }
+
+        <!-- Empty State -->
+        @if (filteredDishPrices().length === 0 && !loadingDishes() && !dishError()) {
+        <div class="simple-empty">
+            @if (searchText() || selectedAreaFilter() || selectedStatus() || dishNameFilter() || kitchenNameFilter() ||
+            groupNameFilter()) {
+            <h3>Không tìm thấy giá món ăn nào</h3>
+            <p>Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+            <button (click)="clearAllFilters()" class="simple-add-btn">
+                Xóa bộ lọc
+            </button>
+            } @else {
+            <h3>Chưa có giá món ăn nào</h3>
+            <p>Chưa có dữ liệu giá món ăn theo khu vực</p>
+            }
+        </div>
+        }
     </div>
 
     <!-- Edit Price Modal -->
