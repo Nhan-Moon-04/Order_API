@@ -114,6 +114,8 @@ namespace Restaurant.Data
                 .WithMany(dg => dg.Dishes)
                 .HasForeignKey(d => d.GroupId);
 
+
+
             modelBuilder.Entity<AreaDishPrices>()
                 .HasOne(adp => adp.Area)
                 .WithMany(a => a.AreaDishPrices)
@@ -498,44 +500,44 @@ namespace Restaurant.Data
             // Enhanced AreaDishPrices with static IDs
             modelBuilder.Entity<AreaDishPrices>().HasData(
                 // Khu A001 - Standard pricing
-                new AreaDishPrices { Id = "ADP001-STATIC-ID-GUID-000000001", AreaId = "A001", DishId = "D001", CustomPrice = 350000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP002-STATIC-ID-GUID-000000002", AreaId = "A001", DishId = "D004", CustomPrice = 75000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP003-STATIC-ID-GUID-000000003", AreaId = "A001", DishId = "D011", CustomPrice = 65000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP004-STATIC-ID-GUID-000000004", AreaId = "A001", DishId = "D014", CustomPrice = 85000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP005-STATIC-ID-GUID-000000005", AreaId = "A001", DishId = "D015", CustomPrice = 25000, EffectiveDate = fixedDate, IsActive = true },
+                new AreaDishPrices { Id = "ADP001-STATIC-ID-GUID-000000001", AreaId = "A001", DishId = "D001", CustomPrice = 350000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP002-STATIC-ID-GUID-000000002", AreaId = "A001", DishId = "D004", CustomPrice = 75000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP003-STATIC-ID-GUID-000000003", AreaId = "A001", DishId = "D011", CustomPrice = 65000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP004-STATIC-ID-GUID-000000004", AreaId = "A001", DishId = "D014", CustomPrice = 85000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP005-STATIC-ID-GUID-000000005", AreaId = "A001", DishId = "D015", CustomPrice = 25000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
 
                 // Khu A002 - Promotional pricing (-5%)
-                new AreaDishPrices { Id = "ADP006-STATIC-ID-GUID-000000006", AreaId = "A002", DishId = "D008", CustomPrice = 185250, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP007-STATIC-ID-GUID-000000007", AreaId = "A002", DishId = "D009", CustomPrice = 156750, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP008-STATIC-ID-GUID-000000008", AreaId = "A002", DishId = "D010", CustomPrice = 137750, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP009-STATIC-ID-GUID-000000009", AreaId = "A002", DishId = "D027", CustomPrice = 199500, EffectiveDate = fixedDate, IsActive = true },
+                new AreaDishPrices { Id = "ADP006-STATIC-ID-GUID-000000006", AreaId = "A002", DishId = "D008", CustomPrice = 185250, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP007-STATIC-ID-GUID-000000007", AreaId = "A002", DishId = "D009", CustomPrice = 156750, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP008-STATIC-ID-GUID-000000008", AreaId = "A002", DishId = "D010", CustomPrice = 137750, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP009-STATIC-ID-GUID-000000009", AreaId = "A002", DishId = "D027", CustomPrice = 199500, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
 
                 // Khu A003 - VIP pricing (+15% for main dishes, +10% for desserts)
-                new AreaDishPrices { Id = "ADP010-STATIC-ID-GUID-000000010", AreaId = "A003", DishId = "D001", CustomPrice = 402500, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP011-STATIC-ID-GUID-000000011", AreaId = "A003", DishId = "D002", CustomPrice = 207000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP012-STATIC-ID-GUID-000000012", AreaId = "A003", DishId = "D003", CustomPrice = 322000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP013-STATIC-ID-GUID-000000013", AreaId = "A003", DishId = "D007", CustomPrice = 287500, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP014-STATIC-ID-GUID-000000014", AreaId = "A003", DishId = "D021", CustomPrice = 437000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP015-STATIC-ID-GUID-000000015", AreaId = "A003", DishId = "D011", CustomPrice = 71500, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP016-STATIC-ID-GUID-000000016", AreaId = "A003", DishId = "D012", CustomPrice = 82500, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP017-STATIC-ID-GUID-000000017", AreaId = "A003", DishId = "D014", CustomPrice = 93500, EffectiveDate = fixedDate, IsActive = true },
+                new AreaDishPrices { Id = "ADP010-STATIC-ID-GUID-000000010", AreaId = "A003", DishId = "D001", CustomPrice = 402500, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP011-STATIC-ID-GUID-000000011", AreaId = "A003", DishId = "D002", CustomPrice = 207000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP012-STATIC-ID-GUID-000000012", AreaId = "A003", DishId = "D003", CustomPrice = 322000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP013-STATIC-ID-GUID-000000013", AreaId = "A003", DishId = "D007", CustomPrice = 287500, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP014-STATIC-ID-GUID-000000014", AreaId = "A003", DishId = "D021", CustomPrice = 437000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP015-STATIC-ID-GUID-000000015", AreaId = "A003", DishId = "D011", CustomPrice = 71500, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP016-STATIC-ID-GUID-000000016", AreaId = "A003", DishId = "D012", CustomPrice = 82500, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP017-STATIC-ID-GUID-000000017", AreaId = "A003", DishId = "D014", CustomPrice = 93500, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
 
                 // Khu A004 - Standard pricing
-                new AreaDishPrices { Id = "ADP018-STATIC-ID-GUID-000000018", AreaId = "A004", DishId = "D004", CustomPrice = 75000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP019-STATIC-ID-GUID-000000019", AreaId = "A004", DishId = "D005", CustomPrice = 65000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP020-STATIC-ID-GUID-000000020", AreaId = "A004", DishId = "D006", CustomPrice = 85000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP021-STATIC-ID-GUID-000000021", AreaId = "A004", DishId = "D025", CustomPrice = 135000, EffectiveDate = fixedDate, IsActive = true },
+                new AreaDishPrices { Id = "ADP018-STATIC-ID-GUID-000000018", AreaId = "A004", DishId = "D004", CustomPrice = 75000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP019-STATIC-ID-GUID-000000019", AreaId = "A004", DishId = "D005", CustomPrice = 65000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP020-STATIC-ID-GUID-000000020", AreaId = "A004", DishId = "D006", CustomPrice = 85000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP021-STATIC-ID-GUID-000000021", AreaId = "A004", DishId = "D025", CustomPrice = 135000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
 
                 // Khu A006 - Quiet zone, slight discount (-3%)
-                new AreaDishPrices { Id = "ADP022-STATIC-ID-GUID-000000022", AreaId = "A006", DishId = "D015", CustomPrice = 24250, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP023-STATIC-ID-GUID-000000023", AreaId = "A006", DishId = "D030", CustomPrice = 43650, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP024-STATIC-ID-GUID-000000024", AreaId = "A006", DishId = "D022", CustomPrice = 160050, EffectiveDate = fixedDate, IsActive = true },
+                new AreaDishPrices { Id = "ADP022-STATIC-ID-GUID-000000022", AreaId = "A006", DishId = "D015", CustomPrice = 24250, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP023-STATIC-ID-GUID-000000023", AreaId = "A006", DishId = "D030", CustomPrice = 43650, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP024-STATIC-ID-GUID-000000024", AreaId = "A006", DishId = "D022", CustomPrice = 160050, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
 
                 // Khu A007 - Private room premium (+20%)
-                new AreaDishPrices { Id = "ADP025-STATIC-ID-GUID-000000025", AreaId = "A007", DishId = "D021", CustomPrice = 456000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP026-STATIC-ID-GUID-000000026", AreaId = "A007", DishId = "D024", CustomPrice = 384000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP027-STATIC-ID-GUID-000000027", AreaId = "A007", DishId = "D035", CustomPrice = 780000, EffectiveDate = fixedDate, IsActive = true },
-                new AreaDishPrices { Id = "ADP028-STATIC-ID-GUID-000000028", AreaId = "A007", DishId = "D031", CustomPrice = 114000, EffectiveDate = fixedDate, IsActive = true }
+                new AreaDishPrices { Id = "ADP025-STATIC-ID-GUID-000000025", AreaId = "A007", DishId = "D021", CustomPrice = 456000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP026-STATIC-ID-GUID-000000026", AreaId = "A007", DishId = "D024", CustomPrice = 384000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP027-STATIC-ID-GUID-000000027", AreaId = "A007", DishId = "D035", CustomPrice = 780000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate },
+                new AreaDishPrices { Id = "ADP028-STATIC-ID-GUID-000000028", AreaId = "A007", DishId = "D031", CustomPrice = 114000, EffectiveDate = fixedDate, IsActive = true, CreatedAt = fixedDate }
             );
         }
     }

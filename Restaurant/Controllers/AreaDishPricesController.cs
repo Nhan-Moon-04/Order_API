@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Domain.DTOs;
+using Restaurant.Domain.DTOs.Query;
 using Restaurant.Domain.DTOs.Request;
 using Restaurant.Service.Interfaces;
 using Restaurant.Service.Services;
@@ -51,6 +52,34 @@ namespace Restaurant.API.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+        [HttpPost("Search")]
+        public async Task<ActionResult> GetPagedAreaDishPriceAsync(
+            [FromBody] AreaDishPriceQueryParameters query)
+        {
+            var result = await _service.GetPagedAreaDishPriceAsync(query);
+
+            var data = result.Item1;
+            var totalRecords = result.Item2;
+
+            return Ok(new
+            {
+                Items = data,
+                TotalRecords = totalRecords,
+                PageIndex = query.PageIndex,
+                PageSize = query.PageSize,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)query.PageSize)
+            });
+        }
+
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddAreaDishPrices([FromBody] AddAreaDishPriceRequest request)
+        {
+            if (request.DishIds == null || request.DishIds.Count == 0)
+                return BadRequest("Phải chọn ít nhất 1 món");
+
+            await _service.AddDishesToAreaAsync(request);
+            return Ok(new { Message = "Đã thêm món vào khu thành công" });
         }
 
 

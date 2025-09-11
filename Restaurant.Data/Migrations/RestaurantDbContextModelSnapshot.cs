@@ -32,6 +32,9 @@ namespace Restaurant.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<double>("CustomPrice")
                         .HasColumnType("float");
 
@@ -44,6 +47,9 @@ namespace Restaurant.Data.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -58,253 +64,309 @@ namespace Restaurant.Data.Migrations
                         {
                             Id = "ADP001-STATIC-ID-GUID-000000001",
                             AreaId = "A001",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 350000.0,
                             DishId = "D001",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP002-STATIC-ID-GUID-000000002",
                             AreaId = "A001",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 75000.0,
                             DishId = "D004",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP003-STATIC-ID-GUID-000000003",
                             AreaId = "A001",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 65000.0,
                             DishId = "D011",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP004-STATIC-ID-GUID-000000004",
                             AreaId = "A001",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 85000.0,
                             DishId = "D014",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP005-STATIC-ID-GUID-000000005",
                             AreaId = "A001",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 25000.0,
                             DishId = "D015",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP006-STATIC-ID-GUID-000000006",
                             AreaId = "A002",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 185250.0,
                             DishId = "D008",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP007-STATIC-ID-GUID-000000007",
                             AreaId = "A002",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 156750.0,
                             DishId = "D009",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP008-STATIC-ID-GUID-000000008",
                             AreaId = "A002",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 137750.0,
                             DishId = "D010",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP009-STATIC-ID-GUID-000000009",
                             AreaId = "A002",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 199500.0,
                             DishId = "D027",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP010-STATIC-ID-GUID-000000010",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 402500.0,
                             DishId = "D001",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP011-STATIC-ID-GUID-000000011",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 207000.0,
                             DishId = "D002",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP012-STATIC-ID-GUID-000000012",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 322000.0,
                             DishId = "D003",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP013-STATIC-ID-GUID-000000013",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 287500.0,
                             DishId = "D007",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP014-STATIC-ID-GUID-000000014",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 437000.0,
                             DishId = "D021",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP015-STATIC-ID-GUID-000000015",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 71500.0,
                             DishId = "D011",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP016-STATIC-ID-GUID-000000016",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 82500.0,
                             DishId = "D012",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP017-STATIC-ID-GUID-000000017",
                             AreaId = "A003",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 93500.0,
                             DishId = "D014",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP018-STATIC-ID-GUID-000000018",
                             AreaId = "A004",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 75000.0,
                             DishId = "D004",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP019-STATIC-ID-GUID-000000019",
                             AreaId = "A004",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 65000.0,
                             DishId = "D005",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP020-STATIC-ID-GUID-000000020",
                             AreaId = "A004",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 85000.0,
                             DishId = "D006",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP021-STATIC-ID-GUID-000000021",
                             AreaId = "A004",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 135000.0,
                             DishId = "D025",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP022-STATIC-ID-GUID-000000022",
                             AreaId = "A006",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 24250.0,
                             DishId = "D015",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP023-STATIC-ID-GUID-000000023",
                             AreaId = "A006",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 43650.0,
                             DishId = "D030",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP024-STATIC-ID-GUID-000000024",
                             AreaId = "A006",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 160050.0,
                             DishId = "D022",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP025-STATIC-ID-GUID-000000025",
                             AreaId = "A007",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 456000.0,
                             DishId = "D021",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP026-STATIC-ID-GUID-000000026",
                             AreaId = "A007",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 384000.0,
                             DishId = "D024",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP027-STATIC-ID-GUID-000000027",
                             AreaId = "A007",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 780000.0,
                             DishId = "D035",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         },
                         new
                         {
                             Id = "ADP028-STATIC-ID-GUID-000000028",
                             AreaId = "A007",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomPrice = 114000.0,
                             DishId = "D031",
                             EffectiveDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true
+                            IsActive = true,
+                            SortOrder = 0
                         });
                 });
 
@@ -502,6 +564,9 @@ namespace Restaurant.Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DishName")
                         .IsRequired()

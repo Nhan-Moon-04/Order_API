@@ -9,7 +9,8 @@
         public DateTime EffectiveDate { get; set; }
         public string? AreaName { get; set; }
         public string? DishName { get; set; }
-
+        public int SortOrder { get; set; } = 0;
+        public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
     }
 }

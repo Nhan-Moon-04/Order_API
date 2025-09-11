@@ -99,5 +99,12 @@ namespace Restaurant.Controllers
             }
         }
 
+
+        [HttpPost("GetAvailableDishes")]
+        public async Task<IActionResult> GetAvailableDishes([FromBody] GetAvailableDishesForAreaAsyncRequest request)
+        {
+            var dishes = await _services.GetAvailableDishesForAreaAsync(request.AreaId);
+            return Ok(dishes);
+        }
     }
 }

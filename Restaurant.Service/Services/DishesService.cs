@@ -109,12 +109,38 @@ namespace Restaurant.Service.Services
 
                 var createdAt = $"TS{DateTime.Now:yyyyMMddHHmmss};";
                 var insertSql = @"
-                INSERT INTO Dishes (DishId, DishName, BasePrice, KitchenId, GroupId,Discription, IsActive, CreatedAt)
-                VALUES (@DishId, @DishName, @BasePrice, @KitchenId, @GroupId,@Discription, @IsActive, @createdAt);
+                INSERT INTO Dishes (DishId, DishName, BasePrice, KitchenId, GroupId,Description, IsActive, CreatedAt)
+                VALUES (@DishId, @DishName, @BasePrice, @KitchenId, @GroupId,@Description, @IsActive, @createdAt);
             ";
 
                 await connection.ExecuteAsync(insertSql, newDish);
                 return newDish;
+            }
+
+
+
+            /// <summary>
+            /// 
+            /// Lây danh sách món chưa có trong khu vực
+            ///     
+            /// </summary>
+            /// 
+            public async Task<IEnumerable<DishesDto>> GetAvailableDishesForAreaAsync(string areaId)
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                string sql = @"
+        SELECT d.DishId, d.DishName, d.BasePrice
+        FROM Dishes d
+        WHERE d.DishId NOT IN (
+            SELECT adp.DishId
+            FROM AreaDishPrices adp
+            WHERE adp.AreaId = @AreaId
+        )";
+
+                var dishes = await connection.QueryAsync<DishesDto>(sql, new { AreaId = areaId });
+                return dishes;
             }
 
         }
