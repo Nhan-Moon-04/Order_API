@@ -49,22 +49,24 @@ export interface AddDishesToAreaRequest {
   customPrice: number;
 }
 
+// Delete area dish price request interface
+export interface DeleteAreaDishPriceRequest {
+  id: string;
+}
+
+// Delete area dish price response interface
+export interface DeleteAreaDishPriceResponse {
+  message: string;
+}
+
 // Get available dishes request interface
 export interface GetAvailableDishesRequest {
   areaId: string;
-  pageIndex?: number;
-  pageSize?: number;
-  searchText?: string;
+  searchString?: string;
 }
 
-// Available dishes response interface
-export interface AvailableDishesResponse {
-  items: AvailableDish[];
-  totalRecords: number;
-  pageIndex: number;
-  pageSize: number;
-  totalPages: number;
-}
+// Available dishes response interface - backend returns array directly
+export type AvailableDishesResponse = AvailableDish[];
 
 // Available dish interface for modal
 export interface AvailableDish {
@@ -74,4 +76,7 @@ export interface AvailableDish {
   description?: string;
   kitchenName?: string;
   groupName?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  id?: string;
 }

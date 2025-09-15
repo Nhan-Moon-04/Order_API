@@ -950,3 +950,102 @@
     padding: 10px !important;
   }
 }
+
+/* Selected Dish Info Styles */
+.selected-dish-info {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+}
+
+.selected-dish-info .dish-details {
+  margin: 0;
+}
+
+.selected-dish-info h4 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.selected-dish-info p {
+  margin: 5px 0;
+  color: #5a6c7d;
+  font-size: 14px;
+}
+
+.selected-dish-info strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Dropdown Styles */
+.filter-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.filter-select option {
+  padding: 8px;
+  color: #333;
+}
+
+/* Selected Count Styles */
+.selected-count {
+  margin-top: 15px;
+  padding: 10px 15px;
+  background: #e8f5e8;
+  border: 1px solid #c3e6c3;
+  border-radius: 4px;
+  color: #2d5a2d;
+}
+
+.selected-count p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* No dishes message styles */
+.no-dishes {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.no-dishes p {
+  margin: 5px 0;
+}
+
+.no-dishes button {
+  background: none;
+  border: none;
+  color: #4a90e2;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+  padding: 0;
+}
+
+.no-dishes button:hover {
+  color: #357abd;
+}

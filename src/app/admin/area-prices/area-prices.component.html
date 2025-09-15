@@ -30,19 +30,19 @@
             }
         </div>
         <div class="filter-box">
-            <select [(ngModel)]="selectedAreaFilter" (change)="onFilterChange()" class="filter-select">
+            <select [ngModel]="selectedAreaFilter()" (ngModelChange)="onAreaFilterChange($event)" class="filter-select">
                 <option value="">Tất cả khu vực</option>
                 <option *ngFor="let area of areas()" [value]="area.areaId">
                     {{ area.areaName }}
                 </option>
             </select>
-            <input type="text" [(ngModel)]="dishNameFilter" (input)="onFilterChange()" placeholder="Tên món ăn..."
-                class="filter-input">
-            <input type="text" [(ngModel)]="kitchenNameFilter" (input)="onFilterChange()" placeholder="Tên bếp..."
-                class="filter-input">
-            <input type="text" [(ngModel)]="groupNameFilter" (input)="onFilterChange()" placeholder="Nhóm món..."
-                class="filter-input">
-            <select [(ngModel)]="selectedStatus" (change)="onFilterChange()" class="filter-select">
+            <input type="text" [ngModel]="dishNameFilter()" (ngModelChange)="onDishNameFilterChange($event)"
+                placeholder="Tên món ăn..." class="filter-input">
+            <input type="text" [ngModel]="kitchenNameFilter()" (ngModelChange)="onKitchenNameFilterChange($event)"
+                placeholder="Tên bếp..." class="filter-input">
+            <input type="text" [ngModel]="groupNameFilter()" (ngModelChange)="onGroupNameFilterChange($event)"
+                placeholder="Nhóm món..." class="filter-input">
+            <select [ngModel]="selectedStatus()" (ngModelChange)="onStatusFilterChange($event)" class="filter-select">
                 <option value="">Tất cả trạng thái</option>
                 <option value="true">Hoạt động</option>
                 <option value="false">Không hoạt động</option>
@@ -80,8 +80,8 @@
                 <div class="col-name sortable" (click)="onSortColumn('dishName')">
                     Tên món ăn <span class="sort-icon">{{ getSortIcon('dishName') }}</span>
                 </div>
-                <div class="col-name sortable" (click)="onSortColumn('dish')">
-                    Giá Gốc <span class="sort-icon">{{ getSortIcon('dish') }}</span>
+                <div class="col-name sortable" (click)="onSortColumn('basePrice')">
+                    Giá Gốc <span class="sort-icon">{{ getSortIcon('basePrice') }}</span>
                 </div>
                 <div class="col-price sortable" (click)="onSortColumn('price')">
                     Giá khu vực <span class="sort-icon">{{ getSortIcon('price') }}</span>
@@ -99,11 +99,7 @@
                 <div class="col-area">{{ dishPrice.areaName || 'N/A' }}</div>
                 <div class="col-name">{{ dishPrice.dishName || 'N/A' }}</div>
                 <div class="col-price">
-                    @if (dishPrice.basePrice) {
-                    {{ dishPrice.basePrice | currency:'VND':'symbol':'1.0-0' }}
-                    } @else {
-                    <span style="color: #999;">N/A</span>
-                    }
+                    {{ (dishPrice.basePrice || 0) | currency:'VND':'symbol':'1.0-0' }}
                 </div>
                 <div class="col-price">{{ dishPrice.customPrice | currency:'VND':'symbol':'1.0-0' }}</div>
                 <div class="col-date">{{ dishPrice.effectiveDate | date:'dd/MM/yyyy' }}</div>
@@ -121,8 +117,7 @@
                         title="Đổi số lượng">
                         📊
                     </button>
-                    <button class="action-btn delete-btn"
-                        (click)="openRemoveModal(dishPrice, 'e6847093-5ccb-417e-b49f-67630cc26386')" title="Xóa">
+                    <button class="action-btn delete-btn" (click)="openRemoveModal(dishPrice)" title="Xóa khỏi khu vực">
                         🗑️
                     </button>
                 </div>
@@ -257,17 +252,17 @@
     </div>
     }
 
-    <!-- Remove Food Modal -->
+    <!-- Remove Area Dish Price Modal -->
     @if (showRemoveModal()) {
     <div class="simple-modal-overlay" (click)="closeRemoveModal()">
         <div class="simple-modal" (click)="$event.stopPropagation()">
-            <h3>Xác nhận xóa món</h3>
+            <h3>Xác nhận xóa món khỏi khu vực</h3>
 
             @if (removingDish()) {
             <div class="modal-info">
                 <p class="dish-name">{{ removingDish()?.dishName }}</p>
-                <p class="order-id">Order ID: {{ currentOrderId() }}</p>
-                <p class="warning">Món ăn sẽ bị xóa hoàn toàn khỏi order!</p>
+                <p class="area-name">Khu vực: {{ removingDish()?.areaName }}</p>
+                <p class="warning">Món ăn sẽ bị xóa khỏi khu vực này!</p>
             </div>
             }
 
@@ -275,8 +270,8 @@
                 <button (click)="closeRemoveModal()" class="simple-btn cancel-btn" [disabled]="removingFood()">
                     Hủy
                 </button>
-                <button (click)="removeFood()" class="simple-btn delete-btn" [disabled]="removingFood()">
-                    {{ removingFood() ? 'Đang xóa...' : 'Xóa món' }}
+                <button (click)="removeAreaDishPrice()" class="simple-btn delete-btn" [disabled]="removingFood()">
+                    {{ removingFood() ? 'Đang xóa...' : 'Xóa khỏi khu vực' }}
                 </button>
             </div>
         </div>
@@ -301,9 +296,10 @@
                     <label>Chọn món ăn:</label>
 
                     <!-- Search for available dishes -->
-                    <div class="search-box" style="margin-bottom: 10px;">
+                    <div class="search-box" style="margin-bottom: 15px;">
                         <input type="text" [(ngModel)]="availableDishesSearchText" (input)="onAvailableDishesSearch()"
-                            placeholder="Tìm món ăn..." class="search-input" name="availableDishesSearch">
+                            placeholder="Tìm kiếm món ăn (tên, mã, mô tả...)" class="search-input"
+                            name="availableDishesSearch">
                         @if (availableDishesSearchText()) {
                         <button type="button" (click)="clearAvailableDishesSearch()" class="clear-btn">
                             ✕
@@ -320,68 +316,52 @@
 
                     @if (availableDishes().length === 0 && !loadingAvailableDishes()) {
                     <div class="no-dishes">
+                        @if (availableDishesSearchText()) {
+                        <p>Không tìm thấy món ăn nào với từ khóa "{{ availableDishesSearchText() }}".</p>
+                        <p>Thử tìm kiếm với từ khóa khác hoặc <button type="button"
+                                (click)="clearAvailableDishesSearch()"
+                                style="background: none; border: none; color: #4a90e2; cursor: pointer; text-decoration: underline;">
+                                xóa bộ lọc</button>.</p>
+                        } @else {
                         <p>Không có món ăn nào có sẵn để thêm vào khu vực này.</p>
+                        }
                     </div>
                     }
 
                     @if (availableDishes().length > 0 && !loadingAvailableDishes()) {
-                    <div class="dishes-selection">
+                    <select [(ngModel)]="selectedDish" name="selectedDish" class="filter-select"
+                        style="width: 100%; margin-bottom: 15px;">
+                        <option value="">-- Chọn món ăn --</option>
                         @for (dish of availableDishes(); track dish.dishId) {
-                        <div class="dish-item">
-                            <input type="checkbox" [id]="'dish-' + dish.dishId"
-                                [checked]="selectedDishes().includes(dish.dishId)"
-                                (change)="toggleDishSelection(dish.dishId)">
-                            <label [for]="'dish-' + dish.dishId" class="dish-label">
-                                <div class="dish-info">
-                                    <span class="dish-name">{{ dish.dishName }}</span>
-                                    <span class="dish-price">{{ dish.basePrice | currency:'VND':'symbol':'1.0-0'
-                                        }}</span>
-                                </div>
-                                @if (dish.description) {
-                                <div class="dish-description">{{ dish.description }}</div>
-                                }
-                                @if (dish.kitchenName || dish.groupName) {
-                                <div class="dish-meta">
-                                    @if (dish.kitchenName) {
-                                    <span class="kitchen-name">Bếp: {{ dish.kitchenName }}</span>
-                                    }
-                                    @if (dish.groupName) {
-                                    <span class="group-name">Nhóm: {{ dish.groupName }}</span>
-                                    }
-                                </div>
-                                }
-                            </label>
+                        <option [value]="dish.dishId">
+                            {{ dish.dishName }} - {{ dish.basePrice | currency:'VND':'symbol':'1.0-0' }}
+                            @if (dish.kitchenName) {
+                            ({{ dish.kitchenName }})
+                            }
+                        </option>
+                        }
+                    </select>
+
+                    <!-- Show selected dish details -->
+                    @if (selectedDish()) {
+                    <div class="selected-dish-info">
+                        @for (dish of availableDishes(); track dish.dishId) {
+                        @if (dish.dishId === selectedDish()) {
+                        <div class="dish-details">
+                            <h4>{{ dish.dishName }}</h4>
+                            <p><strong>Giá gốc:</strong> {{ dish.basePrice | currency:'VND':'symbol':'1.0-0' }}</p>
+                            @if (dish.description) {
+                            <p><strong>Mô tả:</strong> {{ dish.description }}</p>
+                            }
+                            @if (dish.kitchenName) {
+                            <p><strong>Bếp:</strong> {{ dish.kitchenName }}</p>
+                            }
+                            @if (dish.groupName) {
+                            <p><strong>Nhóm:</strong> {{ dish.groupName }}</p>
+                            }
                         </div>
                         }
-                    </div>
-
-                    <!-- Pagination for available dishes -->
-                    @if (availableDishesTotalPages() > 1) {
-                    <div class="dishes-pagination">
-                        <div class="pagination">
-                            <button type="button" class="page-btn"
-                                (click)="loadAvailableDishes(selectedArea()!.areaId, availableDishesPageIndex() - 1)"
-                                [disabled]="availableDishesPageIndex() <= 1">
-                                ‹ Trước
-                            </button>
-
-                            @for (page of getAvailableDishesPageNumbers(); track page) {
-                            <button type="button" class="page-btn" [class.active]="availableDishesPageIndex() === page"
-                                (click)="loadAvailableDishes(selectedArea()!.areaId, page)"
-                                [disabled]="availableDishesPageIndex() === page">
-                                {{ page }}
-                            </button>
-                            }
-
-                            <button type="button" class="page-btn"
-                                (click)="loadAvailableDishes(selectedArea()!.areaId, availableDishesPageIndex() + 1)"
-                                [disabled]="availableDishesPageIndex() >= availableDishesTotalPages()">
-                                Sau ›
-                            </button>
-                        </div>
-                        <div class="pagination-info">
-                            Trang {{ availableDishesPageIndex() }} / {{ availableDishesTotalPages() }}
-                        </div>
+                        }
                     </div>
                     }
                     }
@@ -389,13 +369,13 @@
                 <div class="form-group">
                     <label>Giá cho khu vực này (VND) *</label>
                     <input type="number" [(ngModel)]="customPrice" name="customPrice" placeholder="0" min="0" required>
-                    <small class="price-note">Giá này sẽ áp dụng cho tất cả món ăn được chọn</small>
+                    <small class="price-note">Giá này sẽ áp dụng cho món ăn được chọn</small>
                 </div>
 
                 <!-- Selected Count -->
-                @if (selectedDishes().length > 0) {
+                @if (selectedDish()) {
                 <div class="selected-count">
-                    <p>Đã chọn {{ selectedDishes().length }} món ăn</p>
+                    <p>Đã chọn món ăn: {{ getSelectedDishName() }}</p>
                 </div>
                 }
 
@@ -405,7 +385,7 @@
                         Hủy
                     </button>
                     <button type="submit" class="simple-btn submit-btn"
-                        [disabled]="addingDishes() || selectedDishes().length === 0 || !customPrice() || customPrice() <= 0">
+                        [disabled]="addingDishes() || !selectedDish() || !customPrice() || customPrice() <= 0">
                         {{ addingDishes() ? 'Đang thêm...' : 'Thêm món' }}
                     </button>
                 </div>
