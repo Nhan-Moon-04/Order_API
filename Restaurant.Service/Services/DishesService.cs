@@ -125,23 +125,42 @@ namespace Restaurant.Service.Services
             ///     
             /// </summary>
             /// 
-            public async Task<IEnumerable<DishesDto>> GetAvailableDishesForAreaAsync(string areaId)
+            public async Task<IEnumerable<DishesDto>> GetAvailableDishesForAreaAsync(GetAvailableDishesForAreaAsyncQuery query)
             {
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
                 string sql = @"
-        SELECT d.DishId, d.DishName, d.BasePrice
-        FROM Dishes d
-        WHERE d.DishId NOT IN (
-            SELECT adp.DishId
-            FROM AreaDishPrices adp
-            WHERE adp.AreaId = @AreaId
-        )";
+                SELECT d.DishId, d.DishName, d.BasePrice, d.Description, d.IsActive, d.CreatedAt, d.KitchenId, d.GroupId,
+                       k.KitchenName, g.GroupName, d.Id
+                FROM Dishes d
+                LEFT JOIN Kitchens k ON d.KitchenId = k.KitchenId
+                LEFT JOIN DishGroups g ON d.GroupId = g.GroupId 
+                WHERE d.IsActive = 1
+                  AND d.DishId NOT IN (
+                      SELECT adp.DishId
+                      FROM AreaDishPrices adp
+                      WHERE adp.AreaId = @AreaId
+                  )
+                  AND (@SearchString IS NULL 
+                       OR d.DishName LIKE '%' + @SearchString + '%'
+                       OR d.DishId LIKE '%' + @SearchString + '%'
+                       OR g.GroupName LIKE '%' + @SearchString + '%'
+                       OR k.KitchenName LIKE '%' + @SearchString + '%')
+                ORDER BY d.CreatedAt DESC;
+";
 
-                var dishes = await connection.QueryAsync<DishesDto>(sql, new { AreaId = areaId });
+                var dishes = await connection.QueryAsync<DishesDto>(
+                    sql,
+                    new
+                    {
+                        AreaId = query.AreaId,
+                        SearchString = string.IsNullOrWhiteSpace(query.SearchString) ? null : query.SearchString
+                    });
+
                 return dishes;
             }
+
 
         }
     }

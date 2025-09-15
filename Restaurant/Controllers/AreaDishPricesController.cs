@@ -82,7 +82,21 @@ namespace Restaurant.API.Controllers
             return Ok(new { Message = "Đã thêm món vào khu thành công" });
         }
 
-
-
+        [HttpPost("DeleteAreaDishPrice")]
+        public async Task<IActionResult> DeleteAreaDishPrice([FromBody] DeleteAreaDishPrice request)
+        {
+            try
+            {
+                var result = await _service.DeleteAsync(request.Id);
+                if (result)
+                    return Ok(new { Message = "Xoá món khỏi khu vực thành công" });
+                else
+                    return NotFound(new { Message = "Không tìm thấy mục để xoá" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
     }
 }

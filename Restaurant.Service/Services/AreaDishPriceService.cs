@@ -149,17 +149,21 @@ namespace Restaurant.Service.Services
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
+            // Validate query parameters
+            if (query.PageIndex <= 0) query.PageIndex = 1;
+            if (query.PageSize <= 0) query.PageSize = 20;
+
             // --- WHERE động ---
             var where = new StringBuilder("WHERE 1=1");
 
             if (!string.IsNullOrEmpty(query.SearchString))
             {
                 where.Append(@"
-            AND (
-                d.DishName LIKE '%' + @Search + '%'
-                OR a.AreaName LIKE '%' + @Search + '%'
-                OR CAST(adp.CustomPrice AS NVARCHAR) LIKE '%' + @Search + '%'
-            )");
+        AND (
+            d.DishName LIKE '%' + @Search + '%'
+            OR a.AreaName LIKE '%' + @Search + '%'
+            OR CAST(adp.CustomPrice AS NVARCHAR) LIKE '%' + @Search + '%'
+        )");
             }
 
             if (!string.IsNullOrEmpty(query.AreaId))
@@ -177,6 +181,18 @@ namespace Restaurant.Service.Services
             if (query.EffectiveDateTo.HasValue)
                 where.Append(" AND adp.EffectiveDate <= @EffectiveDateTo");
 
+            // Create parameters object
+            var parameters = new
+            {
+                Search = query.SearchString ?? string.Empty,
+                AreaId = query.AreaId ?? string.Empty,
+                DishId = query.DishId ?? string.Empty,
+                IsActive = query.IsActive,
+                EffectiveDateFrom = query.EffectiveDateFrom,
+                EffectiveDateTo = query.EffectiveDateTo,
+                Offset = (query.PageIndex - 1) * query.PageSize,
+                PageSize = query.PageSize
+            };
 
             // --- Đếm tổng ---
             string countSql = $@"
@@ -186,16 +202,7 @@ namespace Restaurant.Service.Services
         LEFT JOIN Dishes d ON adp.DishId = d.DishId
         {where}";
 
-            int totalRecords = await connection.ExecuteScalarAsync<int>(countSql, new
-            {
-                query.AreaId,
-                query.DishId,
-                Search = query.SearchString,
-                query.IsActive,
-                query.EffectiveDateFrom,
-                query.EffectiveDateTo
-            });
-
+            int totalRecords = await connection.ExecuteScalarAsync<int>(countSql, parameters);
 
             // --- Lấy dữ liệu phân trang ---
             string dataSql = $@"
@@ -205,11 +212,11 @@ namespace Restaurant.Service.Services
             adp.DishId,
             adp.CustomPrice,
             adp.EffectiveDate,
-            a.AreaName,
-            d.DishName,
+            ISNULL(a.AreaName, '') as AreaName,
+            ISNULL(d.DishName, '') as DishName,
             adp.IsActive,
             adp.CreatedAt,
-            adp.SortOrder
+            ISNULL(adp.SortOrder, 0) as SortOrder
         FROM AreaDishPrices adp
         LEFT JOIN Areas a ON adp.AreaId = a.AreaId
         LEFT JOIN Dishes d ON adp.DishId = d.DishId
@@ -220,20 +227,19 @@ namespace Restaurant.Service.Services
         OFFSET @Offset ROWS
         FETCH NEXT @PageSize ROWS ONLY";
 
-            var items = await connection.QueryAsync<AreaDishPriceDto>(dataSql, new
-            {
-                query.AreaId,
-                query.DishId,
-                Search = query.SearchString,
-                query.IsActive,
-                query.EffectiveDateFrom,
-                query.EffectiveDateTo,
-                Offset = (query.PageIndex - 1) * query.PageSize,
-                PageSize = query.PageSize
-            });
+            var items = await connection.QueryAsync<AreaDishPriceDto>(dataSql, parameters);
 
             return (items, totalRecords);
         }
+
+
+
+
+
+
+
+
+
 
         public async Task AddDishesToAreaAsync(AddAreaDishPriceRequest request)
         {
@@ -241,23 +247,50 @@ namespace Restaurant.Service.Services
             await connection.OpenAsync();
 
             string sql = @"
-        INSERT INTO AreaDishPrices (AreaId, DishId, CustomPrice, EffectiveDate, IsActive, CreatedAt)
-        VALUES (@AreaId, @DishId, @CustomPrice, GETDATE(), 1, GETDATE())
+        INSERT INTO AreaDishPrices (Id, AreaId, DishId, CustomPrice, EffectiveDate, IsActive, CreatedAt)
+        VALUES (@Id, @AreaId, @DishId, @CustomPrice, GETDATE(), 1, GETDATE())
     ";
 
             foreach (var dishId in request.DishIds)
             {
-                await connection.ExecuteAsync(sql, new
-                {
-                    AreaId = request.AreaId,
-                    DishId = dishId,
-                    CustomPrice = request.CustomPrice ?? 0
-                });
+                var id = Guid.NewGuid().ToString();
+
+                // Lấy SortOrder lớn nhất hiện tại trong Area
+                var sortOrder = await connection.ExecuteScalarAsync<int>(
+                    "SELECT ISNULL(MAX(SortOrder), 0) + 1 FROM AreaDishPrices WHERE AreaId = @AreaId",
+                    new { AreaId = request.AreaId }
+                );
+
+                await connection.ExecuteAsync(@"
+        INSERT INTO AreaDishPrices 
+            (Id, AreaId, DishId, CustomPrice, SortOrder, EffectiveDate, IsActive, CreatedAt)
+        VALUES 
+            (@Id, @AreaId, @DishId, @CustomPrice, @SortOrder, GETDATE(), 1, GETDATE())",
+                    new
+                    {
+                        Id = id,
+                        AreaId = request.AreaId,
+                        DishId = dishId,
+                        CustomPrice = request.CustomPrice ?? 0,
+                        SortOrder = sortOrder
+                    });
             }
+
         }
 
+        public async Task<bool> DeleteAsync(string id)
+        {
+            using (IDbConnection db = new SqlConnection(_connectionString))
+            {
+                string sql = "DELETE FROM AreaDishPrices WHERE Id = @Id";
+                var rows = await db.ExecuteAsync(sql, new { Id = id });
+                return rows > 0;
+            }
 
 
 
+
+
+        }
     }
 }

@@ -101,9 +101,9 @@ namespace Restaurant.Controllers
 
 
         [HttpPost("GetAvailableDishes")]
-        public async Task<IActionResult> GetAvailableDishes([FromBody] GetAvailableDishesForAreaAsyncRequest request)
+        public async Task<IActionResult> GetAvailableDishes([FromBody] GetAvailableDishesForAreaAsyncQuery request)
         {
-            var dishes = await _services.GetAvailableDishesForAreaAsync(request.AreaId);
+            var dishes = await _services.GetAvailableDishesForAreaAsync(request);
             return Ok(dishes);
         }
     }

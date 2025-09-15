@@ -14,7 +14,7 @@ namespace Restaurant.Domain.DTOs
         public required string KitchenId { get; set; }
         public required string GroupId { get; set; }
         public string Description { get; set; } = string.Empty;
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; }
 
 
