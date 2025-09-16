@@ -125,9 +125,12 @@
             }
         </div>
 
-        <!-- Pagination -->
-        @if (totalPages() > 1) {
+        <!-- Pagination - Always show if there are any items -->
+        @if (totalRecords() > 0) {
         <div class="pagination-container">
+            <!-- Debug Info -->
+
+
             <!-- Page Size Selector -->
             <div class="page-size-selector">
                 <label for="pageSizeDropdown">Hiển thị:</label>
@@ -137,10 +140,12 @@
                         {{ size }}
                     </option>
                 </select>
-                <span>mục/trang</span>
+                <span>dòng</span>
+                <span style="font-weight: 200;">Tổng số dòng {{ totalRecords() }}</span>
             </div>
 
             <!-- Pagination Controls -->
+            @if (totalPages() > 1) {
             <div class="pagination">
                 <button class="page-btn" (click)="getAllAreaDishPrices(pageIndex() - 1)" [disabled]="pageIndex() <= 1">
                     ‹ Trước
@@ -158,6 +163,9 @@
                     Sau ›
                 </button>
             </div>
+            } @else {
+
+            }
         </div>
         }
         }
@@ -297,7 +305,8 @@
 
                     <!-- Search for available dishes -->
                     <div class="search-box" style="margin-bottom: 15px;">
-                        <input type="text" [(ngModel)]="availableDishesSearchText" (input)="onAvailableDishesSearch()"
+                        <input type="text" [(ngModel)]="availableDishesSearchText"
+                            (ngModelChange)="onAvailableDishesSearch()"
                             placeholder="Tìm kiếm món ăn (tên, mã, mô tả...)" class="search-input"
                             name="availableDishesSearch">
                         @if (availableDishesSearchText()) {

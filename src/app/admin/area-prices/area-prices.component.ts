@@ -3,7 +3,17 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Observable, catchError, of, forkJoin, map, firstValueFrom } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  of,
+  forkJoin,
+  map,
+  firstValueFrom,
+  debounceTime,
+  distinctUntilChanged,
+  Subject,
+} from 'rxjs';
 import { Area } from '../../model/area.model';
 import {
   AreaDishPrice,
@@ -47,9 +57,10 @@ export class AreaPricesComponent implements OnInit {
 
   // Pagination properties
   totalPages = signal(0);
+  totalRecords = signal(0); // Add this to track total records
   pageIndex = signal(1);
   pageSize = 10;
-  dropdownValues: number[] = [5, 10, 15, 20, 25];
+  dropdownValues: number[] = [5, 10, 15, 20, 25, 50, 100, 200, 500];
   selectedPageSize = signal<number>(10);
 
   // Search and filter properties
@@ -92,6 +103,9 @@ export class AreaPricesComponent implements OnInit {
   addingDishes = signal(false);
   availableDishesSearchText = signal<string>('');
 
+  // Search debounce
+  private searchSubject = new Subject<string>();
+
   ngOnInit() {
     // Load saved page size from localStorage
     const savedPageSize = localStorage.getItem('areaPricesPageSize');
@@ -99,6 +113,14 @@ export class AreaPricesComponent implements OnInit {
       this.selectedPageSize.set(+savedPageSize);
       this.pageSize = +savedPageSize;
     }
+
+    // Set up debounced search for available dishes
+    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe((searchText) => {
+      this.availableDishesSearchText.set(searchText);
+      if (this.selectedArea()) {
+        this.loadAvailableDishes(this.selectedArea()!.areaId);
+      }
+    });
 
     this.loadAreas();
     this.getAllAreaDishPrices(1);
@@ -114,11 +136,15 @@ export class AreaPricesComponent implements OnInit {
       pageIndex: page,
       pageSize: this.selectedPageSize(),
       isActive: 1,
-      areaId: this.selectedAreaFilter(),
-      dishName: this.dishNameFilter(),
-      kitchenName: this.kitchenNameFilter(),
-      groupName: this.groupNameFilter(),
+      areaId: this.selectedAreaFilter() || undefined, // Ensure empty string becomes undefined
+      dishName: this.dishNameFilter() || undefined,
+      kitchenName: this.kitchenNameFilter() || undefined,
+      groupName: this.groupNameFilter() || undefined,
     };
+
+    console.log('getAllAreaDishPrices - Request:', requestBody);
+    console.log('getAllAreaDishPrices - Current pageIndex signal:', this.pageIndex());
+    console.log('getAllAreaDishPrices - Current selectedAreaFilter:', this.selectedAreaFilter());
 
     this.http
       .post<PagedResponse<AreaDishPrice>>(
@@ -140,12 +166,29 @@ export class AreaPricesComponent implements OnInit {
       )
       .subscribe((response) => {
         console.log('Area dish prices response:', response);
+        console.log('Total pages from response:', response.totalPages);
+        console.log('Current page from response:', response.pageIndex);
+        console.log('Total records from response:', response.totalRecords);
 
         // Enrich with dish base prices
         this.enrichAreaDishPricesWithDishInfo(response.items).then((enrichedItems) => {
           this.dishPrices.set(enrichedItems);
           this.totalPages.set(response.totalPages);
-          this.pageIndex.set(response.pageIndex);
+          this.totalRecords.set(response.totalRecords); // Store total records
+
+          // Ensure pageIndex doesn't exceed totalPages
+          const validPageIndex = Math.min(response.pageIndex, response.totalPages || 1);
+          this.pageIndex.set(validPageIndex);
+
+          console.log(
+            'Updated signals - totalPages:',
+            this.totalPages(),
+            'totalRecords:',
+            this.totalRecords(),
+            'pageIndex:',
+            this.pageIndex()
+          );
+
           this.loadingDishes.set(false);
           this.applyFilters();
         });
@@ -154,41 +197,51 @@ export class AreaPricesComponent implements OnInit {
 
   // Search functionality
   onSearch() {
+    this.pageIndex.set(1); // Reset to first page when searching
     this.getAllAreaDishPrices(1);
   }
 
   clearSearch() {
     this.searchText.set('');
+    this.pageIndex.set(1); // Reset to first page when clearing search
     this.getAllAreaDishPrices(1);
   }
 
   // Filter functionality
   onFilterChange() {
+    this.pageIndex.set(1); // Reset to first page when filtering
     this.getAllAreaDishPrices(1);
   }
 
   onAreaFilterChange(areaId: string) {
+    console.log('Area filter changed to:', areaId);
     this.selectedAreaFilter.set(areaId);
+    this.pageIndex.set(1); // Reset to first page when changing area
+    console.log('Reset pageIndex to 1, current pageSize:', this.selectedPageSize());
     this.getAllAreaDishPrices(1);
   }
 
   onDishNameFilterChange(dishName: string) {
     this.dishNameFilter.set(dishName);
+    this.pageIndex.set(1); // Reset to first page when filtering
     this.getAllAreaDishPrices(1);
   }
 
   onKitchenNameFilterChange(kitchenName: string) {
     this.kitchenNameFilter.set(kitchenName);
+    this.pageIndex.set(1); // Reset to first page when filtering
     this.getAllAreaDishPrices(1);
   }
 
   onGroupNameFilterChange(groupName: string) {
     this.groupNameFilter.set(groupName);
+    this.pageIndex.set(1); // Reset to first page when filtering
     this.getAllAreaDishPrices(1);
   }
 
   onStatusFilterChange(status: string) {
     this.selectedStatus.set(status);
+    this.pageIndex.set(1); // Reset to first page when filtering
     this.getAllAreaDishPrices(1);
   }
 
@@ -271,6 +324,7 @@ export class AreaPricesComponent implements OnInit {
     this.dishNameFilter.set('');
     this.kitchenNameFilter.set('');
     this.groupNameFilter.set('');
+    this.pageIndex.set(1); // Reset to first page when clearing all filters
     this.getAllAreaDishPrices(1);
   }
 
@@ -586,6 +640,8 @@ export class AreaPricesComponent implements OnInit {
     this.selectedDish.set('');
     this.customPrice.set(0);
     this.availableDishesSearchText.set('');
+    // Reset the search subject as well
+    this.searchSubject.next('');
   }
 
   loadAvailableDishes(areaId: string) {
@@ -604,25 +660,56 @@ export class AreaPricesComponent implements OnInit {
         catchError((err) => {
           console.error('Error loading available dishes:', err);
           alert('Lỗi tải danh sách món ăn: ' + (err.error?.message || err.message));
-          return of([] as AvailableDishesResponse);
+          return of({
+            value: {
+              statusCode: 500,
+              isSuccess: false,
+              message: 'Error',
+              data: [],
+            },
+          } as AvailableDishesResponse);
         })
       )
       .subscribe((response) => {
         console.log('Available dishes response:', response);
 
-        // Temporarily show all dishes for testing - backend should handle filtering
-        // const filteredDishes = response.filter(
-        //   (dish) => dish.isActive === true // Only include active dishes
-        // );
+        // Check if the response is successful
+        if (!response.value?.isSuccess) {
+          console.error('API returned error:', response.value?.message);
+          alert('Lỗi từ server: ' + (response.value?.message || 'Unknown error'));
+          this.availableDishes.set([]);
+          this.loadingAvailableDishes.set(false);
+          return;
+        }
 
-        console.log('All available dishes (no filter):', response);
+        // Extract dishes from the wrapped response
+        const dishes = response.value?.data || [];
+        console.log('Extracted dishes from response:', dishes);
 
-        this.availableDishes.set(response);
+        // Filter for active dishes only
+        const filteredDishes = dishes.filter((dish) => dish.isActive === true);
+
+        console.log('Filtered available dishes:', filteredDishes);
+
+        // Remember current selection
+        const currentSelection = this.selectedDish();
+
+        this.availableDishes.set(filteredDishes);
+
+        // Restore selection if the dish is still in the filtered list
+        if (currentSelection && filteredDishes.some((dish) => dish.dishId === currentSelection)) {
+          this.selectedDish.set(currentSelection);
+        } else if (
+          currentSelection &&
+          !filteredDishes.some((dish) => dish.dishId === currentSelection)
+        ) {
+          // Clear selection if the previously selected dish is no longer available
+          this.selectedDish.set('');
+        }
+
         this.loadingAvailableDishes.set(false);
       });
   }
-
-  // Removed search functionality - now loads all available dishes at once
 
   selectDish(dishId: string) {
     this.selectedDish.set(dishId);
@@ -640,13 +727,13 @@ export class AreaPricesComponent implements OnInit {
   onAvailableDishesSearch() {
     if (!this.selectedArea()) return;
     console.log('Searching available dishes with text:', this.availableDishesSearchText());
-    this.loadAvailableDishes(this.selectedArea()!.areaId);
+    // Use the subject for debounced search
+    this.searchSubject.next(this.availableDishesSearchText());
   }
 
   clearAvailableDishesSearch() {
     this.availableDishesSearchText.set('');
-    if (!this.selectedArea()) return;
-    this.loadAvailableDishes(this.selectedArea()!.areaId);
+    this.searchSubject.next('');
   }
 
   addDishesToArea() {

@@ -65,14 +65,23 @@ export interface GetAvailableDishesRequest {
   searchString?: string;
 }
 
-// Available dishes response interface - backend returns array directly
-export type AvailableDishesResponse = AvailableDish[];
+// Available dishes response interface - backend returns wrapped response
+export interface AvailableDishesResponse {
+  value: {
+    statusCode: number;
+    isSuccess: boolean;
+    message: string;
+    data: AvailableDish[];
+  };
+}
 
 // Available dish interface for modal
 export interface AvailableDish {
   dishId: string;
   dishName: string;
   basePrice: number;
+  kitchenId?: string;
+  groupId?: string;
   description?: string;
   kitchenName?: string;
   groupName?: string;
