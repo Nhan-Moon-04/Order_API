@@ -156,14 +156,32 @@ namespace Restaurant.Service.Services
             // --- WHERE động ---
             var where = new StringBuilder("WHERE 1=1");
 
+            var parameters = new DynamicParameters();
+            parameters.Add("AreaId", query.AreaId ?? string.Empty);
+            parameters.Add("DishId", query.DishId ?? string.Empty);
+            parameters.Add("IsActive", query.IsActive);
+            parameters.Add("EffectiveDateFrom", query.EffectiveDateFrom);
+            parameters.Add("EffectiveDateTo", query.EffectiveDateTo);
+            parameters.Add("Offset", (query.PageIndex - 1) * query.PageSize);
+            parameters.Add("PageSize", query.PageSize);
+
+            // --- Xử lý search ---
             if (!string.IsNullOrEmpty(query.SearchString))
             {
-                where.Append(@"
-        AND (
-            d.DishName LIKE '%' + @Search + '%'
-            OR a.AreaName LIKE '%' + @Search + '%'
-            OR CAST(adp.CustomPrice AS NVARCHAR) LIKE '%' + @Search + '%'
-        )");
+                var keywords = query.SearchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                for (int i = 0; i < keywords.Length; i++)
+                {
+                    var paramName = $"Search{i}";
+                    parameters.Add(paramName, $"%{keywords[i]}%");
+
+                    where.Append($@"
+                AND (
+                    d.DishName COLLATE SQL_Latin1_General_CP1253_CI_AI LIKE @{paramName}
+                    OR a.AreaName COLLATE SQL_Latin1_General_CP1253_CI_AI LIKE @{paramName}
+                    OR CAST(adp.CustomPrice AS NVARCHAR) LIKE @{paramName}
+                )");
+                }
             }
 
             if (!string.IsNullOrEmpty(query.AreaId))
@@ -180,19 +198,6 @@ namespace Restaurant.Service.Services
 
             if (query.EffectiveDateTo.HasValue)
                 where.Append(" AND adp.EffectiveDate <= @EffectiveDateTo");
-
-            // Create parameters object
-            var parameters = new
-            {
-                Search = query.SearchString ?? string.Empty,
-                AreaId = query.AreaId ?? string.Empty,
-                DishId = query.DishId ?? string.Empty,
-                IsActive = query.IsActive,
-                EffectiveDateFrom = query.EffectiveDateFrom,
-                EffectiveDateTo = query.EffectiveDateTo,
-                Offset = (query.PageIndex - 1) * query.PageSize,
-                PageSize = query.PageSize
-            };
 
             // --- Đếm tổng ---
             string countSql = $@"
@@ -238,9 +243,6 @@ namespace Restaurant.Service.Services
 
 
 
-
-
-
         public async Task AddDishesToAreaAsync(AddAreaDishPriceRequest request)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -278,19 +280,30 @@ namespace Restaurant.Service.Services
 
         }
 
+        // Pseudocode / Plan:
+        // 1. Replace erroneous catch block that tried to call StatusCode (not available in service).
+        // 2. Keep behavior: attempt to delete record by Id using Dapper and return true if rows affected > 0.
+        // 3. On exception, swallow/log (no logger available) and return false so method signature Task<bool> is respected.
+        // 4. Ensure method compiles in a plain service class (no ASP.NET controller helpers).
+
+
         public async Task<bool> DeleteAsync(string id)
         {
-            using (IDbConnection db = new SqlConnection(_connectionString))
+            try
             {
-                string sql = "DELETE FROM AreaDishPrices WHERE Id = @Id";
-                var rows = await db.ExecuteAsync(sql, new { Id = id });
-                return rows > 0;
+                using (IDbConnection db = new SqlConnection(_connectionString))
+                {
+                    string sql = "DELETE FROM AreaDishPrices WHERE Id = @Id";
+                    var rows = await db.ExecuteAsync(sql, new { Id = id });
+                    return rows > 0;
+                }
             }
-
-
-
-
-
+            catch (Exception)
+            {
+                // An error occurred while attempting to delete; return false.
+                // If you have a logging mechanism, log the exception here.
+                return false;
+            }
         }
     }
 }

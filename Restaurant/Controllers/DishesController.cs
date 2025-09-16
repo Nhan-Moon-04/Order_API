@@ -103,8 +103,27 @@ namespace Restaurant.Controllers
         [HttpPost("GetAvailableDishes")]
         public async Task<IActionResult> GetAvailableDishes([FromBody] GetAvailableDishesForAreaAsyncQuery request)
         {
-            var dishes = await _services.GetAvailableDishesForAreaAsync(request);
-            return Ok(dishes);
+            try
+            {
+                var dishes = await _services.GetAvailableDishesForAreaAsync(request);
+                return Ok(StatusCode(200, new
+                {
+                    statusCode = 200,
+                    isSuccess = true,
+                    message = "Available dishes retrieved successfully.",
+                    data = dishes
+                }));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    statusCode = 500,
+                    isSuccess = false,
+                    message = "An unexpected error occurred.",
+                    errors = new[] { ex.Message }
+                });
+            }
         }
     }
 }

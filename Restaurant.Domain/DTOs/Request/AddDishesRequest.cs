@@ -8,8 +8,8 @@ namespace Restaurant.Domain.DTOs.Request
 {
     public class AddDishesRequest
     {
-        public string DishName { get; set; } = string.Empty;
-        public double BasePrice { get; set; }
+        public required string DishName { get; set; } = string.Empty;
+        public required double BasePrice { get; set; }
         public string KitchenId { get; set; } = string.Empty;
         public string GroupId { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;

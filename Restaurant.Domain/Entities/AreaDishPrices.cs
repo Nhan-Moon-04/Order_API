@@ -13,6 +13,7 @@
         public DateTime CreatedAt { get; set; }
 
 
+
         // Navigation
         public virtual Areas? Area { get; set; }
         public virtual Dishes? Dish { get; set; }

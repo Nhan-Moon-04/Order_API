@@ -52,7 +52,7 @@ namespace Restaurant.Service.Services
         #region ADD
         public async Task<OrderDetailDto> AddFood(OrderDetailDto dto)
         {
-            // Kiểm tra Order
+            // ===== Kiểm tra Order =====
             var order = await _context.Orders
                 .Include(o => o.OrderTables)
                     .ThenInclude(ot => ot.Table)
@@ -61,7 +61,7 @@ namespace Restaurant.Service.Services
             if (order == null)
                 throw new ArgumentException($"Order với ID {dto.OrderId} không tồn tại");
 
-            // Kiểm tra Dish
+            // ===== Kiểm tra Dish =====
             var dish = await _context.Dishes
                 .Include(d => d.Kitchen)
                 .FirstOrDefaultAsync(d => d.DishId == dto.DishId && d.IsActive);
@@ -69,19 +69,24 @@ namespace Restaurant.Service.Services
             if (dish == null)
                 throw new ArgumentException($"Món ăn với ID {dto.DishId} không tồn tại hoặc đã bị vô hiệu hóa");
 
-            // Tính giá
-            double unitPrice = dish.BasePrice;
+            // ===== Xác định AreaId từ bàn chính của Order =====
             var primaryTable = order.OrderTables.FirstOrDefault(ot => ot.IsPrimary);
             string? areaId = primaryTable?.Table?.AreaId ?? order.PrimaryAreaId;
+
+            // ===== Tính giá theo Area hoặc giá gốc =====
+            double unitPrice = dish.BasePrice;
             PriceSource priceSource = PriceSource.Base;
 
             if (!string.IsNullOrEmpty(areaId))
             {
                 var areaDishPrice = await _context.AreaDishPrices
-                    .FirstOrDefaultAsync(adp => adp.AreaId == areaId
-                                              && adp.DishId == dto.DishId
-                                              && adp.IsActive
-                                              && adp.EffectiveDate <= DateTime.UtcNow);
+                    .Where(adp => adp.AreaId == areaId
+                               && adp.DishId == dto.DishId
+                               && adp.IsActive
+                               )
+                    .OrderByDescending(adp => adp.EffectiveDate) // lấy giá mới nhất
+                    .FirstOrDefaultAsync();
+
                 if (areaDishPrice != null)
                 {
                     unitPrice = areaDishPrice.CustomPrice;
@@ -89,7 +94,7 @@ namespace Restaurant.Service.Services
                 }
             }
 
-            // Nếu món đã có trong order thì update số lượng
+            // ===== Nếu món đã có trong Order thì tăng số lượng =====
             var existing = await _context.OrderDetails
                 .FirstOrDefaultAsync(od => od.OrderId == dto.OrderId && od.DishId == dto.DishId);
 
@@ -102,7 +107,7 @@ namespace Restaurant.Service.Services
                 return ToDto(existing, dish);
             }
 
-            // Nếu chưa có thì thêm mới
+            // ===== Nếu chưa có thì thêm mới =====
             var entity = new OrderDetail
             {
                 Id = Guid.NewGuid().ToString(),
@@ -123,15 +128,17 @@ namespace Restaurant.Service.Services
 
         public async Task<OrderDetailDto> AddFoodToOrder(string orderId, string dishId, int quantity = 1)
         {
-            return await AddFood(new OrderDetailDto
+            var dto = new OrderDetailDto
             {
                 OrderDetailId = Guid.NewGuid().ToString(),
                 OrderId = orderId,
                 DishId = dishId,
                 Quantity = quantity
-            });
-        }
+            };
 
+            return await AddFood(dto);
+        }
+    
 
 
         /// <summary>
