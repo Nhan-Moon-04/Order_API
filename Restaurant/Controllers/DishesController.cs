@@ -105,14 +105,14 @@ namespace Restaurant.Controllers
         {
             try
             {
-                var dishes = await _services.GetAvailableDishesForAreaAsync(request.AreaId);
-                return Ok(new
+                var dishes = await _services.GetAvailableDishesForAreaAsync(request);
+                return Ok(StatusCode(200, new
                 {
                     statusCode = 200,
                     isSuccess = true,
                     message = "Available dishes retrieved successfully.",
                     data = dishes
-                });
+                }));
             }
             catch (Exception ex)
             {
@@ -126,7 +126,7 @@ namespace Restaurant.Controllers
             }
         }
 
-        [HttpPut("UpdateDish")]
+            [HttpPut("UpdateDish")]
         public async Task<IActionResult> UpdateDish([FromBody] UpdateDishRequest dish)
         {
             try

@@ -131,7 +131,7 @@ namespace Restaurant.Service.Services
             ///     
             /// </summary>
             /// 
-            public async Task<IEnumerable<DishesDto>> GetAvailableDishesForAreaAsync(string areaId)
+            public async Task<IEnumerable<DishesDto>> GetAvailableDishesForAreaAsync(GetAvailableDishesForAreaAsyncQuery query)
             {
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
@@ -148,6 +148,11 @@ namespace Restaurant.Service.Services
                       FROM AreaDishPrices adp
                       WHERE adp.AreaId = @AreaId
                   )
+                  AND (@SearchString IS NULL 
+                       OR d.DishName LIKE '%' + @SearchString + '%'
+                       OR d.DishId LIKE '%' + @SearchString + '%'
+                       OR g.GroupName LIKE '%' + @SearchString + '%'
+                       OR k.KitchenName LIKE '%' + @SearchString + '%')
                 ORDER BY d.CreatedAt DESC;
 ";
 
@@ -155,12 +160,12 @@ namespace Restaurant.Service.Services
                     sql,
                     new
                     {
-                        AreaId = areaId
+                        AreaId = query.AreaId,
+                        SearchString = string.IsNullOrWhiteSpace(query.SearchString) ? null : query.SearchString
                     });
 
                 return dishes;
             }
-
             public async Task<IEnumerable<DishesDto>> UpdateDishes(DishesDto updatedDish)
             {
                 using var connection = new SqlConnection(_connectionString);
