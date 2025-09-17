@@ -95,6 +95,11 @@
                         {{ dish.isActive ? 'Hoạt động' : 'Tạm dừng' }}
                     </span>
                 </div>
+                <div class="col-actions">
+                    <button class="action-btn edit-btn" (click)="openEditModal(dish)" title="Sửa món">
+                        ✏️
+                    </button>
+                </div>
 
             </div>
             }
@@ -229,7 +234,53 @@
         <div class="simple-modal" (click)="$event.stopPropagation()">
             <h3>Sửa món ăn</h3>
 
+            <form (ngSubmit)="updateDish()">
+                <div class="form-group">
+                    <label>Tên món ăn *</label>
+                    <input type="text" [(ngModel)]="editDish().dishName" name="editDishName"
+                        placeholder="Nhập tên món ăn" required>
+                </div>
 
+                <div class="form-group">
+                    <label>Giá (VND) *</label>
+                    <input type="number" [(ngModel)]="editDish().basePrice" name="editBasePrice" placeholder="0" min="0"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nhóm món ăn</label>
+                    <select [(ngModel)]="editDish().groupId" name="editGroupId">
+                        <option value="">Chọn nhóm món ăn</option>
+                        <option *ngFor="let group of dishGroups()" [value]="group.groupId">{{ group.groupName }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Danh Sách Bếp</label>
+                    <select [(ngModel)]="editDish().kitchenId" name="editKitchenId">
+                        <option value="">Chọn bếp</option>
+                        <option *ngFor="let kitchen of kitchens()" [value]="kitchen.kitchenId">{{ kitchen.kitchenName }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <textarea [(ngModel)]="editDish().description" name="editDescription" rows="3"
+                        placeholder="Nhập mô tả món ăn"></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" [(ngModel)]="editDish().isActive" name="editIsActive" id="edit-active">
+                    <label for="edit-active">Kích hoạt món ăn</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" (click)="closeEditModal()" class="simple-btn cancel-btn">Hủy</button>
+                    <button type="submit" class="simple-btn submit-btn">Lưu</button>
+                </div>
+            </form>
         </div>
     </div>
     }

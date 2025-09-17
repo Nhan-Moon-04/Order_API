@@ -132,7 +132,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 50px 120px 2fr 1fr 120px 100px 120px;
+  grid-template-columns: 50px 120px 1fr 1fr 120px 100px 120px 150px;
   background: #f8f9fa;
   border-bottom: 2px solid #ddd;
   font-weight: bold;
@@ -142,7 +142,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 50px 120px 2fr 1fr 120px 100px 120px;
+  grid-template-columns: 50px 120px 1fr 1fr 120px 100px 120px 150px;
   border-bottom: 1px solid #eee;
   transition: background-color 0.2s;
 }

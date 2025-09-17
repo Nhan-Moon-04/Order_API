@@ -301,6 +301,48 @@ export class DishesComponent implements OnInit {
       });
   }
 
+  updateDish() {
+    this.loading.set(true);
+
+    const payload = {
+      dishId: this.editDish().dishId,
+      dishName: this.editDish().dishName,
+      basePrice: this.editDish().basePrice,
+      kitchenId: this.editDish().kitchenId,
+      groupId: this.editDish().groupId,
+      description: this.editDish().description,
+      isActive: this.editDish().isActive,
+    };
+
+    this.http
+      .put(`${environment.apiUrl}/Dishes/UpdateDish`, payload)
+      .pipe(
+        catchError((err) => {
+          this.error.set('Failed to update dish.');
+          this.loading.set(false);
+          return of(null);
+        })
+      )
+      .subscribe((response: any) => {
+        if (response && response.isSuccess !== false) {
+          // If API returns wrapper { statusCode, isSuccess, message, data }
+          if (response.isSuccess === undefined && response.statusCode !== undefined) {
+            if (response.isSuccess) {
+              this.getAllDishes(this.pageIndex());
+              this.closeEditModal();
+            } else {
+              this.error.set(response.message || 'Failed to update dish.');
+            }
+          } else {
+            // Plain response
+            this.getAllDishes(this.pageIndex());
+            this.closeEditModal();
+          }
+        }
+        this.loading.set(false);
+      });
+  }
+
   toggleDishStatus(dish: Dish) {
     const updatedDish = { ...dish, isActive: !dish.isActive };
 
