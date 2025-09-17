@@ -42,6 +42,82 @@ namespace Restaurant.Service.Services
                                  .ToListAsync();
         }
 
+        public async Task<(IEnumerable<AreaDishPriceDto> Items, int TotalRecords)>
+            GetPagedAreaDishPriceAsyncEF(AreaDishPriceQueryParameters query)
+        {
+            // Validate query parameters
+            if (query.PageIndex <= 0) query.PageIndex = 1;
+            if (query.PageSize <= 0) query.PageSize = 20;
+
+            // Bắt đầu query
+            var q = from adp in _context.AreaDishPrices
+                    join a in _context.Areas on adp.AreaId equals a.AreaId into areaGroup
+                    from a in areaGroup.DefaultIfEmpty()
+                    join d in _context.Dishes on adp.DishId equals d.DishId into dishGroup
+                    from d in dishGroup.DefaultIfEmpty()
+                    select new AreaDishPriceDto
+                    {
+                        Id = adp.Id,
+                        AreaId = adp.AreaId,
+                        DishId = adp.DishId,
+                        CustomPrice = adp.CustomPrice,
+                        EffectiveDate = adp.EffectiveDate,
+                        AreaName = a != null ? a.AreaName : "",
+                        DishName = d != null ? d.DishName : "",
+                        IsActive = adp.IsActive,
+                        CreatedAt = adp.CreatedAt,
+                        SortOrder = adp.SortOrder
+
+                    };
+
+            // --- Filter ---
+            if (!string.IsNullOrEmpty(query.AreaId))
+                q = q.Where(x => x.AreaId == query.AreaId);
+
+            if (!string.IsNullOrEmpty(query.DishId))
+                q = q.Where(x => x.DishId == query.DishId);
+
+            if (query.IsActive != -1)
+            {
+                bool isActive = query.IsActive == 1;
+                q = q.Where(x => x.IsActive == isActive);
+            }
+
+            if (query.EffectiveDateFrom.HasValue)
+                q = q.Where(x => x.EffectiveDate >= query.EffectiveDateFrom.Value);
+
+            if (query.EffectiveDateTo.HasValue)
+                q = q.Where(x => x.EffectiveDate <= query.EffectiveDateTo.Value);
+
+            // --- Search ---
+            if (!string.IsNullOrEmpty(query.SearchString))
+            {
+                var keywords = query.SearchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var kw in keywords)
+                {
+                    string keyword = kw; // tránh closure bug
+                    q = q.Where(x =>
+                        x.DishName.Contains(keyword) ||
+                        x.AreaName.Contains(keyword) ||
+                        x.CustomPrice.ToString().Contains(keyword));
+                }
+            }
+
+            // --- Count ---
+            int totalRecords = await q.CountAsync();
+
+            // --- Paging ---
+            var items = await q
+                .OrderBy(x => x.SortOrder == 0 ? 1 : 0)  // NULL sortOrder xuống cuối
+                .ThenBy(x => x.SortOrder)
+                .Skip((query.PageIndex - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync();
+
+            return (items, totalRecords);
+        }
+
+
         public async Task<IEnumerable<AreaDishPriceDto>> GetByIdAsync(string areaId)
         {
             using (IDbConnection db = new SqlConnection(_connectionString))

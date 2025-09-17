@@ -11,9 +11,12 @@ namespace Restaurant.Service.Interfaces
         Task<IEnumerable<AreaDishPriceDto>> GetAllAsync();
         Task<IEnumerable<AreaDishPriceDto>> GetByIdAsync(string areaId);
         Task<(IEnumerable<AreaDishPriceDto> Items, int TotalRecords)> GetPagedAreaDishPriceAsync(AreaDishPriceQueryParameters query);
+        Task<(IEnumerable<AreaDishPriceDto> Items, int TotalRecords)> GetPagedAreaDishPriceAsyncEF(AreaDishPriceQueryParameters query);
         Task<bool> UpdateAsync(string id, AreaDishPriceDto dto);
 
 
         Task<AreaDishPriceDto> UpdatePriceAsync(string id, decimal customPrice);
+
+        
     }
 }

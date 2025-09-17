@@ -45,17 +45,26 @@ namespace Restaurant.Service.Services
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<bool> UpdateAsync(string id, AreasDto dto)
+        {
+            var area = await _context.Areas.FirstOrDefaultAsync(a => a.AreaId == id);
+            if (area == null) return false;
 
+            area.AreaName = dto.AreaName;
+            area.Description = dto.Description;
+            area.IsActive = dto.IsActive;
+            // keep CreatedAt unchanged
 
+            _context.Areas.Update(area);
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<int> CountAresa()
         {
             var count = await _context.Areas.CountAsync();
             return count;
         }
-
-
-
 
         public class AreasDapperService
         {

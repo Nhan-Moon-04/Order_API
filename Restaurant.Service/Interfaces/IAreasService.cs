@@ -9,6 +9,8 @@ namespace Restaurant.Service.Interfaces
 
         Task<int> CountAresa();
 
+        Task<bool> UpdateAsync(string id, AreasDto dto);
+
 
     }
 }
