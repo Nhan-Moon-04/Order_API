@@ -41,7 +41,6 @@ namespace Restaurant.Service.Services
                                  })
                                  .ToListAsync();
         }
-
         public async Task<(IEnumerable<AreaDishPriceDto> Items, int TotalRecords)>
             GetPagedAreaDishPriceAsyncEF(AreaDishPriceQueryParameters query)
         {
