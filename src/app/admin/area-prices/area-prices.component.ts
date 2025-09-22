@@ -71,6 +71,13 @@ export class AreaPricesComponent implements OnInit {
   kitchenNameFilter = signal<string>('');
   groupNameFilter = signal<string>('');
 
+  // Dish names dropdown for area filter
+  dishNames = signal<string[]>([]);
+  selectedDishNameFilter = signal<string>('');
+  loadingDishNames = signal(false);
+  // Suggestions debounce for dish name search (when typing)
+  private dishNameInputSubject = new Subject<string>();
+
   // Sort properties
   sortColumn = signal<string>('');
   sortDirection = signal<'asc' | 'desc'>('asc');
@@ -105,6 +112,7 @@ export class AreaPricesComponent implements OnInit {
 
   // Search debounce
   private searchSubject = new Subject<string>();
+  private dishNamesSearchSubject = new Subject<string>();
 
   ngOnInit() {
     // Load saved page size from localStorage
@@ -122,6 +130,24 @@ export class AreaPricesComponent implements OnInit {
       }
     });
 
+    // Set up debounced search for dish names by area
+    this.dishNamesSearchSubject
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((areaId) => {
+        if (areaId) {
+          this.loadDishNamesByArea(areaId);
+        } else {
+          this.dishNames.set([]);
+        }
+      });
+
+    // Debounced suggestions for dish name input
+    this.dishNameInputSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe((term) => {
+      // If there's a selected area, search names by area+term; otherwise call API with term
+      const areaId = this.selectedAreaFilter();
+      this.loadDishNameSuggestions(areaId, term);
+    });
+
     this.loadAreas();
     this.getAllAreaDishPrices(1);
   }
@@ -137,7 +163,7 @@ export class AreaPricesComponent implements OnInit {
       pageSize: this.selectedPageSize(),
       isActive: 1,
       areaId: this.selectedAreaFilter() || undefined, // Ensure empty string becomes undefined
-      dishName: this.dishNameFilter() || undefined,
+      dishName: this.selectedDishNameFilter() || this.dishNameFilter() || undefined,
       kitchenName: this.kitchenNameFilter() || undefined,
       groupName: this.groupNameFilter() || undefined,
     };
@@ -218,6 +244,13 @@ export class AreaPricesComponent implements OnInit {
     this.selectedAreaFilter.set(areaId);
     this.pageIndex.set(1); // Reset to first page when changing area
     console.log('Reset pageIndex to 1, current pageSize:', this.selectedPageSize());
+
+    // Load dish names for the selected area
+    this.dishNamesSearchSubject.next(areaId);
+
+    // Clear dish name filter when area changes
+    this.selectedDishNameFilter.set('');
+
     this.getAllAreaDishPrices(1);
   }
 
@@ -225,6 +258,74 @@ export class AreaPricesComponent implements OnInit {
     this.dishNameFilter.set(dishName);
     this.pageIndex.set(1); // Reset to first page when filtering
     this.getAllAreaDishPrices(1);
+  }
+
+  // Called on input event in the dish name text box to trigger suggestions
+  onDishNameInput(value: string) {
+    // keep the filter in sync
+    this.dishNameFilter.set(value);
+    // push into subject for debounced suggestions
+    this.dishNameInputSubject.next(value);
+  }
+
+  // Called when user presses Enter in the dish name input
+  onDishNameEnter(value: string) {
+    // Apply the typed value as the selected dish name filter and trigger search
+    this.dishNameFilter.set(value);
+    this.selectedDishNameFilter.set(value);
+    this.dishNames.set([]);
+    this.pageIndex.set(1);
+    this.getAllAreaDishPrices(1);
+  }
+
+  // Select suggestion from the dropdown
+  selectDishNameSuggestion(name: string) {
+    this.dishNameFilter.set(name);
+    this.selectedDishNameFilter.set(name);
+    // clear suggestions
+    this.dishNames.set([]);
+    this.pageIndex.set(1);
+    this.getAllAreaDishPrices(1);
+  }
+
+  // Load suggestions for dish names (optionally filtered by areaId)
+  private loadDishNameSuggestions(areaId: string | undefined, term: string) {
+    if (!term || term.length < 1) {
+      this.dishNames.set([]);
+      return;
+    }
+
+    this.loadingDishNames.set(true);
+
+    const request = {
+      searchString: areaId || '',
+      searchName: term,
+    };
+
+    // If areaId provided, include it in the request body (API expects searchString only; adjust if API supports area)
+    // For now we call same GetDishNames endpoint with the typed term.
+
+    this.http
+      .post<{ statusCode: number; isSuccess: boolean; message: string; data: string[] }>(
+        `${environment.apiUrl}/AreaDishPrices/GetDishNames`,
+        request
+      )
+      .pipe(
+        catchError((err) => {
+          console.error('Error loading dish name suggestions:', err);
+          this.loadingDishNames.set(false);
+          return of({ statusCode: 500, isSuccess: false, message: 'Error', data: [] });
+        })
+      )
+      .subscribe((response) => {
+        if (response.isSuccess && response.data) {
+          // optionally filter by area-based dishNames if we have area-specific list already
+          this.dishNames.set(response.data || []);
+        } else {
+          this.dishNames.set([]);
+        }
+        this.loadingDishNames.set(false);
+      });
   }
 
   onKitchenNameFilterChange(kitchenName: string) {
@@ -235,6 +336,12 @@ export class AreaPricesComponent implements OnInit {
 
   onGroupNameFilterChange(groupName: string) {
     this.groupNameFilter.set(groupName);
+    this.pageIndex.set(1); // Reset to first page when filtering
+    this.getAllAreaDishPrices(1);
+  }
+
+  onDishNameDropdownChange(dishName: string) {
+    this.selectedDishNameFilter.set(dishName);
     this.pageIndex.set(1); // Reset to first page when filtering
     this.getAllAreaDishPrices(1);
   }
@@ -324,6 +431,8 @@ export class AreaPricesComponent implements OnInit {
     this.dishNameFilter.set('');
     this.kitchenNameFilter.set('');
     this.groupNameFilter.set('');
+    this.selectedDishNameFilter.set('');
+    this.dishNames.set([]);
     this.pageIndex.set(1); // Reset to first page when clearing all filters
     this.getAllAreaDishPrices(1);
   }
@@ -432,6 +541,45 @@ export class AreaPricesComponent implements OnInit {
         return of([]);
       })
     );
+  }
+
+  private loadDishNamesByArea(areaId: string) {
+    this.loadingDishNames.set(true);
+
+    const request = {
+      searchString: areaId || '',
+      searchName: '',
+    };
+
+    this.http
+      .post<{
+        statusCode: number;
+        isSuccess: boolean;
+        message: string;
+        data: string[];
+      }>(`${environment.apiUrl}/AreaDishPrices/GetDishNames`, request)
+      .pipe(
+        catchError((err) => {
+          console.error('Error loading dish names:', err);
+          this.loadingDishNames.set(false);
+          return of({
+            statusCode: 500,
+            isSuccess: false,
+            message: 'Error loading dish names',
+            data: [],
+          });
+        })
+      )
+      .subscribe((response) => {
+        console.log('Dish names response:', response);
+        if (response.isSuccess && response.data) {
+          this.dishNames.set(response.data);
+        } else {
+          console.error('Failed to load dish names:', response.message);
+          this.dishNames.set([]);
+        }
+        this.loadingDishNames.set(false);
+      });
   }
 
   goBack() {
