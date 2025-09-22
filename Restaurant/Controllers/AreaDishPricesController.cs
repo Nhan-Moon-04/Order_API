@@ -72,6 +72,33 @@ namespace Restaurant.API.Controllers
             });
         }
 
+
+
+        [HttpPost("SearchEF")]
+
+        public async Task<ActionResult> GetPagedAreaDishPriceEFAsync(
+            [FromBody] AreaDishPriceQueryParameters query)
+        {
+            try
+            {
+                var result = await _service.GetPagedAreaDishPriceAsyncEF(query);
+                var data = result.Item1;
+                var totalRecords = result.Item2;
+                return Ok(new
+                {
+                    Items = data,
+                    TotalRecords = totalRecords,
+                    PageIndex = query.PageIndex,
+                    PageSize = query.PageSize,
+                    TotalPages = (int)Math.Ceiling(totalRecords / (double)query.PageSize)
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
         [HttpPost("Add")]
         public async Task<IActionResult> AddAreaDishPrices([FromBody] AddAreaDishPriceRequest request)
         {
@@ -96,6 +123,32 @@ namespace Restaurant.API.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        [HttpPost("GetDishNames")]
+        public async Task<IActionResult> GetDishNames([FromBody] GetDishNamesRequest request)
+        {
+            try
+            {
+                var dishNames = await _service.GetDishNames(request.SearchString, request.SearchName);
+                return Ok(new
+                {
+                    statusCode = 200,
+                    isSuccess = true,
+                    message = "Dish names retrieved successfully.",
+                    data = dishNames
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    statusCode = 500,
+                    isSuccess = false,
+                    message = "An unexpected error occurred.",
+                    errors = new[] { ex.Message }
+                });
             }
         }
     }

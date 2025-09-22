@@ -126,7 +126,7 @@ namespace Restaurant.Controllers
             }
         }
 
-            [HttpPut("UpdateDish")]
+        [HttpPut("UpdateDish")]
         public async Task<IActionResult> UpdateDish([FromBody] UpdateDishRequest dish)
         {
             try
@@ -179,5 +179,6 @@ namespace Restaurant.Controllers
                 });
             }
         }
+
     }
 }

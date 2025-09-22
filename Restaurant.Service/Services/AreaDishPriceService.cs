@@ -219,19 +219,17 @@ namespace Restaurant.Service.Services
         }
 
         public async Task<(IEnumerable<AreaDishPriceDto> Items, int TotalRecords)>
-     GetPagedAreaDishPriceAsync(AreaDishPriceQueryParameters query)
+            GetPagedAreaDishPriceAsync(AreaDishPriceQueryParameters query)
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // Validate query parameters
             if (query.PageIndex <= 0) query.PageIndex = 1;
             if (query.PageSize <= 0) query.PageSize = 20;
 
-            // --- WHERE động ---
             var where = new StringBuilder("WHERE 1=1");
-
             var parameters = new DynamicParameters();
+
             parameters.Add("AreaId", query.AreaId ?? string.Empty);
             parameters.Add("DishId", query.DishId ?? string.Empty);
             parameters.Add("IsActive", query.IsActive);
@@ -240,7 +238,7 @@ namespace Restaurant.Service.Services
             parameters.Add("Offset", (query.PageIndex - 1) * query.PageSize);
             parameters.Add("PageSize", query.PageSize);
 
-            // --- Xử lý search ---
+            // --- Search tổng quát ---
             if (!string.IsNullOrEmpty(query.SearchString))
             {
                 var keywords = query.SearchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -259,6 +257,7 @@ namespace Restaurant.Service.Services
                 }
             }
 
+            // --- Lọc theo field riêng ---
             if (!string.IsNullOrEmpty(query.AreaId))
                 where.Append(" AND adp.AreaId = @AreaId");
 
@@ -274,17 +273,50 @@ namespace Restaurant.Service.Services
             if (query.EffectiveDateTo.HasValue)
                 where.Append(" AND adp.EffectiveDate <= @EffectiveDateTo");
 
-            // --- Đếm tổng ---
+            // --- DishName search riêng ---
+            if (!string.IsNullOrEmpty(query.DishName))
+            {
+                parameters.Add("DishName", $"%{query.DishName}%");
+                where.Append(" AND d.DishName COLLATE SQL_Latin1_General_CP1253_CI_AI LIKE @DishName");
+            }
+
+            if (!string.IsNullOrEmpty(query.AreaName))
+            {
+                parameters.Add("AreaName", $"%{query.AreaName}%");
+                where.Append(" AND a.AreaName COLLATE SQL_Latin1_General_CP1253_CI_AI LIKE @AreaName");
+            }
+
+            if (!string.IsNullOrEmpty(query.Description))
+            {
+                parameters.Add("Description", $"%{query.Description}%");
+                where.Append(" AND d.Description COLLATE SQL_Latin1_General_CP1253_CI_AI LIKE @Description");
+            }
+
+            if (!string.IsNullOrEmpty(query.KitchenName))
+            {
+                parameters.Add("KitchenName", $"%{query.KitchenName}%");
+                where.Append(" AND k.KitchenName COLLATE SQL_Latin1_General_CP1253_CI_AI LIKE @KitchenName");
+            }
+
+            if (!string.IsNullOrEmpty(query.GroupName))
+            {
+                parameters.Add("GroupName", $"%{query.GroupName}%");
+                where.Append(" AND g.GroupName COLLATE SQL_Latin1_General_CP1253_CI_AI LIKE @GroupName");
+            }
+
+            // --- Count ---
             string countSql = $@"
         SELECT COUNT(*)
         FROM AreaDishPrices adp
         LEFT JOIN Areas a ON adp.AreaId = a.AreaId
         LEFT JOIN Dishes d ON adp.DishId = d.DishId
+        LEFT JOIN Kitchens k ON d.KitchenId = k.KitchenId
+        LEFT JOIN DishGroups g ON d.GroupId = g.GroupId
         {where}";
 
             int totalRecords = await connection.ExecuteScalarAsync<int>(countSql, parameters);
 
-            // --- Lấy dữ liệu phân trang ---
+            // --- Data query ---
             string dataSql = $@"
         SELECT 
             adp.Id,
@@ -294,12 +326,17 @@ namespace Restaurant.Service.Services
             adp.EffectiveDate,
             ISNULL(a.AreaName, '') as AreaName,
             ISNULL(d.DishName, '') as DishName,
+            ISNULL(d.Description, '') as Description,
+            ISNULL(k.KitchenName, '') as KitchenName,
+            ISNULL(g.GroupName, '') as GroupName,
             adp.IsActive,
             adp.CreatedAt,
             ISNULL(adp.SortOrder, 0) as SortOrder
         FROM AreaDishPrices adp
         LEFT JOIN Areas a ON adp.AreaId = a.AreaId
         LEFT JOIN Dishes d ON adp.DishId = d.DishId
+        LEFT JOIN Kitchens k ON d.KitchenId = k.KitchenId
+        LEFT JOIN DishGroups g ON d.GroupId = g.GroupId
         {where}
         ORDER BY 
             CASE WHEN adp.SortOrder IS NULL THEN 1 ELSE 0 END,
@@ -311,6 +348,7 @@ namespace Restaurant.Service.Services
 
             return (items, totalRecords);
         }
+
 
 
 
@@ -379,6 +417,25 @@ namespace Restaurant.Service.Services
                 // If you have a logging mechanism, log the exception here.
                 return false;
             }
+        }
+        public async Task<IEnumerable<string>> GetDishNames(string id, string search)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+
+            var sql = @"
+            SELECT DishName 
+            FROM Dishes 
+            INNER JOIN AreaDishPrices
+                ON AreaDishPrices.DishId = Dishes.DishId  
+               AND AreaDishPrices.AreaId = @id
+            WHERE Dishes.DishName COLLATE Vietnamese_CI_AI LIKE @search";
+
+            var dishNames = await connection.QueryAsync<string>(sql, new { id, search = $"%{search}%" });
+
+
+            return dishNames;
         }
     }
 }

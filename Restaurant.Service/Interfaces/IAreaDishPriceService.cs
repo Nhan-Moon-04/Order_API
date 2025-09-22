@@ -10,6 +10,7 @@ namespace Restaurant.Service.Interfaces
         Task<bool> DeleteAsync(string id);
         Task<IEnumerable<AreaDishPriceDto>> GetAllAsync();
         Task<IEnumerable<AreaDishPriceDto>> GetByIdAsync(string areaId);
+        Task<IEnumerable<string>> GetDishNames(string id, string search);
         Task<(IEnumerable<AreaDishPriceDto> Items, int TotalRecords)> GetPagedAreaDishPriceAsync(AreaDishPriceQueryParameters query);
         Task<(IEnumerable<AreaDishPriceDto> Items, int TotalRecords)> GetPagedAreaDishPriceAsyncEF(AreaDishPriceQueryParameters query);
         Task<bool> UpdateAsync(string id, AreaDishPriceDto dto);
