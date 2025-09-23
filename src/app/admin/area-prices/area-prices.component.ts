@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -75,8 +75,17 @@ export class AreaPricesComponent implements OnInit {
   dishNames = signal<string[]>([]);
   selectedDishNameFilter = signal<string>('');
   loadingDishNames = signal(false);
+  // Whether suggestion dropdown is visible
+  suggestionsVisible = signal(false);
   // Suggestions debounce for dish name search (when typing)
   private dishNameInputSubject = new Subject<string>();
+  // Track what caused suggestion load: 'typing' | 'area' | 'other'
+  private lastSuggestionTrigger: 'typing' | 'area' | 'other' = 'other';
+  private documentClickHandler = (e: MouseEvent) => {
+    // clicking anywhere outside will close suggestions
+    this.dishNames.set([]);
+    this.suggestionsVisible.set(false);
+  };
 
   // Sort properties
   sortColumn = signal<string>('');
@@ -150,6 +159,13 @@ export class AreaPricesComponent implements OnInit {
 
     this.loadAreas();
     this.getAllAreaDishPrices(1);
+
+    // close suggestions when clicking outside
+    document.addEventListener('click', this.documentClickHandler);
+  }
+
+  ngOnDestroy() {
+    document.removeEventListener('click', this.documentClickHandler);
   }
 
   // Get all area dish prices with pagination
@@ -157,16 +173,22 @@ export class AreaPricesComponent implements OnInit {
     this.loadingDishes.set(true);
     this.dishError.set(null);
 
-    const requestBody: AreaDishPriceSearchRequest = {
+    const isActiveValue =
+      this.selectedStatus() === '' ? undefined : this.selectedStatus() == '1' ? 1 : 0;
+
+    const requestBody: any = {
       searchString: this.searchText(),
       pageIndex: page,
       pageSize: this.selectedPageSize(),
-      isActive: 1,
       areaId: this.selectedAreaFilter() || undefined, // Ensure empty string becomes undefined
       dishName: this.selectedDishNameFilter() || this.dishNameFilter() || undefined,
       kitchenName: this.kitchenNameFilter() || undefined,
       groupName: this.groupNameFilter() || undefined,
     };
+
+    if (isActiveValue !== undefined) {
+      requestBody.isActive = isActiveValue;
+    }
 
     console.log('getAllAreaDishPrices - Request:', requestBody);
     console.log('getAllAreaDishPrices - Current pageIndex signal:', this.pageIndex());
@@ -242,6 +264,11 @@ export class AreaPricesComponent implements OnInit {
   onAreaFilterChange(areaId: string) {
     console.log('Area filter changed to:', areaId);
     this.selectedAreaFilter.set(areaId);
+    // hide any inline suggestions when user explicitly changes area
+    this.dishNames.set([]);
+    this.suggestionsVisible.set(false);
+    // mark that the next dish names load is area-triggered
+    this.lastSuggestionTrigger = 'area';
     this.pageIndex.set(1); // Reset to first page when changing area
     console.log('Reset pageIndex to 1, current pageSize:', this.selectedPageSize());
 
@@ -265,6 +292,13 @@ export class AreaPricesComponent implements OnInit {
     // keep the filter in sync
     this.dishNameFilter.set(value);
     // push into subject for debounced suggestions
+    if (!value || value.length < 1) {
+      this.dishNames.set([]);
+      this.suggestionsVisible.set(false);
+      return;
+    }
+    // mark that the user typed, so suggestion overlay may be shown
+    this.lastSuggestionTrigger = 'typing';
     this.dishNameInputSubject.next(value);
   }
 
@@ -284,6 +318,8 @@ export class AreaPricesComponent implements OnInit {
     this.selectedDishNameFilter.set(name);
     // clear suggestions
     this.dishNames.set([]);
+    this.suggestionsVisible.set(false);
+    this.lastSuggestionTrigger = 'other';
     this.pageIndex.set(1);
     this.getAllAreaDishPrices(1);
   }
@@ -319,11 +355,19 @@ export class AreaPricesComponent implements OnInit {
       )
       .subscribe((response) => {
         if (response.isSuccess && response.data) {
-          // optionally filter by area-based dishNames if we have area-specific list already
           this.dishNames.set(response.data || []);
+          // Only show the floating suggestions overlay when user typed
+          if (this.lastSuggestionTrigger === 'typing' && (response.data || []).length > 0) {
+            this.suggestionsVisible.set(true);
+          } else {
+            this.suggestionsVisible.set(false);
+          }
         } else {
           this.dishNames.set([]);
+          this.suggestionsVisible.set(false);
         }
+        // reset trigger after handling response
+        this.lastSuggestionTrigger = 'other';
         this.loadingDishNames.set(false);
       });
   }
@@ -347,8 +391,8 @@ export class AreaPricesComponent implements OnInit {
   }
 
   onStatusFilterChange(status: string) {
-    this.selectedStatus.set(status);
-    this.pageIndex.set(1); // Reset to first page when filtering
+    this.selectedStatus.set(status); // status: "", "0", "1"
+    this.pageIndex.set(1);
     this.getAllAreaDishPrices(1);
   }
 
@@ -544,6 +588,8 @@ export class AreaPricesComponent implements OnInit {
   }
 
   private loadDishNamesByArea(areaId: string) {
+    // Don't show the inline typed-suggestions UI for area-only loads
+    this.suggestionsVisible.set(false);
     this.loadingDishNames.set(true);
 
     const request = {
@@ -573,6 +619,7 @@ export class AreaPricesComponent implements OnInit {
       .subscribe((response) => {
         console.log('Dish names response:', response);
         if (response.isSuccess && response.data) {
+          // populate list for the dropdown select, but keep suggestions hidden
           this.dishNames.set(response.data);
         } else {
           console.error('Failed to load dish names:', response.message);

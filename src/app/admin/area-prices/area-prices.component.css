@@ -164,6 +164,19 @@
   background: white;
 }
 
+/* Make the table horizontally scrollable on small devices */
+.dishes-table {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure header/rows keep their column widths and can scroll horizontally */
+.table-header,
+.table-row {
+  min-width: 1000px; /* allow scrolling instead of compressing columns */
+}
+
 .table-header {
   display: grid;
   grid-template-columns: 50px 80px 1.5fr 2fr 120px 120px 120px 100px 120px;
@@ -481,6 +494,7 @@
   .table-row {
     grid-template-columns: 30px 60px 1fr 1fr 80px 80px 80px 60px 80px;
     font-size: 11px;
+    min-width: 760px;
   }
 
   .col-id,
@@ -497,6 +511,40 @@
   .pagination-container {
     flex-direction: column;
     gap: 10px;
+  }
+}
+
+/* Extra small screens: hide low-priority columns and reduce padding */
+@media (max-width: 480px) {
+  .filter-box {
+    gap: 6px;
+  }
+
+  .table-header,
+  .table-row {
+    /* keep a reasonable min width but drop some less important columns visually */
+    grid-template-columns: 30px 1fr 1fr 80px 60px;
+    min-width: 420px;
+    font-size: 12px;
+  }
+
+  /* Hide columns that are not essential on narrow screens */
+  .col-code,
+  .col-date,
+  .col-price {
+    display: none;
+  }
+
+  .col-id,
+  .col-area,
+  .col-name,
+  .col-status,
+  .col-actions {
+    padding: 8px 6px;
+  }
+
+  .search-section {
+    padding: 10px;
   }
 }
 

@@ -39,24 +39,19 @@
             <div class="autocomplete-wrapper" style="position: relative;">
                 <input #dishInput type="text" [ngModel]="dishNameFilter()" (input)="onDishNameInput(dishInput.value)"
                     (keydown.enter)="onDishNameEnter(dishInput.value)" placeholder="Tên món ăn..."
-                    class="filter-input autocomplete-input">
+                    class="filter-input autocomplete-input" (click)="$event.stopPropagation()">
                 <!-- suggestions dropdown -->
-                <ul *ngIf="dishNames().length > 0" class="autocomplete-list"
+                <ul *ngIf="dishNames().length > 0 && suggestionsVisible()" class="autocomplete-list"
                     style="position: absolute; z-index: 50; background: #fff; border: 1px solid #ddd; width: 100%; max-height: 200px; overflow: auto; margin-top: 2px; padding: 0; list-style: none;">
                     <li *ngFor="let name of dishNames()" (click)="selectDishNameSuggestion(name)"
-                        style="padding: 8px; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
+                        style="padding: 8px; cursor: pointer; border-bottom: 1px solid #f0f0f0;"
+                        (click)="$event.stopPropagation()">
                         {{ name }}
                     </li>
                 </ul>
             </div>
-            @if (selectedAreaFilter() && dishNames().length > 0) {
-            <select [ngModel]="selectedDishNameFilter()" (ngModelChange)="onDishNameDropdownChange($event)"
-                class="filter-select">
-                <option value="">Tất cả món ăn trong khu vực</option>
-                <option *ngFor="let dishName of dishNames()" [value]="dishName">
-                    {{ dishName }}
-                </option>
-            </select>
+            @if (selectedAreaFilter() && dishNames().length > 0 && !suggestionsVisible()) {
+
             } @else if (selectedAreaFilter() && loadingDishNames()) {
             <div class="loading-indicator" style="font-size: 12px; color: #666; padding: 5px;">
                 Đang tải danh sách món ăn...
@@ -68,8 +63,8 @@
                 placeholder="Nhóm món..." class="filter-input">
             <select [ngModel]="selectedStatus()" (ngModelChange)="onStatusFilterChange($event)" class="filter-select">
                 <option value="">Tất cả trạng thái</option>
-                <option value="true">Hoạt động</option>
-                <option value="false">Không hoạt động</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Không hoạt động</option>
             </select>
         </div>
     </div>
@@ -206,7 +201,7 @@
             </button>
             } @else {
             <h3>Chưa có giá món ăn nào</h3>
-            <p>Chưa có dữ liệu giá món ăn theo khu vực</p>
+            <p>chưa có dữ liệu giá món ăn theo khu vực!</p>
             }
         </div>
         }
@@ -233,7 +228,6 @@
                     <label>Giá mới (VND)</label>
                     <input type="number" [(ngModel)]="newPrice" name="newPrice" placeholder="0" min="0" required>
                 </div>
-
                 <div class="modal-actions">
                     <button type="button" (click)="closeEditModal()" class="simple-btn cancel-btn"
                         [disabled]="updatingPrice()">
