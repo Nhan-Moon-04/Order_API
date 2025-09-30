@@ -131,12 +131,5 @@ export class AdminDashboardComponent implements OnInit {
       route: '/admin/tables-areas',
       color: 'bg-pink-500',
     },
-    {
-      title: 'Xem tất cả giá món theo khu vực',
-      description: 'Danh sách món ăn và giá cả theo từng khu vực',
-      icon: 'fas fa-tags',
-      route: '/admin/show-all-area-dish-price',
-      color: 'bg-indigo-500',
-    },
   ];
 }

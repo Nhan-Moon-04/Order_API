@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'admin/areas', component: AdminAreasComponent },
   { path: 'admin/area-prices', component: AreaPricesComponent },
   { path: 'admin/area-prices/:areaId', component: AreaPricesComponent },
-  { path: 'admin/show-all-area-dish-price', component: ShowAllAreaDishPriceComponent },
+  { path: 'show-all-area-dish-price', component: ShowAllAreaDishPriceComponent },
   { path: 'admin/tables-areas', component: TablesAreasComponent },
   { path: 'admin/dishes', component: DishesComponent },
   { path: '**', redirectTo: '' },
