@@ -42,8 +42,6 @@
 
 /* Search and Filter Section */
 .search-section {
-  margin-bottom: 20px;
-  padding: 15px;
   background: #f5f5f5;
   border: 1px solid #ddd;
 }
@@ -1096,4 +1094,213 @@
 
 .no-dishes button:hover {
   color: #357abd;
+}
+
+/* Selected Area Info - when navigating from area management */
+.selected-area-info {
+  padding: 8px 12px;
+  background: #e8f5e8;
+  border: 1px solid #c3e6c3;
+  border-radius: 4px;
+  color: #2d5a2d;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.selected-area-info strong {
+  font-weight: 600;
+}
+
+/* Datalist styling for dish search */
+input[list] {
+  position: relative;
+}
+
+input[list]::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+input[list]:focus::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+/* Improved dish search input styling */
+.add-modal input[list] {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.add-modal input[list]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.dropdown-toggle {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dropdown-toggle:hover {
+  border-color: #9ca3af;
+}
+
+.dropdown-toggle:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+.selected-text {
+  flex: 1;
+  color: #374151;
+}
+
+.dropdown-toggle .selected-text:empty::before {
+  content: '-- Chọn món ăn --';
+  color: #9ca3af;
+}
+
+.dropdown-arrow {
+  margin-left: 8px;
+  color: #6b7280;
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.dropdown-search {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dropdown-search .search-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.dropdown-search .search-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+.dropdown-options {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-option {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover {
+  background-color: #f9fafb;
+}
+
+.dropdown-option.selected {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.dropdown-option .dish-name {
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.dropdown-option .dish-price {
+  font-size: 12px;
+  color: #059669;
+  font-weight: 600;
+}
+
+.dropdown-option .dish-kitchen {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.no-results {
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Searchable Dropdown Styles */
+.searchable-dropdown {
+  position: relative;
+}
+
+.option-item:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.dropdown-options {
+  position: absolute;
+  z-index: 100;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.option-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.option-item:last-child {
+  border-bottom: none;
 }

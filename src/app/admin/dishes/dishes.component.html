@@ -17,9 +17,7 @@
         <div class="search-box">
             <input type="text" [(ngModel)]="searchText" (input)="onSearch()" placeholder="Tìm kiếm món ăn..."
                 class="search-input">
-            <button (click)="clearSearch()" class="clear-btn" *ngIf="searchText">
-                ✕
-            </button>
+
         </div>
         <div class="filter-box">
             <select [(ngModel)]="selectedGroup" (change)="onFilterChange()" class="filter-select">
@@ -35,6 +33,7 @@
             </select>
         </div>
     </div>
+
 
     <!-- Main Content -->
     <div class="simple-content">

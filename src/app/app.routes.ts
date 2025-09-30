@@ -17,6 +17,7 @@ export const routes: Routes = [
   { path: 'admin', component: AdminDashboardComponent },
   { path: 'admin/areas', component: AdminAreasComponent },
   { path: 'admin/area-prices', component: AreaPricesComponent },
+  { path: 'admin/area-prices/:areaId', component: AreaPricesComponent },
   { path: 'admin/tables-areas', component: TablesAreasComponent },
   { path: 'admin/dishes', component: DishesComponent },
   { path: '**', redirectTo: '' },

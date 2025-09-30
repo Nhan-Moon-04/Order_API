@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   Observable,
@@ -45,7 +45,11 @@ import { Location } from '@angular/common';
 export class AreaPricesComponent implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private location = inject(Location);
+
+  // Track if component was accessed from area management
+  isFromAreaManagement = signal(false);
 
   areas = signal<Area[]>([]);
   selectedArea = signal<Area | null>(null);
@@ -113,17 +117,26 @@ export class AreaPricesComponent implements OnInit {
   // Add Dishes Modal
   showAddModal = signal(false);
   availableDishes = signal<AvailableDish[]>([]);
+  filteredDishes = signal<AvailableDish[]>([]);
   selectedDish = signal<string>('');
+  dishSearchTerm = signal<string>('');
   customPrice = signal<number>(0);
   loadingAvailableDishes = signal(false);
   addingDishes = signal(false);
-  availableDishesSearchText = signal<string>('');
+  showDropdownOptions = signal(false);
 
   // Search debounce
   private searchSubject = new Subject<string>();
   private dishNamesSearchSubject = new Subject<string>();
 
   ngOnInit() {
+    // Check if navigated from area management with areaId parameter
+    const areaIdFromRoute = this.route.snapshot.paramMap.get('areaId');
+    if (areaIdFromRoute) {
+      this.isFromAreaManagement.set(true);
+      this.selectedAreaFilter.set(areaIdFromRoute);
+    }
+
     // Load saved page size from localStorage
     const savedPageSize = localStorage.getItem('areaPricesPageSize');
     if (savedPageSize) {
@@ -131,13 +144,7 @@ export class AreaPricesComponent implements OnInit {
       this.pageSize = +savedPageSize;
     }
 
-    // Set up debounced search for available dishes
-    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe((searchText) => {
-      this.availableDishesSearchText.set(searchText);
-      if (this.selectedArea()) {
-        this.loadAvailableDishes(this.selectedArea()!.areaId);
-      }
-    });
+    // Removed old search subject - using direct filtering now
 
     // Set up debounced search for dish names by area
     this.dishNamesSearchSubject
@@ -162,6 +169,14 @@ export class AreaPricesComponent implements OnInit {
 
     // close suggestions when clicking outside
     document.addEventListener('click', this.documentClickHandler);
+
+    // close searchable dropdown when clicking outside
+    document.addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.searchable-dropdown')) {
+        this.showDropdownOptions.set(false);
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -832,11 +847,11 @@ export class AreaPricesComponent implements OnInit {
 
   resetAddModalData() {
     this.availableDishes.set([]);
+    this.filteredDishes.set([]);
     this.selectedDish.set('');
+    this.dishSearchTerm.set('');
     this.customPrice.set(0);
-    this.availableDishesSearchText.set('');
-    // Reset the search subject as well
-    this.searchSubject.next('');
+    this.showDropdownOptions.set(false);
   }
 
   loadAvailableDishes(areaId: string) {
@@ -844,7 +859,7 @@ export class AreaPricesComponent implements OnInit {
 
     const request: GetAvailableDishesRequest = {
       areaId: areaId,
-      searchString: this.availableDishesSearchText() || undefined,
+      searchString: undefined, // Using client-side filtering now
     };
 
     console.log('Loading available dishes with request:', request);
@@ -910,29 +925,50 @@ export class AreaPricesComponent implements OnInit {
     this.selectedDish.set(dishId);
   }
 
-  getSelectedDishName(): string {
-    const dishId = this.selectedDish();
-    if (!dishId) return '';
+  onFocusDropdown() {
+    this.showDropdownOptions.set(true);
+    // Show all dishes when first opening the dropdown
+    this.filteredDishes.set(this.availableDishes());
+  }
 
-    const dish = this.availableDishes().find((d) => d.dishId === dishId);
+  filterDishes(event: any) {
+    const searchTerm = event.target.value.toLowerCase();
+    this.dishSearchTerm.set(event.target.value);
+    this.showDropdownOptions.set(true);
+
+    if (searchTerm) {
+      const filtered = this.availableDishes().filter(
+        (dish) =>
+          dish.dishName.toLowerCase().includes(searchTerm) ||
+          dish.description?.toLowerCase().includes(searchTerm) ||
+          dish.kitchenName?.toLowerCase().includes(searchTerm)
+      );
+      this.filteredDishes.set(filtered);
+    } else {
+      this.filteredDishes.set(this.availableDishes());
+    }
+  }
+
+  selectDishFromSearch(dish: AvailableDish) {
+    this.selectedDish.set(dish.dishId);
+    this.dishSearchTerm.set(dish.dishName);
+    this.showDropdownOptions.set(false);
+  }
+
+  getSelectedDish(): AvailableDish | undefined {
+    if (!this.selectedDish()) return undefined;
+    return this.availableDishes().find((d) => d.dishId === this.selectedDish());
+  }
+
+  getSelectedDishName(): string {
+    const dish = this.getSelectedDish();
     return dish ? dish.dishName : '';
   }
 
-  // Available Dishes Search Methods
-  onAvailableDishesSearch() {
-    if (!this.selectedArea()) return;
-    console.log('Searching available dishes with text:', this.availableDishesSearchText());
-    // Use the subject for debounced search
-    this.searchSubject.next(this.availableDishesSearchText());
-  }
-
-  clearAvailableDishesSearch() {
-    this.availableDishesSearchText.set('');
-    this.searchSubject.next('');
-  }
+  // Available Dishes Search Methods - Removed (using direct filtering)
 
   addDishesToArea() {
-    if (!this.selectedDish()) {
+    if (!this.getSelectedDish()) {
       alert('Vui lòng chọn món ăn');
       return;
     }

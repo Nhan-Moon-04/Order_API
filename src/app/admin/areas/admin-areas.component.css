@@ -229,6 +229,16 @@
   background: #c82333;
 }
 
+.dishes-btn {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.dishes-btn:hover {
+  background: #218838;
+}
+
 .simple-empty {
   text-align: center;
   padding: 60px 20px;
@@ -370,5 +380,15 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .area-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .area-actions .simple-btn {
+    width: 100%;
+    text-align: center;
   }
 }

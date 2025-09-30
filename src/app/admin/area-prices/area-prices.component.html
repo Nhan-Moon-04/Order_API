@@ -29,44 +29,7 @@
             </button>
             }
         </div>
-        <div class="filter-box">
-            <select [ngModel]="selectedAreaFilter()" (ngModelChange)="onAreaFilterChange($event)" class="filter-select">
-                <option value="">Tất cả khu vực</option>
-                <option *ngFor="let area of areas()" [value]="area.areaId">
-                    {{ area.areaName }}
-                </option>
-            </select>
-            <div class="autocomplete-wrapper" style="position: relative;">
-                <input #dishInput type="text" [ngModel]="dishNameFilter()" (input)="onDishNameInput(dishInput.value)"
-                    (keydown.enter)="onDishNameEnter(dishInput.value)" placeholder="Tên món ăn..."
-                    class="filter-input autocomplete-input" (click)="$event.stopPropagation()">
-                <!-- suggestions dropdown -->
-                <ul *ngIf="dishNames().length > 0 && suggestionsVisible()" class="autocomplete-list"
-                    style="position: absolute; z-index: 50; background: #fff; border: 1px solid #ddd; width: 100%; max-height: 200px; overflow: auto; margin-top: 2px; padding: 0; list-style: none;">
-                    <li *ngFor="let name of dishNames()" (click)="selectDishNameSuggestion(name)"
-                        style="padding: 8px; cursor: pointer; border-bottom: 1px solid #f0f0f0;"
-                        (click)="$event.stopPropagation()">
-                        {{ name }}
-                    </li>
-                </ul>
-            </div>
-            @if (selectedAreaFilter() && dishNames().length > 0 && !suggestionsVisible()) {
 
-            } @else if (selectedAreaFilter() && loadingDishNames()) {
-            <div class="loading-indicator" style="font-size: 12px; color: #666; padding: 5px;">
-                Đang tải danh sách món ăn...
-            </div>
-            }
-            <input type="text" [ngModel]="kitchenNameFilter()" (ngModelChange)="onKitchenNameFilterChange($event)"
-                placeholder="Tên bếp..." class="filter-input">
-            <input type="text" [ngModel]="groupNameFilter()" (ngModelChange)="onGroupNameFilterChange($event)"
-                placeholder="Nhóm món..." class="filter-input">
-            <select [ngModel]="selectedStatus()" (ngModelChange)="onStatusFilterChange($event)" class="filter-select">
-                <option value="">Tất cả trạng thái</option>
-                <option value="1">Hoạt động</option>
-                <option value="0">Không hoạt động</option>
-            </select>
-        </div>
     </div>
 
     <!-- Main Content -->
@@ -321,19 +284,6 @@
                 <div class="form-group">
                     <label>Chọn món ăn:</label>
 
-                    <!-- Search for available dishes -->
-                    <div class="search-box" style="margin-bottom: 15px;">
-                        <input type="text" [(ngModel)]="availableDishesSearchText"
-                            (ngModelChange)="onAvailableDishesSearch()"
-                            placeholder="Tìm kiếm món ăn (tên, mã, mô tả...)" class="search-input"
-                            name="availableDishesSearch">
-                        @if (availableDishesSearchText()) {
-                        <button type="button" (click)="clearAvailableDishesSearch()" class="clear-btn">
-                            ✕
-                        </button>
-                        }
-                    </div>
-
                     @if (loadingAvailableDishes()) {
                     <div class="loading-dishes">
                         <div class="simple-spinner"></div>
@@ -343,52 +293,62 @@
 
                     @if (availableDishes().length === 0 && !loadingAvailableDishes()) {
                     <div class="no-dishes">
-                        @if (availableDishesSearchText()) {
-                        <p>Không tìm thấy món ăn nào với từ khóa "{{ availableDishesSearchText() }}".</p>
-                        <p>Thử tìm kiếm với từ khóa khác hoặc <button type="button"
-                                (click)="clearAvailableDishesSearch()"
-                                style="background: none; border: none; color: #4a90e2; cursor: pointer; text-decoration: underline;">
-                                xóa bộ lọc</button>.</p>
-                        } @else {
                         <p>Không có món ăn nào có sẵn để thêm vào khu vực này.</p>
-                        }
                     </div>
                     }
 
                     @if (availableDishes().length > 0 && !loadingAvailableDishes()) {
-                    <select [(ngModel)]="selectedDish" name="selectedDish" class="filter-select"
-                        style="width: 100%; margin-bottom: 15px;">
-                        <option value="">-- Chọn món ăn --</option>
-                        @for (dish of availableDishes(); track dish.dishId) {
-                        <option [value]="dish.dishId">
-                            {{ dish.dishName }} - {{ dish.basePrice | currency:'VND':'symbol':'1.0-0' }}
-                            @if (dish.kitchenName) {
-                            ({{ dish.kitchenName }})
-                            }
-                        </option>
-                        }
-                    </select>
+                    <!-- Searchable Dropdown -->
+                    <div class="searchable-dropdown" style="position: relative;">
+                        <input type="text" [(ngModel)]="dishSearchTerm" name="dishSearchTerm"
+                            (input)="filterDishes($event)" (focus)="onFocusDropdown()"
+                            placeholder="Tìm kiếm và chọn món ăn..." class="filter-input"
+                            style="width: 100%; margin-bottom: 5px;">
 
-                    <!-- Show selected dish details -->
-                    @if (selectedDish()) {
-                    <div class="selected-dish-info">
-                        @for (dish of availableDishes(); track dish.dishId) {
-                        @if (dish.dishId === selectedDish()) {
-                        <div class="dish-details">
-                            <h4>{{ dish.dishName }}</h4>
-                            <p><strong>Giá gốc:</strong> {{ dish.basePrice | currency:'VND':'symbol':'1.0-0' }}</p>
-                            @if (dish.description) {
-                            <p><strong>Mô tả:</strong> {{ dish.description }}</p>
+                        @if (showDropdownOptions()) {
+                        <!-- Show dishes when dropdown is open -->
+                        @if (filteredDishes().length > 0) {
+                        <div class="dropdown-options"
+                            style="position: absolute; z-index: 100; width: 100%; max-height: 200px; overflow-y: auto; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            @for (dish of filteredDishes(); track dish.dishId) {
+                            <div class="option-item" (click)="selectDishFromSearch(dish)"
+                                style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;"
+                                [style.background-color]="selectedDish() === dish.dishId ? '#e3f2fd' : 'white'"
+                                [class.hovered]="true">
+                                <div style="font-weight: 500; color: #333;">{{ dish.dishName }}</div>
+                                <div style="font-size: 12px; color: #059669; font-weight: 600;">{{ dish.basePrice |
+                                    currency:'VND':'symbol':'1.0-0' }}</div>
+                                @if (dish.kitchenName) {
+                                <div style="font-size: 11px; color: #666;">Bếp: {{ dish.kitchenName }}</div>
+                                }
+                            </div>
                             }
-                            @if (dish.kitchenName) {
-                            <p><strong>Bếp:</strong> {{ dish.kitchenName }}</p>
-                            }
-                            @if (dish.groupName) {
-                            <p><strong>Nhóm:</strong> {{ dish.groupName }}</p>
-                            }
+                        </div>
+                        } @else if (dishSearchTerm()) {
+                        <!-- Show no results message only when searching -->
+                        <div class="no-results"
+                            style="position: absolute; z-index: 100; width: 100%; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 10px; color: #666; text-align: center;">
+                            Không tìm thấy món ăn nào
                         </div>
                         }
                         }
+                    </div>
+
+
+                    <!-- Show selected dish details -->
+                    @if (getSelectedDish()) {
+                    <div class="selected-dish-info">
+                        <div class="dish-details">
+                            <h4>{{ getSelectedDish()?.dishName }}</h4>
+                            <p><strong>Giá gốc:</strong> {{ getSelectedDish()?.basePrice |
+                                currency:'VND':'symbol':'1.0-0' }}</p>
+                            @if (getSelectedDish()?.description) {
+                            <p><strong>Mô tả:</strong> {{ getSelectedDish()?.description }}</p>
+                            }
+                            @if (getSelectedDish()?.kitchenName) {
+                            <p><strong>Bếp:</strong> {{ getSelectedDish()?.kitchenName }}</p>
+                            }
+                        </div>
                     </div>
                     }
                     }
@@ -400,11 +360,6 @@
                 </div>
 
                 <!-- Selected Count -->
-                @if (selectedDish()) {
-                <div class="selected-count">
-                    <p>Đã chọn món ăn: {{ getSelectedDishName() }}</p>
-                </div>
-                }
 
                 <div class="modal-actions">
                     <button type="button" (click)="closeAddModal()" class="simple-btn cancel-btn"

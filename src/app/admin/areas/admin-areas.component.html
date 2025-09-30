@@ -59,6 +59,9 @@
                     <button class="simple-btn edit-btn" (click)="openEditModal(area)">
                         Sửa
                     </button>
+                    <button class="simple-btn dishes-btn" (click)="editDishes(area)">
+                        Chỉnh sửa món
+                    </button>
                     <button class="simple-btn delete-btn" (click)="deleteArea(area)">
                         Xóa
                     </button>
@@ -87,6 +90,12 @@
             <h3>Thêm khu vực mới</h3>
 
             <form (ngSubmit)="addArea()">
+                <div class="form-group">
+                    <label>Mã khu vực (tùy chọn)</label>
+                    <input type="text" [(ngModel)]="newArea.areaId" name="areaId"
+                        placeholder="Ví dụ: A007 (để trống để tự động tạo)" maxlength="10">
+                </div>
+
                 <div class="form-group">
                     <label>Tên khu vực *</label>
                     <input type="text" [(ngModel)]="newArea.areaName" name="areaName" placeholder="Nhập tên khu vực"

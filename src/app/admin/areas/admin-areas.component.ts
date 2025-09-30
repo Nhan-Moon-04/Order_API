@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, catchError, of } from 'rxjs';
 import { Area } from '../../model/area.model';
 import { environment } from '../../../environments/environment';
@@ -16,6 +17,7 @@ import { Location } from '@angular/common';
 })
 export class AdminAreasComponent implements OnInit {
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   areas = signal<Area[]>([]);
   loading = signal(false);
@@ -26,6 +28,7 @@ export class AdminAreasComponent implements OnInit {
 
   // Form data
   newArea = {
+    areaId: '',
     areaName: '',
     description: '',
     isActive: true,
@@ -70,6 +73,7 @@ export class AdminAreasComponent implements OnInit {
 
   openAddModal() {
     this.newArea = {
+      areaId: '',
       areaName: '',
       description: '',
       isActive: true,
@@ -106,8 +110,17 @@ export class AdminAreasComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
+    // Create payload matching the API specification
+    const createAreaPayload = {
+      areaId: this.newArea.areaId.trim() || '', // Use custom areaId or let backend generate
+      areaName: this.newArea.areaName,
+      description: this.newArea.description || '',
+      isActive: this.newArea.isActive,
+      createdAt: new Date().toISOString(),
+    };
+
     this.http
-      .post<Area>(`${environment.apiUrl}/Areas`, this.newArea)
+      .post<Area>(`${environment.apiUrl}/Areas/CreateArea`, createAreaPayload)
       .pipe(
         catchError((err) => {
           console.error('Error adding area:', err);
@@ -135,8 +148,16 @@ export class AdminAreasComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
+    // Create payload matching the API specification
+    const updateAreaPayload = {
+      areaId: this.editArea.areaId,
+      name: this.editArea.areaName, // API expects 'name' instead of 'areaName'
+      description: this.editArea.description || '',
+      isActive: this.editArea.isActive,
+    };
+
     this.http
-      .put<Area>(`${environment.apiUrl}/Areas/${this.editArea.areaId}`, this.editArea)
+      .post<Area>(`${environment.apiUrl}/Areas/UpdateArea`, updateAreaPayload)
       .pipe(
         catchError((err) => {
           console.error('Error updating area:', err);
@@ -163,8 +184,9 @@ export class AdminAreasComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
+    // Send areaId as JSON string in request body to match API specification
     this.http
-      .delete(`${environment.apiUrl}/Areas/${area.areaId}`)
+      .post(`${environment.apiUrl}/Areas/DeleteArea`, area.areaId)
       .pipe(
         catchError((err) => {
           console.error('Error deleting area:', err);
@@ -219,5 +241,9 @@ export class AdminAreasComponent implements OnInit {
     if (window.history.length > 1) {
       this.location.back();
     }
+  }
+
+  editDishes(area: Area) {
+    this.router.navigate(['/admin/area-prices', area.areaId]);
   }
 }
