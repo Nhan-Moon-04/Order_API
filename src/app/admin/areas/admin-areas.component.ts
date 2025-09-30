@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, catchError, of } from 'rxjs';
 import { Area } from '../../model/area.model';
@@ -184,9 +184,15 @@ export class AdminAreasComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    // Send areaId as JSON string in request body to match API specification
+    // Send areaId as JSON string in request body with proper headers
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    };
+
     this.http
-      .post(`${environment.apiUrl}/Areas/DeleteArea`, area.areaId)
+      .post(`${environment.apiUrl}/Areas/DeleteArea`, JSON.stringify(area.areaId), httpOptions)
       .pipe(
         catchError((err) => {
           console.error('Error deleting area:', err);

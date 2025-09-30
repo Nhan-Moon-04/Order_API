@@ -117,19 +117,26 @@ export class AdminDashboardComponent implements OnInit {
     //   route: '/admin/reports',
     //   color: 'bg-teal-500',
     // },
-    {
-      title: 'Quản lý giá tiền khu vực',
-      description: 'Thêm, sửa, xóa giá tiền khu vực',
-      icon: 'fas fa-tags',
-      route: '/admin/area-prices',
-      color: 'bg-yellow-500',
-    },
+    // {
+    //   title: 'Quản lý giá tiền khu vực',
+    //   description: 'Thêm, sửa, xóa giá tiền khu vực',
+    //   icon: 'fas fa-tags',
+    //   route: '/admin/area-prices',
+    //   color: 'bg-yellow-500',
+    // },
     {
       title: 'Quản lý Bàn - Khu vực',
       description: 'Phân bàn theo khu vực',
       icon: 'fas fa-th-large',
       route: '/admin/tables-areas',
       color: 'bg-pink-500',
+    },
+    {
+      title: 'Xem tất cả giá món theo khu vực',
+      description: 'Danh sách món ăn và giá cả theo từng khu vực',
+      icon: 'fas fa-tags',
+      route: '/admin/show-all-area-dish-price',
+      color: 'bg-indigo-500',
     },
   ];
 }

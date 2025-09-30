@@ -1,0 +1,143 @@
+<div class="container">
+    <div class="header">
+        <button (click)="goBack()" class="back-btn">
+            ← Quay lại
+        </button>
+        <div class="header-content">
+            <h1>Xem tất cả giá món theo khu vực</h1>
+            <p>Danh sách món ăn và giá cả theo từng khu vực</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Left Panel - Areas List -->
+        <div class="areas-panel">
+            <h3>Khu vực</h3>
+
+            @if (loadingAreas()) {
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Đang tải khu vực...</p>
+            </div>
+            }
+
+            @if (areas().length > 0 && !loadingAreas()) {
+            <div class="areas-list">
+                @for (area of areas(); track area.areaId) {
+                <div class="area-item" [class.selected]="selectedArea()?.areaId === area.areaId"
+                    (click)="selectArea(area)">
+                    <div class="area-name">{{ area.areaName }}</div>
+                    <div class="area-description">{{ area.description || 'Không có mô tả' }}</div>
+                    <div class="area-status" [class.active]="area.isActive" [class.inactive]="!area.isActive">
+                        {{ area.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                    </div>
+                </div>
+                }
+            </div>
+            }
+
+            @if (areas().length === 0 && !loadingAreas()) {
+            <div class="empty-state">
+                <p>Không có khu vực nào</p>
+            </div>
+            }
+        </div>
+
+        <!-- Right Panel - Area Dish Prices -->
+        <div class="dishes-panel">
+            @if (selectedArea()) {
+            <h3>Món ăn - {{ selectedArea()?.areaName }}</h3>
+
+            @if (loadingDishes()) {
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Đang tải danh sách món ăn...</p>
+            </div>
+            }
+
+            @if (areaDishPrices().length > 0 && !loadingDishes()) {
+            <div class="dishes-list">
+                @for (dish of areaDishPrices(); track dish.id) {
+                <div class="dish-item">
+                    <div class="dish-header">
+                        <h4>{{ dish.dishName }}</h4>
+                        <div class="dish-price">
+                            {{ dish.customPrice | currency:'VND':'symbol':'1.0-0' }}
+                        </div>
+                    </div>
+                    <div class="dish-details">
+                        <div class="dish-info">
+                            <span><strong>Khu vực:</strong> {{ dish.areaName }}</span>
+                            <span><strong>Ngày hiệu lực:</strong> {{ dish.effectiveDate | date:'dd/MM/yyyy' }}</span>
+
+                        </div>
+                        <div class="dish-status" [class.active]="dish.isActive" [class.inactive]="!dish.isActive">
+                            {{ dish.isActive ? 'Hoạt động' : 'Không hoạt động' }}
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- Pagination - Always show if there are any items -->
+            @if (totalRecords() > 0) {
+            <div class="pagination-container">
+                <!-- Page Size Selector -->
+                <div class="page-size-selector">
+                    <label for="pageSizeDropdown">Hiển thị:</label>
+                    <select id="pageSizeDropdown" [ngModel]="selectedPageSize()"
+                        (ngModelChange)="onPageSizeChange($event)" class="page-size-dropdown">
+                        <option *ngFor="let size of dropdownValues" [value]="size">
+                            {{ size }}
+                        </option>
+                    </select>
+                    <span>dòng</span>
+                    <span style="font-weight: 200;">Tổng số dòng {{ totalRecords() }}</span>
+                </div>
+
+                <!-- Pagination Controls -->
+                @if (totalPages() > 1) {
+                <div class="pagination">
+                    <button class="page-btn" (click)="onPageChange(pageIndex() - 1)" [disabled]="pageIndex() <= 1">
+                        ‹ Trước
+                    </button>
+
+                    @for (page of getPageNumbers(); track page) {
+                    <button class="page-btn" [class.active]="pageIndex() === page" (click)="onPageChange(page)"
+                        [disabled]="pageIndex() === page">
+                        {{ page }}
+                    </button>
+                    }
+
+                    <button class="page-btn" (click)="onPageChange(pageIndex() + 1)"
+                        [disabled]="pageIndex() >= totalPages()">
+                        Sau ›
+                    </button>
+                </div>
+                }
+            </div>
+            }
+            }
+
+            @if (areaDishPrices().length === 0 && !loadingDishes() && selectedArea()) {
+            <div class="empty-state">
+                <h4>Chưa có món ăn nào</h4>
+                <p>Khu vực "{{ selectedArea()?.areaName }}" chưa có món ăn nào được thiết lập giá.</p>
+            </div>
+            }
+            } @else {
+            <div class="no-selection">
+                <h4>Chọn khu vực</h4>
+                <p>Hãy chọn một khu vực bên trái để xem danh sách món ăn.</p>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (error()) {
+    <div class="error-message">
+        {{ error() }}
+    </div>
+    }
+</div>
